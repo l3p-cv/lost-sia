@@ -28,16 +28,13 @@ class Annotation extends Component{
     }
 
     componentWillMount(){
-        console.log('Annotation did mount ', this.props.data.id, this.props.data)
         this.setState({anno: {...this.props.data}})
     }
 
     componentDidUpdate(prevProps){
         if (this.isSelected()){
-            console.log('Annotation Update', this.state, this.props.type, this.props.data.id)
         }
         if (prevProps.data !== this.props.data){
-            console.log('ANNOTATION annoChangeMode - Annotation got new annotation data from props -> state', this.props.data, this.state.anno)
             this.setState({anno: {...this.props.data}})
         }
         if (prevProps.showSingleAnno !== this.props.showSingleAnno){
@@ -58,13 +55,11 @@ class Annotation extends Component{
     **************/
     onClick(e: Event){
         e.stopPropagation()
-        console.log('Annotation select annotation on click: ', this.state.anno)
         this.performedAction(this.state.anno, canvasActions.ANNO_SELECTED)
     }
 
     onMouseDown(e: Event){
         e.preventDefault()
-        console.log('Mouse Down on Anno', e)
         if (this.props.onMouseDown){
             this.props.onMouseDown(e)
         }
@@ -75,7 +70,6 @@ class Annotation extends Component{
     }
 
     handleModeChangeRequest(anno, mode){
-        console.log('ANNOTATION: annoChangeMode - handleModeChangeRequest', anno, mode)
         this.setMode(anno, mode)
     }
 
@@ -137,10 +131,6 @@ class Annotation extends Component{
                 } else {
                     this.performedAction(newAnno, pAction)
                 }
-                console.log(
-                    'AnnotationArea', area
-                    , this.props.image
-                    )
                 break
             default:
                 this.performedAction(anno, pAction)
@@ -330,7 +320,6 @@ class Annotation extends Component{
             />
     }
     render(){
-        console.log('ANNOTATION: annoChangeMode - Render Single Anno state', this.state)
         if(!this.state.anno.data) return null
         if(this.state.anno.status === annoStatus.DELETED) return null
         return (

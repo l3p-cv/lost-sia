@@ -16,14 +16,12 @@ class Edge extends Component{
     }
     
     onMouseOver(e){
-        console.log('Mouse over edge', this.props.idx)
         if (this.props.isSelected){
             this.setState({haloCss: 'node-halo-on'})
         }
     }
 
     onMouseLeave(e){
-        console.log('Mouse Leave, ', this.props.isSelected)
         if (this.props.isSelected){
             this.setState({haloCss: 'node-halo-off'})
         }
@@ -31,7 +29,6 @@ class Edge extends Component{
 
     onMouseDown(e){
         // e.stopPropagation()
-        console.log('Clicked on Edge', this.props.idx)
         if (this.props.onMouseDown){
             this.props.onMouseDown(e, this.props.idx)
         }
@@ -57,7 +54,6 @@ class Edge extends Component{
             p1 = this.props.anno[this.props.anno.length-1]
             p2 = this.props.anno[0]
         }
-        console.log('EDGE: Render p1 p2 this.props', p1, p2, this.props)
         return(<g
             onMouseOver={(e) => {this.onMouseOver(e)}}
             onMouseLeave={e => {this.onMouseLeave(e)}}

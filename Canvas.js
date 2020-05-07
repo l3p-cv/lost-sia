@@ -176,7 +176,6 @@ class Canvas extends Component{
         //     }
         // }
         if (this.state.performedImageInit){
-            console.log('canvasHist Performed image init', this.state)
             // Initialize canvas history
             this.setState({
                 performedImageInit:false,
@@ -205,15 +204,11 @@ class Canvas extends Component{
                 this.selectAnnotation(undefined)
                 this.updateCanvasView(this.getAnnoBackendFormat())
             }
-            console.log('Canvas update this.state',this.state)
-            console.log('Canvas imageLoaded',this.state.imageLoaded)
             
         }
-        console.log('canvasHistory canvas state', this.hist.getHist(), this.state)
     }
 
     onImageLoad(){
-        console.log('Canvas onImageLoade')
         this.setState({
             imageLoaded: true
         })
@@ -225,7 +220,6 @@ class Canvas extends Component{
     onMouseOver(){
         //Prevent scrolling on svg
         this.svg.current.focus()
-        console.log('Mouse Over Canvas')
     }
 
     onWheel(e:Event){
@@ -248,7 +242,6 @@ class Canvas extends Component{
         if (nextScale > 200.0){
             nextScale = 200.0
         }
-        console.log(nextScale)
         this.setState({svg: {
             ...this.state.svg,
             scale: nextScale,
@@ -305,7 +298,6 @@ class Canvas extends Component{
 
     handleKeyAction(action){
         const anno = this.findAnno(this.state.selectedAnnoId)
-        console.log('handleKeyAction: ', action)
         switch(action){
             case keyActions.EDIT_LABEL:
                 this.editAnnoLabel()
@@ -322,7 +314,6 @@ class Canvas extends Component{
                 }
                 break
             case keyActions.LEAVE_ANNO_ADD_MODE:
-                console.log('handleKeyAction LEAVE_ANNO_EDIT_MODE')
                 if (anno){
                     this.updateSelectedAnno(
                         anno, modes.VIEW
@@ -348,14 +339,12 @@ class Canvas extends Component{
     onKeyDown(e: Event){
         e.preventDefault()
         this.keyMapper.keyDown(e.key)
-        console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
         this.findAnno(this.state.selectedAnnoId)
     }
 
     onKeyUp(e: Event){
         e.preventDefault()
         this.keyMapper.keyUp(e.key)
-        // console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
     }
 
     onMouseMove(e: Event){
@@ -376,7 +365,6 @@ class Canvas extends Component{
      * @param {String} pAction Action that was performed
      */
     onAnnoPerformedAction(anno, pAction){
-        console.log('onAnnoPerformedAction', anno, pAction)
         let newAnnos = undefined
         switch(pAction){
             case canvasActions.ANNO_SELECTED:
@@ -391,7 +379,6 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_CREATED:
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
-                console.log('ANNO_CREATED newAnnos', newAnnos)
                 this.pushHist(
                     newAnnos, anno.id,
                     pAction, undefined
@@ -456,7 +443,6 @@ class Canvas extends Component{
                 )
                 break
             case canvasActions.ANNO_CREATED_FINAL_NODE:
-                console.log('canvasActions.ANNO_CREATED_FINAL_NODE', anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
@@ -476,7 +462,6 @@ class Canvas extends Component{
     }
 
     onAnnoLabelInputClose(){
-        console.log('onAnnoLabelInputClose')
         this.svg.current.focus()
         this.showLabelInput(false)
         this.showSingleAnno(undefined)
@@ -567,7 +552,6 @@ class Canvas extends Component{
     undo(){
         if (!this.hist.isEmpty()){
             const cState = this.hist.undo()
-            console.log('canvasHistory UNDO: ',cState)
             this.setCanvasState(
                 cState.entry.annotations,
                 cState.entry.imgLabelIds, 
@@ -579,7 +563,6 @@ class Canvas extends Component{
     redo(){
         if (!this.hist.isEmpty()){
             const cState = this.hist.redo()
-            console.log('canvasHistory REDO: ',cState)
             this.setCanvasState(
                 cState.entry.annotations,
                 cState.entry.imgLabelIds, 
@@ -655,7 +638,6 @@ class Canvas extends Component{
             const myAnnos = this.state.annos.filter(e => {
                 return e.status !== annoStatus.DELETED
             })
-            console.log('Traverse annos: filteredAnnos', myAnnos)
             if (myAnnos.length > 0){
                 if (!this.state.selectedAnnoId){
                     this.selectAnnotation(myAnnos[0].id)
@@ -698,7 +680,6 @@ class Canvas extends Component{
                 points: bAnnos.filter((el) => {return el.type === 'point'}),
                 polygons: bAnnos.filter((el) => {return el.type === 'polygon'}),
         }
-        console.log('Annotation getAnnoBackendFormat', backendFormat)
         return backendFormat
     }
 
@@ -712,7 +693,6 @@ class Canvas extends Component{
             annotations: backendFormat,
             isJunk: this.state.isJunk
         }
-        console.log('FinalData', finalData)
         return finalData
     }
 
@@ -903,8 +883,6 @@ class Canvas extends Component{
         var canvasLeft
         var maxImgHeight
         var maxImgWidth 
-        console.log('Canvas container', container)
-        console.log('CanvasLeft', canvasLeft, this.props.uiConfig.toolBarWidth)
         if(this.props.layoutOffset){
             canvasTop = container.top + this.props.layoutOffset.top
             canvasLeft = container.left + this.props.layoutOffset.left
@@ -920,13 +898,6 @@ class Canvas extends Component{
         var ratio = this.img.current.naturalWidth / this.img.current.naturalHeight
         var imgWidth = "100%"
         var imgHeight = "100%"
-        console.log('clientHeight', clientHeight)
-        console.log('window.innerHeight', window.innerHeight)
-        console.log('naturalWidth', this.img.current.naturalWidth)
-        console.log('naturalHeight', this.img.current.naturalHeight)
-        console.log('maxImgWidth', maxImgWidth)
-        console.log('maxImgHeight', maxImgHeight)
-        console.log('ratio', ratio)
         if (maxImgHeight * ratio > maxImgWidth){
             imgWidth = maxImgWidth
             imgHeight = maxImgWidth / ratio
@@ -934,9 +905,6 @@ class Canvas extends Component{
             imgWidth = maxImgHeight * ratio
             imgHeight = maxImgHeight
         }
-        // console.log('svg', this.svg)
-        console.log('img', this.img)
-        console.log('imgWidth, imgHeight', imgWidth, imgHeight)
         if (this.props.centerCanvasInContainer){
             const resSpaceX = maxImgWidth - imgWidth
             if (resSpaceX > 2){
@@ -969,7 +937,6 @@ class Canvas extends Component{
     }
 
     setImageLabels(labelIds){
-        console.log('initImageLabels', labelIds)
         if (labelIds !== this.state.imgLabelIds){
             this.setState({
                 imgLabelIds: labelIds
@@ -984,7 +951,6 @@ class Canvas extends Component{
         //Annotation data should be present and a pixel accurate value 
         //for svg should be calculated
         if(annotations){
-            console.log('UpdateCanvasView annotations', annotations)
             const imgSize = this.updateImageSize()
             annos = [
                 ...annotations.bBoxes.map((element) => {
@@ -1013,7 +979,6 @@ class Canvas extends Component{
                 return {...el, 
                     data:transform.toSia(el.data, {width: imgSize.imgWidth, height:imgSize.imgHeight}, el.type)}
                 })
-            console.log('Canvas annos', annos)
             this.setState({annos: [...annos]})
         }
     }
@@ -1022,7 +987,6 @@ class Canvas extends Component{
         // Do not render annotations while moving the camera!
         if (this.state.mode !== modes.CAMERA_MOVE){
             // this.annoRefs = []
-            console.log('hist Render annotations', this.state.annos)
             const annos =  this.state.annos.map((el) => {
                 // this.annoRefs.push(React.createRef())
                 return <Annotation type={el.type} 
@@ -1080,7 +1044,6 @@ class Canvas extends Component{
     }
 
     render(){
-        console.log('Canvas render state, props', this.state, this.props)
         const selectedAnno = this.findAnno(this.state.selectedAnnoId)
         return(
             <div ref={this.container} >
