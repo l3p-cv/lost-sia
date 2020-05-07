@@ -23,7 +23,6 @@ class AnnoLabelInput extends Component{
     
     componentDidUpdate(prevProps){
         if (this.props.visible){
-            console.log('ShowLabelInput')
             this.setPosition()
         } 
 
@@ -42,9 +41,7 @@ class AnnoLabelInput extends Component{
         //     let left = this.props.svg.left + center.x - inputRect.width /2.0
         //     if (left < this.props.svg.left) left = this.props.svg.left
         //     if (left+inputRect.width > this.props.svg.left+this.props.svg.width){
-        //         console.log('labelinput right, svg right', left+inputRect.width, this.props.svg.left+this.props.svg.width)
         //         left = this.props.svg.left+this.props.svg.width - inputRect.width
-        //         console.log('labelinput new left', left)
         //     }
         //     if (this.state.top !== top || this.state.left !== left){  
         //         this.setState({
@@ -80,7 +77,6 @@ class AnnoLabelInput extends Component{
     updateAnnoLabel(label){
         if (!constraints.allowedToLabel(
             this.props.allowedActions, this.props.selectedAnno)) return
-        console.log('LabelInput confirmLabel label', label)
         this.annoLabelUpdate({
             ...this.props.selectedAnno,
             labelIds: label,
