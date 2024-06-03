@@ -1,68 +1,76 @@
 {
-    "name": "lost-sia",
-    "version": "donotchange",
-    "description": "Single Image Annotation Tool",
-    "license": "MIT",
-    "repository": "l3p-cv/lost-sia",
-    "main": "dist/index.js",
-    "module": "dist/index.es.js",
-    "jsnext:main": "dist/index.es.js",
-    "type": "module",
-    "keywords": [
-        "lost",
-        "annotation",
-        "image annotation",
-        "react annotation tool"
-    ],
-    "engines": {
-        "node": ">=18",
-        "npm": ">=8"
-    },
-    "exports": {
-        ".": {
-            "import": "./src/index.js",
-            "require": "./src/index.js"
-        }
-    },
-    "files": [
-        "src"
-    ],
-    "scripts": {
-        "build": "vite build",
-        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-        "preview": "vite preview",
-        "publishpkg": "npm publish"
-    },
-    "dependencies": {
-        "@coreui/react": "^5.0.0",
-        "@fortawesome/free-regular-svg-icons": "^6.5.2",
-        "@fortawesome/free-solid-svg-icons": "^6.5.2",
-        "@fortawesome/react-fontawesome": "^0.2.0",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "react-draggable": "^4.4.6",
-        "sass": "^1.77.1",
-        "semantic-ui-css": "2.5.0",
-        "semantic-ui-react": "^2.0.3"
-    },
-    "peerDependencies": {
-        "lodash": "^4.17.15",
-        "prop-types": "^15.5.4",
-        "react": "^18.0.0",
-        "react-dom": "^18.0.0"
-    },
-    "devDependencies": {
-        "@vitejs/plugin-react": "^4.2.1",
-        "cross-env": "^5.1.4",
-        "eslint": "^5.0.1",
-        "eslint-config-standard": "^11.0.0",
-        "eslint-config-standard-react": "^6.0.0",
-        "eslint-plugin-import": "^2.13.0",
-        "eslint-plugin-node": "^7.0.1",
-        "eslint-plugin-promise": "^4.0.0",
-        "eslint-plugin-react": "^7.10.0",
-        "eslint-plugin-standard": "^3.1.0",
-        "glob": "^10.3.15",
-        "vite": "^5.1.6"
+  "name": "lost-sia",
+  "version": "2.0.0-alpha0",
+  "description": "Single Image Annotation Tool",
+  "license": "MIT",
+  "repository": "l3p-cv/lost-sia",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "jsnext:main": "dist/index.es.js",
+  "type": "module",
+  "keywords": [
+    "lost",
+    "annotation",
+    "image annotation",
+    "react annotation tool"
+  ],
+  "engines": {
+    "node": ">=18",
+    "npm": ">=8"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.js"
     }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "publishpkg": "npm publish",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@coreui/react": "^5.0.0",
+    "@fortawesome/free-regular-svg-icons": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-draggable": "^4.4.6",
+    "sass": "^1.77.1",
+    "semantic-ui-css": "2.5.0",
+    "semantic-ui-react": "^2.0.3"
+  },
+  "peerDependencies": {
+    "lodash": "^4.17.15",
+    "prop-types": "^15.5.4",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "cross-env": "^5.1.4",
+    "eslint": "^5.0.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-config-standard-react": "^6.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.0",
+    "eslint-plugin-react": "^7.10.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "glob": "^10.3.15",
+    "vite": "^5.1.6",
+    "vitest": "^1.6.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended",
+      "plugin:storybook/recommended"
+    ]
+  }
 }
