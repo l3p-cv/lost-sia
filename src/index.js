@@ -1,5 +1,6 @@
 
 import 'semantic-ui-css/semantic.min.css'
+import './scss/style.scss'
 // import { default as Canvas } from './Canvas'
 // import { default as Toolbar } from './ToolBar'
 export { default as Canvas } from './Canvas'

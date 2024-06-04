@@ -7,11 +7,11 @@ import * as annoActions from './types/canvasActions'
 import { noAnnos } from './siaDummyData'
 
 /**
- * SIA element that handles annotations within an image
+ * SIA element that handles annotations within an image  
  * 
  * @param {object} annos -  A json object containing all annotation 
  *      information for an image
- *      {
+ *      ```{
  *              bBoxes: [{
  *                  id: int, // -> Not required if status === annoStatus.NEW
  *                  data: {},
@@ -22,24 +22,24 @@ import { noAnnos } from './siaDummyData'
  *              points: []
  *              lines: []
  *              polygons: []
- *      }
+ *      }```
  * @param {object} annoSaveResponse - Backend response when updating an annotation in backend
- *                  {
+ *                  ```{
  *                      tempId: int or str, // temporal frontend Id 
  *                      dbId: int, // Id from backend
  *                      newStatus: str // new Status for the annotation
- *                  }
+ *                  }```
  * @param {object} possibleLabels - Possible labels that can be assigned to 
  *      an annotation.
- *      [{   
+ *      ```[{   
  *          id: int, 
  *          description: str, 
  *          label: str, (name of the label) 
  *          color: str (color is optional)
- *      }, ...]
+ *      }, ...]```
  * @param {blob} imageBlob - The actual image blob that will be displayed
  * @param {object} imageMeta - Meta information for the current image
- *        {
+ *        ```{
  *          "id": int,
  *          "number": int, // -> number of image in current annotask
  *          "amount": int, // -> total number of images in current annotask
@@ -49,31 +49,31 @@ import { noAnnos } from './siaDummyData'
  *          "isJunk": bool, // -> Indicates wether current image is a junk image
  *          "annoTime": float, // -> Total annotation time for the current image
  *          "description": str or null // -> Description or comment for the current image
- *      }
+ *      }```
  * @param {object} exampleImg - Example for a selected label
- *      {
+ *      ```{
  *          "anno": {
  *              "id": int, // -> ID of the example annotation
  *              "comment": null or str // -> Comment that has been assigned to this example
  *          },
  *          "img": image blob
- *      }
+ *      }```
  * @param {bool} isJunk - Indicates wether the current image is junk or not
  * @param {object} uiConfig - User interface configs 
- *      {
+ *      ```{
  *          nodesRadius: int, strokeWidth: int,
  *          layoutOffset: {left:int, top:int, right:int, bottom:int}, -> Offset of the canvas inside the container
  *          imgBarVisible: bool,
  *          imgLabelInputVisible: bool,
  *          centerCanvasInContainer: bool, -> Center the canvas in the middle of the container.
  *          maxCanvas: bool -> Maximize Canvas Size. Do not fit canvas to image size.
- *      }
+ *      }```
  * @param {int} layoutUpdate - A counter that triggers a layout update
  *      everytime it is incremented.
  * @param {string} selectedTool - The tool that is selected to draw an 
  *      annotation. Possible choices are: 'bBox', 'point', 'line', 'polygon'
  * @param {object} canvasConfig - Configuration for this canvas
- *  {
+ *  ```{
  *      annos:{
  *          tools: {
  *              point: bool,
@@ -97,7 +97,7 @@ import { noAnnos } from './siaDummyData'
  *          }
  *      },
  *      allowedToMarkExample: bool, -> Indicates wether the current user is allowed to mark an annotation as example.
- *   }
+ *   }```
  * @param {str or int} defaultLabel (optional) - Name or ID of the default label that is used
  *      when no label was selected by the annotator. If not set "no label" will be used.
  *      If ID is used, it needs to be one of the possible label ids.
@@ -107,12 +107,12 @@ import { noAnnos } from './siaDummyData'
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
  *      Such annos can not be edited in any way.
  * @param {object} filter Information for the filter Popup
- *          {
+ *          ```{
  *              "clahe": {
  *                  "clipLimit": int,
  *                  "active": bool
  *              },
- *          } 
+ *          }``` 
  * @param {bool | object} toolbarEnabled Defines which toolbar buttons are 
  *      displayed or if toolbar is shown at all. 
  *          false | {
@@ -139,10 +139,10 @@ import { noAnnos } from './siaDummyData'
  * @event onAnnoEvent - Fires when an anno performed an action
  *      args: {anno: annoObject, newAnnos: list of annoObjects, pAction: str}
  * @event onGetAnnoExample - Fires when anno example is requested by canvas
- *      {
+ *      ```{
  *          id: int, // -> ID of the annotation that will be requested as example
  *          comment: null or str
- *      }
+ *      }```
  * @event onCanvasEvent - Fires on canvas event
  *      args: {action: action, data: dataObject}
  *      action -> CANVAS_SVG_UPDATE 
