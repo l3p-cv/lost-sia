@@ -28,20 +28,20 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
 
 /**
  * SIA Canvas element that handles annotations within an image
- * 
+ *
  * @param {React.Ref} container - A react ref to a div that defines the
  *      space where this Canvas lives in.
- * @param {object} annos -  A json object containing all annotation 
+ * @param {object} annos -  A json object containing all annotation
  *      information for an image
  *      {
  *          image : {
- *              id: int, 
- *              number: int, 
- *              amount: int, 
- *              isFirst: bool, 
+ *              id: int,
+ *              number: int,
+ *              amount: int,
+ *              isFirst: bool,
  *              isLast: bool,
  *              description: string, // -> optional
- *              imgActions: list of string, // -> optional 
+ *              imgActions: list of string, // -> optional
  *          },
  *          annotations: {
  *              bBoxes: [{
@@ -58,20 +58,20 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *      }
  * @param {object} annoSaveResponse - Backend response when updating an annotation in backend
  *                  {
- *                      tempId: int or str, // temporal frontend Id 
+ *                      tempId: int or str, // temporal frontend Id
  *                      dbId: int, // Id from backend
  *                      newStatus: str // new Status for the annotation
  *                  }
- * @param {object} possibleLabels - Possible labels that can be assigned to 
+ * @param {object} possibleLabels - Possible labels that can be assigned to
  *      an annotation.
- *      {   
- *          id: int, 
- *          description: str, 
- *          label: str, (name of the label) 
+ *      {
+ *          id: int,
+ *          description: str,
+ *          label: str, (name of the label)
  *          color: str (color is optional)
  *      }
  * @param {blob} imageBlob - The actual image blob that will be displayed
- * @param {object} uiConfig - User interface configs 
+ * @param {object} uiConfig - User interface configs
  *      {
  *          nodesRadius: int, strokeWidth: int,
  *          layoutOffset: {left:int, top:int, right:int, bottom:int}, -> Offset of the canvas inside the container
@@ -82,7 +82,7 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *      }
  * @param {int} layoutUpdate - A counter that triggers a layout update
  *      everytime it is incremented.
- * @param {string} selectedTool - The tool that is selected to draw an 
+ * @param {string} selectedTool - The tool that is selected to draw an
  *      annotation. Possible choices are: 'bBox', 'point', 'line', 'polygon'
  * @param {object} canvasConfig - Configuration for this canvas
  *  {
@@ -117,26 +117,26 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  * @param {bool} preventScrolling Prevent scrolling on mouseEnter
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
  *      Such annos can not be edited in any way.
- * @event onAnnoSaveEvent - Callback with update information for a single 
+ * @event onAnnoSaveEvent - Callback with update information for a single
  *          annotation or the current image that can be used for backend updates
  *          args: {
- *                      action: the action that was performed in frontend, 
- *                      anno: anno information, 
+ *                      action: the action that was performed in frontend,
+ *                      anno: anno information,
  *                      img: image information
  *              }
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
- * @event onKeyDown - Fires for keyDown on canvas 
- * @event onKeyUp - Fires for keyUp on canvas 
+ * @event onKeyDown - Fires for keyDown on canvas
+ * @event onKeyUp - Fires for keyUp on canvas
  * @event onAnnoEvent - Fires when an anno performed an action
  *      args: {anno: annoObject, newAnnos: list of annoObjects, pAction: str}
  * @event onCanvasEvent - Fires on canvas event
  *      args: {action: action, data: dataObject}
- *      action -> CANVAS_SVG_UPDATE 
+ *      action -> CANVAS_SVG_UPDATE
  *          data: {width: int, height: int, scale: float, translateX: float,
  *          translateY:float}
  *      action -> CANVAS_UI_CONFIG_UPDATE
- *      action -> CANVAS_LABEL_INPUT_CLOSE 
+ *      action -> CANVAS_LABEL_INPUT_CLOSE
  *      action -> CANVAS_IMG_LOADED
  *      action -> CANVAS_IMGBAR_CLOSE
  * @event onImgBarClose - Fires when close button on ImgBar was hit.
@@ -320,7 +320,7 @@ class Canvas extends Component {
     }
 
     onWheel(e) {
-        // Zoom implementation. Note that svg is first scaled and 
+        // Zoom implementation. Note that svg is first scaled and
         // second translated!
         const up = e.deltaY < 0
         const mousePos = this.getMousePosition(e)
@@ -414,10 +414,10 @@ class Canvas extends Component {
 
         switch (action) {
             case keyActions.EDIT_LABEL:
-                // Need to get the newest version of annotation data directly 
+                // Need to get the newest version of annotation data directly
                 // from annotation object, when editing label/ hitting enter
                 // in create mode, since annotation data in canvas are not updated
-                // to this point in time. 
+                // to this point in time.
                 const ar = this.findAnnoRef(this.state.selectedAnnoId)
                 let myAnno = undefined
                 if (ar !== undefined) {
@@ -550,7 +550,7 @@ class Canvas extends Component {
     }
 
     /**
-     * Handle actions that have been performed by an annotation 
+     * Handle actions that have been performed by an annotation
      * @param {Number} anno Id of the annotation
      * @param {String} pAction Action that was performed
      */
@@ -575,7 +575,7 @@ class Canvas extends Component {
                 // this.pushHist(
                 //     this.state.annos, anno.id,
                 //     pAction, this.state.showSingleAnno
-                // )    
+                // )
                 break
             case canvasActions.ANNO_START_CREATING:
                 newAnnos = this.updateSelectedAnno(anno)
@@ -991,7 +991,7 @@ class Canvas extends Component {
     }
     /**
      * Find a annotation by id in current state
-     * 
+     *
      * @param {int} annoId - Id of the annotation to find
      */
     findAnno(annoId) {
@@ -1034,7 +1034,7 @@ class Canvas extends Component {
         //     console.log('hist', this.hist)
         //     this.setCanvasState(
         //         cState.entry.annotations,
-        //         cState.entry.imgLabelIds, 
+        //         cState.entry.imgLabelIds,
         //         cState.entry.selectedAnnoId,
         //         cState.entry.showSingleAnno)
         // }
@@ -1053,7 +1053,7 @@ class Canvas extends Component {
         //     console.log('hist', this.hist)
         //     this.setCanvasState(
         //         cState.entry.annotations,
-        //         cState.entry.imgLabelIds, 
+        //         cState.entry.imgLabelIds,
         //         cState.entry.selectedAnnoId,
         //         cState.entry.showSingleAnno
         //     )
@@ -1095,7 +1095,7 @@ class Canvas extends Component {
 
     /**
      * Set state of Canvas annotations and imageLabels.
-     * 
+     *
      * @param {list} annotations - Annotations in backend format
      * @param {list} imgLabelIds - IDs of the image labels
      * @param {object} selectedAnno - The selected annotation
@@ -1382,7 +1382,7 @@ class Canvas extends Component {
     }
 
     putSelectedOnTop(prevState) {
-        // The selected annotation need to be rendered as last one in 
+        // The selected annotation need to be rendered as last one in
         // oder to be above all other annotations.
         if (this.state.selectedAnnoId) {
             if (prevState.selectedAnnoId !== this.state.selectedAnnoId) {
@@ -1441,7 +1441,7 @@ class Canvas extends Component {
 
     addDelayedBackendUpdate(anno, action) {
         // take care of tempIds while receiving a dbId from backend.
-        // handling tempIds is only required if instant anno backend update is 
+        // handling tempIds is only required if instant anno backend update is
         // used.
         if (this.props.onAnnoSaveEvent) {
             if ((typeof anno.id) === "string") {
@@ -1476,7 +1476,7 @@ class Canvas extends Component {
             // anno.status = annoStatus.DATABASE
             //TODO: Should not update if the anno is currently in edit or move mode
             // this.updateAnno(anno)
-            // if (this.state.selectedAnnoId === res.tempId) this.setState({selectedAnnoId: res.dbId}) 
+            // if (this.state.selectedAnnoId === res.tempId) this.setState({selectedAnnoId: res.dbId})
             this.updateDelayedBackendUpdates(res.tempId, res.dbId)
         }
         // else {
@@ -1489,10 +1489,10 @@ class Canvas extends Component {
 
     /**
      * Update selected anno and override mode if desired
-     * 
+     *
      * @param {object} anno - The new annotation that becomes the selected anno
      * @param {string} mode - The new mode for the selected anno
-     * @returns The new anno that was set as selectedAnno in state and 
+     * @returns The new anno that was set as selectedAnno in state and
      *      the new annos list that was set in state
      */
     updateSelectedAnno(anno, mode = undefined, returnNewAnno = false) {
@@ -1627,7 +1627,7 @@ class Canvas extends Component {
             imageOffset: imgOffset
         })
         this.svgUpdate(svg)
-        return { imgWidth, imgHeight, imgOffset }
+        return { imgWidth: this.props.fixedImageSize ? this.props.fixedImageSize : imgWidth, imgHeight: this.props.fixedImageSize ? this.props.fixedImageSize : imgHeight, imgOffset }
     }
 
     svgUpdate(svg) {
@@ -1646,7 +1646,7 @@ class Canvas extends Component {
 
 
         var annos = []
-        //Annotation data should be present and a pixel accurate value 
+        //Annotation data should be present and a pixel accurate value
         //for svg should be calculated
         if (annotations) {
             const imgSize = this.updateImageSize()
@@ -1752,7 +1752,7 @@ class Canvas extends Component {
         return (
             <div ref={this.container} >
                 <div height={this.state.svg.height}
-                    style={{ position: 'fixed', top: this.state.svg.top, left: this.state.svg.left }}
+                    style={{ position: this.props.isStaticPosition ? 'static': 'fixed', top: this.state.svg.top, left: this.state.svg.left }}
                 >
                     {/* {this.renderAnnoCommentInput(selectedAnno)} */}
                     {this.renderImgLabelInput()}
@@ -1797,8 +1797,8 @@ class Canvas extends Component {
                         onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs) : {}}
                         exampleImg={this.props.exampleImg}
                     />
-                    <svg ref={this.svg} width={this.state.svg.width}
-                        height={this.state.svg.height}
+                    <svg ref={this.svg} width={this.props.fixedImageSize ? this.props.fixedImageSize : this.state.svg.width}
+                        height={ this.props.fixedImageSize ? this.props.fixedImageSize : this.state.svg.height}
                         onKeyDown={e => this.onKeyDown(e)}
                         onKeyUp={e => this.onKeyUp(e)}
                         onClick={e => this.handleCanvasClick(e)}
@@ -1818,8 +1818,8 @@ class Canvas extends Component {
                                 onContextMenu={(e) => this.onRightClick(e)}
                                 onMouseDown={(e) => this.onMouseDown(e)}
                                 href={this.props.imageBlob}
-                                width={this.state.svg.width}
-                                height={this.state.svg.height}
+                                width={ this.props.fixedImageSize ? this.props.fixedImageSize : this.state.svg.width}
+                                height={ this.props.fixedImageSize ? this.props.fixedImageSize : this.state.svg.height}
                             />
                             {this.renderAnnotations()}
                         </g>
