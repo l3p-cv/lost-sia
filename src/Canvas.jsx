@@ -1627,8 +1627,7 @@ class Canvas extends Component {
             imageOffset: imgOffset
         })
         this.svgUpdate(svg)
-        return { imgWidth, imgHeight, imgOffset }
-    }
+        return { imgWidth: this.props.fixedImageSize ? this.props.fixedImageSize : imgWidth, imgHeight: this.props.fixedImageSize ? this.props.fixedImageSize : imgHeight, imgOffset }    }
 
     svgUpdate(svg) {
         this.triggerCanvasEvent(canvasActions.CANVAS_SVG_UPDATE, svg)
@@ -1750,9 +1749,9 @@ class Canvas extends Component {
     render() {
         const selectedAnno = this.findAnno(this.state.selectedAnnoId)
         return (
-            <div ref={this.container} >
-                <div height={this.state.svg.height}
-                    style={{ position: 'fixed', top: this.state.svg.top, left: this.state.svg.left }}
+            <div  ref={this.container} >
+                <div  height={this.state.svg.height}
+                    style={{position: this.props.isStaticPosition ? 'static': 'fixed', top: this.state.svg.top, left: this.state.svg.left }}
                 >
                     {/* {this.renderAnnoCommentInput(selectedAnno)} */}
                     {this.renderImgLabelInput()}
@@ -1771,13 +1770,18 @@ class Canvas extends Component {
                         // allowedActions={this.props.canvasConfig.img.actions}
                         onMouseEnter={e => this.handleImgBarMouseEnter(e)}
                     />
-                    <Dimmer active={!this.state.imageLoaded || this.props.blocked}><Loader>Loading</Loader></Dimmer>
+
+                    <Dimmer active={!this.state.imageLoaded || this.props.blocked}>
+                      { (!this.state.imageLoaded || this.props.blocked) && <Loader>Loading</Loader>}
+                    </Dimmer>
                     <Dimmer active={this.state.isJunk}>
-                        <Header as='h2' icon inverted style={{ background: 'rgba(0,0,0,0)' }}>
+                       { this.state.isJunk && <Header as='h2' icon inverted style={{ background: 'rgba(0,0,0,0)' }}>
                             <Icon name='ban' />
                             Marked as Junk
                         </Header>
+                        }
                     </Dimmer>
+
                     {this.renderAnnoToolBar(selectedAnno)}
                     {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
                     {this.renderAnnoLabelInpput(selectedAnno)}
@@ -1797,8 +1801,8 @@ class Canvas extends Component {
                         onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs) : {}}
                         exampleImg={this.props.exampleImg}
                     />
-                    <svg ref={this.svg} width={this.state.svg.width}
-                        height={this.state.svg.height}
+                    <svg ref={this.svg} width={this.props.fixedImageSize ? this.props.fixedImageSize : this.state.svg.width}
+                        height={ this.props.fixedImageSize ? this.props.fixedImageSize : this.state.svg.height}
                         onKeyDown={e => this.onKeyDown(e)}
                         onKeyUp={e => this.onKeyUp(e)}
                         onClick={e => this.handleCanvasClick(e)}
@@ -1818,8 +1822,8 @@ class Canvas extends Component {
                                 onContextMenu={(e) => this.onRightClick(e)}
                                 onMouseDown={(e) => this.onMouseDown(e)}
                                 href={this.props.imageBlob}
-                                width={this.state.svg.width}
-                                height={this.state.svg.height}
+                                width={ this.props.fixedImageSize ? this.props.fixedImageSize : this.state.svg.width}
+                                height={ this.props.fixedImageSize ? this.props.fixedImageSize : this.state.svg.height}
                             />
                             {this.renderAnnotations()}
                         </g>

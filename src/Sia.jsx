@@ -9,6 +9,10 @@ import { noAnnos } from './siaDummyData'
 /**
  * SIA element that handles annotations within an image
  * 
+ * @param {boolean} isStaticPosition - Use static positioning instead of "fixed"
+ *
+ * @param {integer} fixedImageSize - Use fixed image size if specified
+ * 
  * @param {object} annos -  A json object containing all annotation 
  *      information for an image
  *      {
@@ -417,7 +421,7 @@ const Sia = (props) => {
     }
 
     return (
-        <div className={fullscreenCSS} ref={containerRef}>
+        <div className={`sia-app ${fullscreenCSS}`} ref={containerRef}>
             <Canvas
                 container={containerRef}
 
@@ -456,6 +460,8 @@ const Sia = (props) => {
                 defaultLabel={props.defaultLabel}
                 preventScrolling={props.preventScrolling}
                 isImageChanging={props.isImageChanging}
+                isStaticPosition={props.isStaticPosition}
+                fixedImageSize={props.fixedImageSize}
             />
             <ToolBar
                 onToolBarEvent={
