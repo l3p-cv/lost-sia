@@ -7,9 +7,12 @@ import * as annoActions from './types/canvasActions'
 import { noAnnos } from './siaDummyData'
 
 /**
- * SIA element that handles annotations within an image  
- * 
- * @param {object} annos -  A json object containing all annotation 
+ * SIA element that handles annotations within an image
+ * @param {boolean} isStaticPosition - Use static positioning instead of "fixed"
+ *
+ * @param {integer} fixedImageSize - Use fixed image size if specified
+ *
+ * @param {object} annos -  A json object containing all annotation
  *      information for an image
  *      ```{
  *              bBoxes: [{
@@ -25,16 +28,16 @@ import { noAnnos } from './siaDummyData'
  *      }```
  * @param {object} annoSaveResponse - Backend response when updating an annotation in backend
  *                  ```{
- *                      tempId: int or str, // temporal frontend Id 
+ *                      tempId: int or str, // temporal frontend Id
  *                      dbId: int, // Id from backend
  *                      newStatus: str // new Status for the annotation
  *                  }```
- * @param {object} possibleLabels - Possible labels that can be assigned to 
+ * @param {object} possibleLabels - Possible labels that can be assigned to
  *      an annotation.
- *      ```[{   
- *          id: int, 
- *          description: str, 
- *          label: str, (name of the label) 
+ *      ```[{
+ *          id: int,
+ *          description: str,
+ *          label: str, (name of the label)
  *          color: str (color is optional)
  *      }, ...]```
  * @param {blob} imageBlob - The actual image blob that will be displayed
@@ -59,7 +62,7 @@ import { noAnnos } from './siaDummyData'
  *          "img": image blob
  *      }```
  * @param {bool} isJunk - Indicates wether the current image is junk or not
- * @param {object} uiConfig - User interface configs 
+ * @param {object} uiConfig - User interface configs
  *      ```{
  *          nodesRadius: int, strokeWidth: int,
  *          layoutOffset: {left:int, top:int, right:int, bottom:int}, -> Offset of the canvas inside the container
@@ -70,7 +73,7 @@ import { noAnnos } from './siaDummyData'
  *      }```
  * @param {int} layoutUpdate - A counter that triggers a layout update
  *      everytime it is incremented.
- * @param {string} selectedTool - The tool that is selected to draw an 
+ * @param {string} selectedTool - The tool that is selected to draw an
  *      annotation. Possible choices are: 'bBox', 'point', 'line', 'polygon'
  * @param {object} canvasConfig - Configuration for this canvas
  *  ```{
@@ -112,9 +115,9 @@ import { noAnnos } from './siaDummyData'
  *                  "clipLimit": int,
  *                  "active": bool
  *              },
- *          }``` 
- * @param {bool | object} toolbarEnabled Defines which toolbar buttons are 
- *      displayed or if toolbar is shown at all. 
+ *          }```
+ * @param {bool | object} toolbarEnabled Defines which toolbar buttons are
+ *      displayed or if toolbar is shown at all.
  *          false | {
  *              imgLabel: bool,
  *              nextPrev: bool,
@@ -126,16 +129,16 @@ import { noAnnos } from './siaDummyData'
  *              filter: bool | {rotate: bool, clahe:bool},
  *              help: bool
  *          }
- * @event onAnnoSaveEvent - Callback with update information for a single 
+ * @event onAnnoSaveEvent - Callback with update information for a single
  *          annotation or the current image that can be used for backend updates
  *          args: {
- *                      action: the action that was performed in frontend, 
- *                      anno: anno information, 
+ *                      action: the action that was performed in frontend,
+ *                      anno: anno information,
  *                      img: image information
  *              }
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
- * @event onCanvasKeyDown - Fires for keyDown on canvas 
+ * @event onCanvasKeyDown - Fires for keyDown on canvas
  * @event onAnnoEvent - Fires when an anno performed an action
  *      args: {anno: annoObject, newAnnos: list of annoObjects, pAction: str}
  * @event onGetAnnoExample - Fires when anno example is requested by canvas
@@ -145,17 +148,17 @@ import { noAnnos } from './siaDummyData'
  *      }```
  * @event onCanvasEvent - Fires on canvas event
  *      args: {action: action, data: dataObject}
- *      action -> CANVAS_SVG_UPDATE 
+ *      action -> CANVAS_SVG_UPDATE
  *          data: {width: int, height: int, scale: float, translateX: float,
  *          translateY:float}
  *      action -> CANVAS_UI_CONFIG_UPDATE
- *      action -> CANVAS_LABEL_INPUT_CLOSE 
+ *      action -> CANVAS_LABEL_INPUT_CLOSE
  *      action -> CANVAS_IMG_LOADED
  *      action -> CANVAS_IMGBAR_CLOSE
  * @event onToolBarEvent - Fires on Toolbar event
  *      args: {e: event, data: data object}
- * 
- *      e -> DELETE_ALL_ANNOS 
+ *
+ *      e -> DELETE_ALL_ANNOS
  *      e -> TOOL_SELECTED
  *          data: 'bbox', 'point', 'line', 'polygon'
  *      e -> GET_NEXT_IMAGE
@@ -178,7 +181,7 @@ import { noAnnos } from './siaDummyData'
  *                  "angle": 90 | -90 | 180,
  *                  "active": bool
  *              }
- *          } 
+ *          }
  *      e -> SHOW_ANNO_DETAILS
  *          data: null
  *      e -> SHOW_LABEL_INFO
@@ -456,6 +459,8 @@ const Sia = (props) => {
                 defaultLabel={props.defaultLabel}
                 preventScrolling={props.preventScrolling}
                 isImageChanging={props.isImageChanging}
+                isStaticPosition={props.isStaticPosition}
+                fixedImageSize={props.fixedImageSize}
             />
             <ToolBar
                 onToolBarEvent={
