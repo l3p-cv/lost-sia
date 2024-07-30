@@ -7,6 +7,9 @@ import { glob } from 'glob'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  esbuild: {
+    drop: ['console', 'debugger']
+  },
   build: {
     copyPublicDir: false,
     lib: {
