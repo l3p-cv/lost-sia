@@ -29,39 +29,40 @@
 // "#d47776",
 // "#a94e2c"]
 
-const colors20 = ["#46aed7",
-"#e28f81",
-"#50b897",
-"#88712f",
-"#9cb067",
-"#a4527d",
-"#a55046",
-"#6e90da",
-"#487b3b",
-"#6360a7",
-"#cd8fd3",
-"#d5a442",
-"#cf7635",
-"#da4971",
-"#a4b137",
-"#d44da4",
-"#aa54be",
-"#5ab74d",
-"#7166d9",
-"#d14734"]
+const colors20 = [
+  "#46aed7",
+  "#e28f81",
+  "#50b897",
+  "#88712f",
+  "#9cb067",
+  "#a4527d",
+  "#a55046",
+  "#6e90da",
+  "#487b3b",
+  "#6360a7",
+  "#cd8fd3",
+  "#d5a442",
+  "#cf7635",
+  "#da4971",
+  "#a4b137",
+  "#d44da4",
+  "#aa54be",
+  "#5ab74d",
+  "#7166d9",
+  "#d14734",
+];
 
-const colors = colors20
-const nColors = 20
+const colors = colors20;
+const nColors = 20;
 
-export function getColor(n){
-    if (n){
-        return colors[n%nColors]
-    }
-    else{
-        return getDefaultColor()    
-    }
+export function getColor(n) {
+  if (n) {
+    return colors[n % nColors];
+  } else {
+    return getDefaultColor();
+  }
 }
 
-export function getDefaultColor(){
-    return colors[0]
+export function getDefaultColor() {
+  return colors[0];
 }

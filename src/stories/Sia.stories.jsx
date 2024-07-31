@@ -1,22 +1,34 @@
 // import { within, userEvent, expect } from '@storybook/test';
-import { Provider } from 'react-redux';
-import { store } from './store'
-import { canvasConfig, filter, uiConfig, selectedTool, imgMeta, toolbarEnabled, noAnnos, annos, defaultLabel, possibleLabels, imgBlob } from './siaDummyData'
+import { Provider } from "react-redux";
+import { store } from "./store";
+import {
+  canvasConfig,
+  filter,
+  uiConfig,
+  selectedTool,
+  imgMeta,
+  toolbarEnabled,
+  noAnnos,
+  annos,
+  defaultLabel,
+  possibleLabels,
+  imgBlob,
+} from "./siaDummyData";
 
-import Sia from '../Sia';
+import Sia from "../Sia";
 
 export default {
-  title: 'Example/SIA',
+  title: "Example/SIA",
   component: Sia,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   args: {
     isJunk: false,
-    fullscreen: false
-  }
+    fullscreen: false,
+  },
 };
 
 /**
@@ -44,6 +56,6 @@ export const Default = {
           {...args}
         />
       </Provider>
-    )
-  ]
+    ),
+  ],
 };

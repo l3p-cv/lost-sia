@@ -1,67 +1,66 @@
-class UndoRedo{
-    constructor(maxElements=100){
-        this.hist = []
-        this.pointer = 0
-        this.maxElements = maxElements
-    }
+class UndoRedo {
+  constructor(maxElements = 100) {
+    this.hist = [];
+    this.pointer = 0;
+    this.maxElements = maxElements;
+  }
 
-    push(entry, description='No description'){
-        const histEl = {
-            entry,
-            description
-        }
-        if (this.pointer !== 0){
-            while (this.pointer !== 0){
-                this.pointer--
-                this.hist.shift()
-            }
-        }
-        this.hist.unshift(histEl)
-        if (this.hist.length > this.maxElements){
-            this.hist.pop()
-        }
+  push(entry, description = "No description") {
+    const histEl = {
+      entry,
+      description,
+    };
+    if (this.pointer !== 0) {
+      while (this.pointer !== 0) {
+        this.pointer--;
+        this.hist.shift();
+      }
     }
-
-    undo(){
-        if (this.pointer+1 < this.hist.length){
-            // const element = 
-            this.pointer++
-            return this.hist[this.pointer]
-        } else {
-            return this.hist[this.hist.length-1]
-        }
+    this.hist.unshift(histEl);
+    if (this.hist.length > this.maxElements) {
+      this.hist.pop();
     }
+  }
 
-    undoMia(){
-        if (this.pointer+1 < this.hist.length){
-            this.pointer++
-            return this.hist[this.pointer-1] 
-        } else {
-                return this.hist[this.hist.length-1]
-            }
+  undo() {
+    if (this.pointer + 1 < this.hist.length) {
+      // const element =
+      this.pointer++;
+      return this.hist[this.pointer];
+    } else {
+      return this.hist[this.hist.length - 1];
     }
+  }
 
-    redo(){
-        if (this.pointer-1 >= 0){
-            this.pointer--
-            return this.hist[this.pointer]
-        } else {
-            return this.hist[0]
-        }
+  undoMia() {
+    if (this.pointer + 1 < this.hist.length) {
+      this.pointer++;
+      return this.hist[this.pointer - 1];
+    } else {
+      return this.hist[this.hist.length - 1];
     }
+  }
 
-    getHist(){
-        return this.hist
+  redo() {
+    if (this.pointer - 1 >= 0) {
+      this.pointer--;
+      return this.hist[this.pointer];
+    } else {
+      return this.hist[0];
     }
+  }
 
-    clearHist(){
-        this.hist = []
-    }
+  getHist() {
+    return this.hist;
+  }
 
-    isEmpty(){
-        return this.hist.length === 0
-    }
+  clearHist() {
+    this.hist = [];
+  }
 
+  isEmpty() {
+    return this.hist.length === 0;
+  }
 }
 
-export default UndoRedo
+export default UndoRedo;

@@ -1,10 +1,15 @@
-import React from 'react';
-import { Popup } from 'semantic-ui-react'
+import React from "react";
+import { Popup } from "semantic-ui-react";
 
 const SiaPopup = ({ content, trigger }) => {
+  return (
+    <Popup
+      inverted
+      style={{ opacity: 0.9 }}
+      content={content}
+      trigger={trigger}
+    />
+  );
+};
 
-    return <Popup inverted style={{ opacity: 0.9 }} content={content} trigger={trigger} />
-
-}
-
-export default SiaPopup
+export default SiaPopup;
