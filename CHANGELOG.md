@@ -11,14 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Order of buttons in ToolBar: Move setting and filter btn up
 - Added notification that redo/undo is currently not supported
+- Set up prettier and formatted all files
+- Fixed CSS style leak problem
 
 ### Added
 
 - imgActions poperty that will record all actions a user performs during the annotation process
+- Added properties `isStaticPosition` and `fixedImageSize` to Sia
 
 ### Removed
 
 - autoSave Feature since it caused a lot of runtime errors and instability
+- Commented out console statements
 
 ### Breaking Changes
 
