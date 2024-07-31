@@ -57,7 +57,7 @@ const AnnoStats = (props) => {
   const renderRows = () => {
     let stats = {};
     props.annos.forEach((a) => {
-      // console.log('render rows', a)
+      // // console.log('render rows', a)
       if (a.status !== "deleted") {
         a.labelIds.forEach((lblId) => {
           if (lblId in stats) {

@@ -232,11 +232,11 @@ const Sia = (props) => {
   }, [props.layoutUpdate]);
 
   useEffect(() => {
-    console.log(annos);
+    // console.log(annos);
   }, [annos]);
 
   useEffect(() => {
-    console.log("props.annos", props.annos);
+    // console.log("props.annos", props.annos);
     if (props.annos) {
       setAnnos(props.annos);
     } else {
@@ -245,8 +245,8 @@ const Sia = (props) => {
   }, [props.annos]);
 
   useEffect(() => {
-    console.log("props.fullscreen", props.fullscreen);
-    console.log("fullscreen", fullscreen);
+    // console.log("props.fullscreen", props.fullscreen);
+    // console.log("fullscreen", fullscreen);
     if (typeof props.fullscreen === "boolean") {
       if (fullscreen !== props.fullscreen) {
         setFullscreen(props.fullscreen);
@@ -256,7 +256,7 @@ const Sia = (props) => {
 
   useEffect(() => {
     if (fullscreen !== undefined) {
-      console.log("effect fullscreen", fullscreen);
+      // console.log("effect fullscreen", fullscreen);
       // toggleFullscreen()
       applyFullscreen(fullscreen);
     }
@@ -282,7 +282,7 @@ const Sia = (props) => {
   };
 
   const handleAnnoEvent = (anno, annos, action) => {
-    console.log("handleAnnoEvent anno, annos, action", anno, annos, action);
+    // console.log("handleAnnoEvent anno, annos, action", anno, annos, action);
     if (props.onAnnoEvent) {
       props.onAnnoEvent(anno, annos, action);
     }

@@ -499,7 +499,7 @@ class Canvas extends Component {
           this.recreateAnnotation(this.state.selectedAnnoId);
         break;
       default:
-        console.warn("Unknown key action", action);
+        // console.warn("Unknown key action", action);
     }
   }
 
@@ -582,7 +582,7 @@ class Canvas extends Component {
    * @param {String} pAction Action that was performed
    */
   handleAnnoEvent(anno, pAction) {
-    console.log("handleAnnoEvent", pAction, anno);
+    // console.log("handleAnnoEvent", pAction, anno);
     let newAnnos = undefined;
     let actionHistoryStore = undefined;
 
@@ -704,7 +704,7 @@ class Canvas extends Component {
         actionHistoryStore = [...this.state.imgActions, pAction];
         anno = this.stopAnnotimeMeasure(anno);
         anno = this.checkAndCorrectAnno(anno);
-        console.log("ANNO_LABEL_UPDATE aftercheckAndCorrect", anno);
+        // console.log("ANNO_LABEL_UPDATE aftercheckAndCorrect", anno);
         // this.updateSelectedAnno(anno, anno.mode)
         if (anno.mode === modes.DELETED) {
           this.updateSelectedAnno(anno, modes.DELETED);
@@ -748,7 +748,7 @@ class Canvas extends Component {
         });
         break;
       default:
-        console.warn("Action not handled", pAction);
+        // console.warn("Action not handled", pAction);
         break;
     }
     if (actionHistoryStore) {
@@ -828,7 +828,7 @@ class Canvas extends Component {
         ...this.state.imgActions,
         canvasActions.IMG_LABEL_UPDATE,
       ];
-      console.log("gotNewLabel", label);
+      // console.log("gotNewLabel", label);
       this.setState({
         imgLabelIds: label,
         imgLabelChanged: true,
@@ -977,7 +977,7 @@ class Canvas extends Component {
 
   stopAnnotimeMeasure(anno) {
     if (anno.timestamp === undefined) {
-      console.warn(
+      // console.warn(
         "No timestamp for annotime measurement. Check if you started measurement",
         anno,
       );
@@ -1023,7 +1023,7 @@ class Canvas extends Component {
     }
   }
   unloadImage() {
-    console.log("unloadImage", this.state, this.props.imageMeta);
+    // console.log("unloadImage", this.state, this.props.imageMeta);
     if (this.state.imageLoaded) {
       this.setState({ imageLoaded: false });
     }
@@ -1071,7 +1071,7 @@ class Canvas extends Component {
       },
       pAction,
     );
-    console.log("hist", this.hist);
+    // console.log("hist", this.hist);
   }
 
   undo() {
@@ -1084,7 +1084,7 @@ class Canvas extends Component {
     //TODO: Make UNDO great again
     // if (!this.hist.isEmpty()){
     //     const cState = this.hist.undo()
-    //     console.log('hist', this.hist)
+    //     // console.log('hist', this.hist)
     //     this.setCanvasState(
     //         cState.entry.annotations,
     //         cState.entry.imgLabelIds,
@@ -1103,7 +1103,7 @@ class Canvas extends Component {
     //TODO: Make REDO great again
     // if (!this.hist.isEmpty()){
     //     const cState = this.hist.redo()
-    //     console.log('hist', this.hist)
+    //     // console.log('hist', this.hist)
     //     this.setCanvasState(
     //         cState.entry.annotations,
     //         cState.entry.imgLabelIds,
@@ -1339,7 +1339,7 @@ class Canvas extends Component {
         if (this.state.annos.length < maxAnnos) {
           allowed = true;
         } else {
-          console.warn(
+          // console.warn(
             "Maximum number of annotations reached! MaxAnnos:",
             maxAnnos,
           );
@@ -1353,7 +1353,7 @@ class Canvas extends Component {
         allowed = true;
       }
     } else {
-      console.warn("No annotation tool selected!");
+      // console.warn("No annotation tool selected!");
       this.handleNotification({
         title: "No tool selected!",
         message: "Please select an annotation tool in the toolbar.",
@@ -1410,7 +1410,7 @@ class Canvas extends Component {
    * @param {string} id of annotation
    */
   recreateAnnotation(annoID) {
-    console.log("AnnoSave -> recreateAnnotation ", annoID);
+    // console.log("AnnoSave -> recreateAnnotation ", annoID);
 
     let annos = this.state.annos;
 
@@ -1427,7 +1427,7 @@ class Canvas extends Component {
 
     // editing is only allowed on line and polygon
     if (!["line", "polygon"].includes(anno.type))
-      return console.log(
+      return // console.log(
         "Cant recreate annotation: Type " + anno.type + " is forbidden",
       );
 
@@ -1457,7 +1457,7 @@ class Canvas extends Component {
       annoToolBarVisible: false,
     });
 
-    console.log("Annotation recreated");
+    // console.log("Annotation recreated");
     this.handleAnnoEvent(newAnno, canvasActions.ANNO_ENTER_CREATE_MODE);
   }
 
@@ -1499,7 +1499,7 @@ class Canvas extends Component {
   }
 
   updateDelayedBackendUpdates(tempId, dbId) {
-    console.log(
+    // console.log(
       "updateDelayedBackendUpdates ",
       tempId,
       dbId,
@@ -1515,7 +1515,7 @@ class Canvas extends Component {
             anno.status === annoStatus.NEW ? annoStatus.CHANGED : anno.status,
         };
         delete this.delayedBackendUpdates[tempId];
-        console.log("PerformDelayedBackendUpdate", action, myAnno);
+        // console.log("PerformDelayedBackendUpdate", action, myAnno);
         this.handleAnnoSaveEvent(action, myAnno);
       } else {
         delete this.delayedBackendUpdates[tempId];
@@ -1537,7 +1537,7 @@ class Canvas extends Component {
             this.delayedBackendUpdates[anno.id] = null;
             myAnno = anno;
           }
-          console.log(
+          // console.log(
             "addDelayedBackendUpdate ",
             myAnno,
             action,
@@ -1694,7 +1694,7 @@ class Canvas extends Component {
     if (this.props.uiConfig.maxCanvas) {
       imgOffset.x = (maxImgWidth - imgWidth) / 2;
       imgOffset.y = (maxImgHeight - imgHeight) / 2;
-      console.log(`imgOffset: `, imgOffset);
+      // console.log(`imgOffset: `, imgOffset);
       svg = {
         ...this.state.svg,
         width: maxImgWidth,

@@ -147,7 +147,7 @@ const LabelInput = ({
   };
 
   const annoLabelUpdate = (label) => {
-    console.log("LabelInput -> annoLabelUpdate ", label);
+    // console.log("LabelInput -> annoLabelUpdate ", label);
 
     if (onLabelUpdate) {
       onLabelUpdate(label.filter((val) => val !== -1));
@@ -159,7 +159,7 @@ const LabelInput = ({
   };
 
   const closeLabelInput = () => {
-    console.log("LabelInput -> closeLabelInput");
+    // console.log("LabelInput -> closeLabelInput");
 
     if (onLabelConfirmed) onLabelConfirmed(label.filter((val) => val !== -1));
     if (onClose) onClose();

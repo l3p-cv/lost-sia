@@ -37,7 +37,7 @@ export function fixBackendAnnos(backendAnnos) {
       }),
     ],
   };
-  console.log("fixBackendAnnos", annos);
+  // console.log("fixBackendAnnos", annos);
   return annos;
 }
 

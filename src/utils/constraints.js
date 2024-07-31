@@ -16,7 +16,7 @@ export function allowedToLabel(allowedActions, anno) {
     //     if (allowedActions.edit.label){
     //         return true
     //     } else {
-    //         console.warn('You may not edit the label of this annotation as defined by config!', anno)
+    //         // console.warn('You may not edit the label of this annotation as defined by config!', anno)
     //         return false
     //     }
     // } else {
@@ -25,7 +25,7 @@ export function allowedToLabel(allowedActions, anno) {
     //     return true
     // }
   } else {
-    console.warn(
+    // console.warn(
       "You may not edit the label of this annotation as defined by config!",
       anno,
     );
@@ -47,7 +47,7 @@ export function allowedToLabel(allowedActions, anno) {
 //         if(allowedActions.edit.delete){
 //             return true
 //         } else {
-//             console.warn('You may not delete this annotation as defined by config!', anno)
+//             // console.warn('You may not delete this annotation as defined by config!', anno)
 //             return false
 //         }
 //     } else {
@@ -69,7 +69,7 @@ export function allowedToEdit(allowedActions, anno) {
     if (allowedActions.edit) {
       return true;
     } else {
-      console.warn(
+      // console.warn(
         "You may not edit bounds of this annotation as defined by config!",
         anno,
       );

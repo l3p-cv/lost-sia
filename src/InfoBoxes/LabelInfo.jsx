@@ -38,7 +38,7 @@ const LabelInfo = (props) => {
   };
 
   const handleImgClick = () => {
-    console.log("clicked img");
+    // console.log("clicked img");
     // setShowExampleViewer(true)
     // requestImg(myLbl, props.selectedAnno)
 

@@ -95,7 +95,7 @@ export function toBackend(data, svg, type, imgOffset = { x: 0, y: 0 }) {
         };
       });
     default:
-      console.warn("Wrong annotation type!");
+    // console.warn("Wrong annotation type!");
   }
 }
 
@@ -145,7 +145,7 @@ export function getArea(data, scaledImg, type, originalImg) {
       }
       return Math.abs(area / 2) * originalImg.width * originalImg.height;
     default:
-      console.warn("Wrong annotation type!");
+      // console.warn("Wrong annotation type!");
       return undefined;
   }
 }
