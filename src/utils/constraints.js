@@ -26,9 +26,9 @@ export function allowedToLabel(allowedActions, anno) {
     // }
   } else {
     // console.warn(
-      "You may not edit the label of this annotation as defined by config!",
-      anno,
-    );
+    //   "You may not edit the label of this annotation as defined by config!",
+    //   anno,
+    // );
     return false;
   }
 }
@@ -70,9 +70,9 @@ export function allowedToEdit(allowedActions, anno) {
       return true;
     } else {
       // console.warn(
-        "You may not edit bounds of this annotation as defined by config!",
-        anno,
-      );
+      //   "You may not edit bounds of this annotation as defined by config!",
+      //   anno,
+      // );
       return false;
     }
   } else {

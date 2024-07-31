@@ -499,7 +499,7 @@ class Canvas extends Component {
           this.recreateAnnotation(this.state.selectedAnnoId);
         break;
       default:
-        // console.warn("Unknown key action", action);
+      // console.warn("Unknown key action", action);
     }
   }
 
@@ -978,9 +978,9 @@ class Canvas extends Component {
   stopAnnotimeMeasure(anno) {
     if (anno.timestamp === undefined) {
       // console.warn(
-        "No timestamp for annotime measurement. Check if you started measurement",
-        anno,
-      );
+      //   "No timestamp for annotime measurement. Check if you started measurement",
+      //   anno,
+      // );
     } else {
       let now = performance.now();
       anno.annoTime += (now - anno.timestamp) / 1000;
@@ -1340,9 +1340,9 @@ class Canvas extends Component {
           allowed = true;
         } else {
           // console.warn(
-            "Maximum number of annotations reached! MaxAnnos:",
-            maxAnnos,
-          );
+          //   "Maximum number of annotations reached! MaxAnnos:",
+          //   maxAnnos,
+          // );
           this.handleNotification({
             title: "Maximum number of annotations reached!",
             message: `Only ${maxAnnos} annotations per image are allowed by config`,
@@ -1426,10 +1426,9 @@ class Canvas extends Component {
       }
 
     // editing is only allowed on line and polygon
-    if (!["line", "polygon"].includes(anno.type))
-      return // console.log(
-        "Cant recreate annotation: Type " + anno.type + " is forbidden",
-      );
+    if (!["line", "polygon"].includes(anno.type)) return; // console.log(
+    //   "Cant recreate annotation: Type " + anno.type + " is forbidden",
+    // );
 
     // remove the old annotation
     this.state.annos.splice(annoIndex, 1);
@@ -1500,11 +1499,11 @@ class Canvas extends Component {
 
   updateDelayedBackendUpdates(tempId, dbId) {
     // console.log(
-      "updateDelayedBackendUpdates ",
-      tempId,
-      dbId,
-      this.delayedBackendUpdates,
-    );
+    //   "updateDelayedBackendUpdates ",
+    //   tempId,
+    //   dbId,
+    //   this.delayedBackendUpdates,
+    // );
     if (tempId !== dbId) this.tempIdMap[tempId] = dbId;
     if (tempId in this.delayedBackendUpdates) {
       if (this.delayedBackendUpdates[tempId] !== null) {
@@ -1538,12 +1537,12 @@ class Canvas extends Component {
             myAnno = anno;
           }
           // console.log(
-            "addDelayedBackendUpdate ",
-            myAnno,
-            action,
-            anno,
-            this.delayedBackendUpdates,
-          );
+          //   "addDelayedBackendUpdate ",
+          //   myAnno,
+          //   action,
+          //   anno,
+          //   this.delayedBackendUpdates,
+          // );
           return myAnno;
         }
       }
