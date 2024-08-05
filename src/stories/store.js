@@ -1,18 +1,18 @@
-import { createStore, applyMiddleware, compose, combineReducers } from 'redux'
-import lost from './lost'
+import { createStore, applyMiddleware, compose, combineReducers } from "redux";
+import lost from "./lost";
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const appReducer = combineReducers({
-    lost
-})
+  lost,
+});
 
-const rootReducer = (state, action) => appReducer(state, action)
+const rootReducer = (state, action) => appReducer(state, action);
 
 export const store = createStore(
-    rootReducer,
-    {},
-    // composeEnhancers(applyMiddleware(reduxThunk)),
-)
+  rootReducer,
+  {},
+  // composeEnhancers(applyMiddleware(reduxThunk)),
+);
 
-export default store
+export default store;
