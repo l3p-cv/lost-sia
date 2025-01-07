@@ -1,5 +1,7 @@
 import "semantic-ui-css/semantic.min.css";
 import "./scss/style.scss";
+import './SIA.scss'
+
 // import { default as Canvas } from './Canvas'
 // import { default as Toolbar } from './ToolBar'
 export { default as Canvas } from "./Canvas";
@@ -12,9 +14,9 @@ export { default as Sia } from './Sia'
 export { default as dummyData } from './siaDummyData'
 export { default as transform } from './utils/transform'
 export { default as annoConversion } from './utils/annoConversion'
+export { uiConfig,SIA_INITIAL_UI_CONFIG } from './utils/uiConfig'
 export { default as canvasActions } from './types/canvasActions'
 export { default as toolbarEvents } from './types/toolbarEvents'
 export { default as tools } from './types/tools'
 export { default as filterTools } from './filterTools'
 export { default as notificationType } from './types/notificationType'
-
