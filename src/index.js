@@ -4,13 +4,13 @@ import './SIA.scss'
 
 // import { default as Canvas } from './Canvas'
 // import { default as Toolbar } from './ToolBar'
-export { default as Canvas } from "./Canvas.js";
+export { default as Canvas } from "./Canvas.jsx";
 
 // export { Canvas }
 // export { Toolbar }
 
 
-export { default as Sia } from './Sia.js'
+export { default as Sia } from './Sia.jsx'
 export { default as dummyData } from './siaDummyData.js'
 export { default as transform } from './utils/transform.js'
 export { default as annoConversion } from './utils/annoConversion.js'
