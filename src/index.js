@@ -4,19 +4,19 @@ import './SIA.scss'
 
 // import { default as Canvas } from './Canvas'
 // import { default as Toolbar } from './ToolBar'
-export { default as Canvas } from "./Canvas";
+export { default as Canvas } from "./Canvas.js";
 
 // export { Canvas }
 // export { Toolbar }
 
 
-export { default as Sia } from './Sia'
-export { default as dummyData } from './siaDummyData'
-export { default as transform } from './utils/transform'
-export { default as annoConversion } from './utils/annoConversion'
-export { uiConfig,SIA_INITIAL_UI_CONFIG } from './utils/uiConfig'
-export { default as canvasActions } from './types/canvasActions'
-export { default as toolbarEvents } from './types/toolbarEvents'
-export { default as tools } from './types/tools'
-export { default as filterTools } from './filterTools'
-export { default as notificationType } from './types/notificationType'
+export { default as Sia } from './Sia.js'
+export { default as dummyData } from './siaDummyData.js'
+export { default as transform } from './utils/transform.js'
+export { default as annoConversion } from './utils/annoConversion.js'
+export { uiConfig,SIA_INITIAL_UI_CONFIG } from './utils/uiConfig.js'
+export { default as canvasActions } from './types/canvasActions.js'
+export { default as toolbarEvents } from './types/toolbarEvents.js'
+export { default as tools } from './types/tools.js'
+export { default as filterTools } from './filterTools.js'
+export { default as notificationType } from './types/notificationType.js'
