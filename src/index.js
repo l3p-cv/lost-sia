@@ -15,6 +15,6 @@ export { default as annoConversion } from './utils/annoConversion'
 export { default as canvasActions } from './types/canvasActions'
 export { default as toolbarEvents } from './types/toolbarEvents'
 export { default as tools } from './types/tools'
-export { default as filterTools } from './filterTools/'
+export { default as filterTools } from './filterTools'
 export { default as notificationType } from './types/notificationType'
 
