@@ -1,12 +1,12 @@
 import * as transform from "./transform";
 import * as annoStatus from "../types/annoStatus";
 import * as modes from "../types/modes";
-import { uniqueId } from "lodash";
+const _ = require("lodash");
 
 function _fixBackendAnnoElement(element) {
   return {
     ...element,
-    id: element.id ? element.id : uniqueId("new"),
+    id: element.id ? element.id : _.uniqueId("new"),
     annoTime: element.annoTime ? element.annoTime : 0.0,
     mode: element.mode ? element.mode : modes.VIEW,
     status: element.status ? element.status : annoStatus.DATABASE,
