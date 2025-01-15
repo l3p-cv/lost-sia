@@ -1,8 +1,7 @@
 import * as transform from "./transform";
 import * as annoStatus from "../types/annoStatus";
 import * as modes from "../types/modes";
-import { uniqueId } from "lodash/uniqueId";
-const _ = require("lodash");
+import { uniqueId } from "lodash-es";
 
 function _fixBackendAnnoElement(element) {
   return {
