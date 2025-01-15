@@ -1,6 +1,6 @@
 {
   "name": "lost-sia",
-  "version": "2.0.0-alpha14",
+  "version": "2.0.0-alpha15",
   "description": "Single Image Annotation Tool",
   "license": "MIT",
   "repository": "l3p-cv/lost-sia",

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import uniqueId from "lodash/uniqueId";
+import { uniqueId } from "lodash/uniqueId";
 import Annotation from "./Annotation/Annotation";
 import AnnoLabelInput from "./AnnoLabelInput";
 import ImgBar from "./ImgBar";
