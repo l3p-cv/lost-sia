@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-const _ = require("lodash");
+import uniqueId from "lodash/uniqueId";
 import Annotation from "./Annotation/Annotation";
 import AnnoLabelInput from "./AnnoLabelInput";
 import ImgBar from "./ImgBar";
@@ -929,7 +929,7 @@ class Canvas extends Component {
     // const corrected = transform.correctAnnotation(anno.data, this.props.svg, this.props.imageOffset)
     if (this.clipboard) {
       // let annos = [...this.state.annos]
-      const uid = _.uniqueId("new");
+      const uid = uniqueId("new");
       // this.handleAnnoEvent()
       const newData = this.clipboard.data.map((e) => {
         return { x: e.x + offset, y: e.y + offset };
@@ -1364,7 +1364,7 @@ class Canvas extends Component {
       const mousePos = this.getMousePosition(e);
       // const selAnno = this.findAnno(this.state.selectedAnnoId)
       let newAnno = {
-        id: this.props.nextAnnoId ? this.props.nextAnnoId : _.uniqueId("new"),
+        id: this.props.nextAnnoId ? this.props.nextAnnoId : uniqueId("new"),
         type: this.props.selectedTool,
         data: [
           {
