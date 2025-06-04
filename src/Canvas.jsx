@@ -1,37 +1,28 @@
+import _ from "lodash";
 import React, { Component } from "react";
-import _, { transform } from "lodash";
-import Annotation from "./Annotation/Annotation";
 import AnnoLabelInput from "./AnnoLabelInput";
-import ImgBar from "./ImgBar";
-import Prompt from "./Prompt";
-import LabelInput from "./LabelInput";
+import Annotation from "./Annotation/Annotation";
 import AnnoToolBar from "./AnnoToolBar";
+import ImgBar from "./ImgBar";
+import LabelInput from "./LabelInput";
+import Prompt from "./Prompt";
 
-import * as annoConversion from "./utils/annoConversion";
-import * as keyActions from "./utils/keyActions";
-import KeyMapper from "./utils/keyActions";
-import * as TOOLS from "./types/tools";
-import * as modes from "./types/modes";
-import UndoRedo from "./utils/hist";
-import * as transformAnnos from "./utils/transform";
+import { Button, Dimmer, Header, Icon, Loader } from "semantic-ui-react";
 import * as annoStatus from "./types/annoStatus";
 import * as canvasActions from "./types/canvasActions";
-import {
-  Loader,
-  Dimmer,
-  Icon,
-  Header,
-  Button,
-  Form,
-  TextArea,
-} from "semantic-ui-react";
-import * as mouse from "./utils/mouse";
-import * as colorlut from "./utils/colorlut";
+import * as modes from "./types/modes";
 import * as notificationType from "./types/notificationType";
+import * as TOOLS from "./types/tools";
+import * as annoConversion from "./utils/annoConversion";
+import * as colorlut from "./utils/colorlut";
+import UndoRedo from "./utils/hist";
+import KeyMapper, * as keyActions from "./utils/keyActions";
+import * as mouse from "./utils/mouse";
+import * as transformAnnos from "./utils/transform";
 import * as wv from "./utils/windowViewport";
 
-import "./SIA.scss";
 import InfoBoxes from "./InfoBoxes/InfoBoxArea";
+import "./SIA.scss";
 
 /**
  * SIA Canvas element that handles annotations within an image
@@ -192,6 +183,8 @@ class Canvas extends Component {
       possibleLabels: undefined,
       annoCommentInputTrigger: 0,
       imgActions: [],
+      isDrawingSamBBox: false, // Flag to indicate if a SAM bbox is currently being drawn,
+      samBBoxStartPoint: null,
     };
     this.img = React.createRef();
     this.svg = React.createRef();
@@ -386,6 +379,13 @@ class Canvas extends Component {
     } else if (e.button === 1) {
       this.setMode(modes.CAMERA_MOVE);
     } else if (e.button === 2) {
+      if (
+        this.props.selectedTool === TOOLS.POSITIVE_POINT ||
+        this.props.selectedTool === TOOLS.NEGATIVE_POINT ||
+        this.props.selectedTool === TOOLS.SAM_BBOX
+      ) {
+        return; // do nothing for sam tools
+      }
       //Create annotation on right click
       this.createNewAnnotation(e);
     }
@@ -396,6 +396,13 @@ class Canvas extends Component {
       // this.collectAnnos()
       this.setMode(modes.CAMERA_MOVE);
     } else if (e.button === 2) {
+      if (
+        this.props.selectedTool === TOOLS.POSITIVE_POINT ||
+        this.props.selectedTool === TOOLS.NEGATIVE_POINT ||
+        this.props.selectedTool === TOOLS.SAM_BBOX
+      ) {
+        return; // Note: do nothing for sam tools
+      }
       //Create annotation on right click
       this.createNewAnnotation(e);
     } else if (e.button === 0) {
@@ -860,6 +867,53 @@ class Canvas extends Component {
     }
   }
 
+  handleContextMenu(e) {
+    e.preventDefault();
+    if (
+      this.props.selectedTool === TOOLS.POSITIVE_POINT ||
+      this.props.selectedTool === TOOLS.NEGATIVE_POINT
+    ) {
+      const { x, y } = this.getMousePosition(e);
+
+      const imgWidth = this.state.svg.width - 2 * this.state.imageOffset.x;
+      const imgHeight = this.state.svg.height - 2 * this.state.imageOffset.y;
+
+      const normX = (x - this.state.imageOffset.x) / imgWidth;
+      const normY = (y - this.state.imageOffset.y) / imgHeight;
+
+      const type =
+        this.props.selectedTool === TOOLS.POSITIVE_POINT
+          ? "positive"
+          : "negative";
+
+      this.props.onSamPointClick(x, y, normX, normY, type);
+    }
+  }
+
+  handleMouseDown(e) {
+    if (this.props.selectedTool === TOOLS.SAM_BBOX) {
+      if (e.button !== 2) {
+        return;
+      }
+
+      e.preventDefault();
+      const { x, y } = this.getMousePosition(e);
+
+      this.setState({
+        isDrawingSamBBox: true,
+        samBBoxStartPoint: { x, y },
+      });
+
+      // start a new rectangle
+      this.props.onUpdateSamBBox({
+        x,
+        y,
+        width: 0,
+        height: 0,
+      });
+    }
+  }
+
   handleImgBarMouseEnter(e) {
     this.setState({ imgBarVisible: false });
   }
@@ -870,6 +924,64 @@ class Canvas extends Component {
 
   handleSvgMouseMove(e) {
     this.mousePosAbs = mouse.getMousePositionAbs(e, this.state.svg);
+
+    if (this.props.selectedTool === TOOLS.SAM_BBOX) {
+      if (!this.state.isDrawingSamBBox || !this.state.samBBoxStartPoint) {
+        // If not drawing a SAM bbox, do nothing
+        return;
+      }
+
+      const { x, y } = this.getMousePosition(e);
+      const startPoint = this.state.samBBoxStartPoint;
+
+      const imgWidth = this.state.svg.width - 2 * this.state.imageOffset.x;
+      const imgHeight = this.state.svg.height - 2 * this.state.imageOffset.y;
+
+      const xMin = Math.min(startPoint.x, x);
+      const yMin = Math.min(startPoint.y, y);
+      const width = Math.abs(x - startPoint.x);
+      const height = Math.abs(y - startPoint.y);
+
+      // normalized coordinates
+      const xMinNorm = (xMin - this.state.imageOffset.x) / imgWidth;
+      const yMinNorm = (yMin - this.state.imageOffset.y) / imgHeight;
+      const xMaxNorm = (xMin + width - this.state.imageOffset.x) / imgWidth;
+      const yMaxNorm = (yMin + height - this.state.imageOffset.y) / imgHeight;
+
+      // update the rectangle with the new width and height
+      this.props.onUpdateSamBBox({
+        x: xMin,
+        y: yMin,
+        width,
+        height,
+        xMinNorm,
+        yMinNorm,
+        xMaxNorm,
+        yMaxNorm,
+      });
+    }
+  }
+
+  handleMouseUp(e) {
+    if (this.props.selectedTool === TOOLS.SAM_BBOX) {
+      if (e.button !== 2) {
+        return;
+      }
+
+      e.preventDefault();
+      this.setState({
+        isDrawingSamBBox: false,
+      });
+    }
+  }
+
+  handleMouseLeave(e) {
+    if (this.props.selectedTool === TOOLS.SAM_BBOX) {
+      // If mouse leaves the canvas while drawing a SAM bbox, reset the state
+      this.setState({
+        isDrawingSamBBox: false,
+      });
+    }
   }
 
   handleNotification(messageObj) {
@@ -1878,6 +1990,34 @@ class Canvas extends Component {
     );
   }
 
+  renderSamPoints() {
+    return this.props.samPoints.map((point, index) => (
+      <circle
+        key={index}
+        cx={point.x}
+        cy={point.y}
+        r={5}
+        fill={point.type === "positive" ? "lightgreen" : "lightcoral"}
+      />
+    ));
+  }
+
+  renderSamBBox() {
+    return (
+      this.props.samBBox && (
+        <rect
+          x={this.props.samBBox.x}
+          y={this.props.samBBox.y}
+          width={this.props.samBBox.width}
+          height={this.props.samBBox.height}
+          fill="rgba(0, 0, 255, 0.1)"
+          stroke="blue"
+          strokeWidth="2"
+        />
+      )
+    );
+  }
+
   render() {
     const selectedAnno = this.findAnno(this.state.selectedAnnoId);
     return (
@@ -1970,6 +2110,10 @@ class Canvas extends Component {
             onKeyUp={(e) => this.onKeyUp(e)}
             onClick={(e) => this.handleCanvasClick(e)}
             onMouseMove={(e) => this.handleSvgMouseMove(e)}
+            onContextMenu={(e) => this.handleContextMenu(e)}
+            onMouseDown={(e) => this.handleMouseDown(e)}
+            onMouseUp={(e) => this.handleMouseUp(e)}
+            onMouseLeave={(e) => this.handleMouseLeave(e)}
             tabIndex="0"
           >
             <g
@@ -2005,6 +2149,8 @@ class Canvas extends Component {
                 }
               />
               {this.renderAnnotations()}
+              {this.renderSamPoints()}
+              {this.renderSamBBox()}
             </g>
           </svg>
           <img
