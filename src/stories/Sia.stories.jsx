@@ -1,16 +1,11 @@
-// import { within, userEvent, expect } from '@storybook/test';
-import { Provider } from "react-redux";
-import { store } from "./store";
+import { fn } from "@storybook/test";
 import {
   canvasConfig,
   filter,
-  uiConfig,
   selectedTool,
   imgMeta,
   toolbarEnabled,
-  noAnnos,
   annos,
-  defaultLabel,
   possibleLabels,
   imgBlob,
 } from "./siaDummyData";
@@ -18,7 +13,7 @@ import {
 import Sia from "../Sia";
 
 export default {
-  title: "Example/SIA",
+  title: "Components/SIA",
   component: Sia,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
@@ -26,36 +21,34 @@ export default {
   },
   tags: ["autodocs"],
   args: {
-    isJunk: false,
-    fullscreen: false,
+    onAnnoSaveEvent: fn(),
+    onNotification: fn(),
+    onCanvasKeyDown: fn(),
+    onAnnoEvent: fn(),
+    onGetAnnoExample: fn(),
+    onCanvasEvent: fn(),
+    onToolBarEvent: fn(),
+    onGetFunction: fn(),
   },
 };
 
 /**
  * SIA with dummy data
  */
-export const Default = {
-  decorators: [
-    (Story, { args }) => (
-      <Provider store={store}>
-        <Sia
-          annos={annos}
-          possibleLabels={possibleLabels}
-          imageBlob={imgBlob}
-          imageMeta={imgMeta}
-          // isJunk={false}
-          uiConfig={uiConfig}
-          layoutUpdate={0}
-          selectedTool={selectedTool}
-          canvasConfig={canvasConfig}
-          // fullscreen={false}
-          preventScrolling={false}
-          lockedAnnos={[]}
-          filter={filter}
-          toolbarEnabled={toolbarEnabled}
-          {...args}
-        />
-      </Provider>
-    ),
-  ],
+export const Primary = {
+  args: {
+    annos,
+    canvasConfig,
+    fullscreen: false,
+    filter,
+    imageBlob: imgBlob,
+    imageMeta: imgMeta,
+    isJunk: false,
+    layoutUpdate: 0,
+    lockedAnnos: [],
+    possibleLabels,
+    preventScrolling: false,
+    selectedTool,
+    toolbarEnabled,
+  },
 };
