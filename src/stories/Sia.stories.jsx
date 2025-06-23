@@ -8,6 +8,7 @@ import {
   annos,
   possibleLabels,
   imgBlob,
+  noAnnos,
 } from "./siaDummyData";
 
 import Sia from "../Sia";
@@ -37,7 +38,7 @@ export default {
  */
 export const Primary = {
   args: {
-    annos,
+    annos: noAnnos,
     canvasConfig,
     fullscreen: false,
     filter,

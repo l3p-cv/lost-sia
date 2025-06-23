@@ -4,8 +4,8 @@ const WARNING = "warning";
 const ERROR = "error";
 
 export default {
-    INFO,
-    SUCCESS,
-    WARNING,
-    ERROR
-}
+  INFO,
+  SUCCESS,
+  WARNING,
+  ERROR,
+};
