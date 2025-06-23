@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 
 import ToolBar from "./ToolBar";
+import Toolbar from "./Toolbar/Toolbar";
+import NavigationButtons from "./Toolbar/NavigationButtons";
 import Canvas from "./Canvas";
 import * as tbe from "./types/toolbarEvents";
 import * as annoActions from "./types/canvasActions";
@@ -412,8 +414,14 @@ const Sia = (props) => {
     }
   };
 
+  const allowedTools = props.canvasConfig.tools;
+
   return (
     <div className={`sia-app ${fullscreenCSS}`} ref={containerRef}>
+      <Toolbar
+        allowedTools={allowedTools}
+        additionalButtons={<NavigationButtons />}
+      />
       <Canvas
         container={containerRef}
         onAnnoEvent={(anno, annos, action) =>

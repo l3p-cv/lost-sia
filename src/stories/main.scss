@@ -1,0 +1,6 @@
+// this is an example how custom styles can be applied
+@use '../styles/variables' as *;
+
+@use '@coreui/coreui/scss/coreui' with (
+    $primary: $primary
+);
