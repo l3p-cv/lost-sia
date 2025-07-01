@@ -427,6 +427,7 @@ class Canvas extends Component {
   handleKeyAction(action) {
     const anno = this.findAnno(this.state.selectedAnnoId);
     const camKeyStepSize = 20 * this.state.svg.scale;
+    console.log('handleKeyAction', action, anno)
 
     switch (action) {
       case keyActions.EDIT_LABEL:
@@ -499,7 +500,7 @@ class Canvas extends Component {
           this.recreateAnnotation(this.state.selectedAnnoId);
         break;
       default:
-      // console.warn("Unknown key action", action);
+        // console.warn("Unknown key action", action);
     }
   }
 
@@ -585,6 +586,7 @@ class Canvas extends Component {
     // console.log("handleAnnoEvent", pAction, anno);
     let newAnnos = undefined;
     let actionHistoryStore = undefined;
+    console.log('canvasActions: ', anno, pAction)
 
     switch (pAction) {
       case canvasActions.ANNO_ENTER_CREATE_MODE:
@@ -657,6 +659,21 @@ class Canvas extends Component {
           this.showSingleAnno(undefined);
         } else {
           newAnnos = this.updateSelectedAnno(anno, modes.CREATE);
+        }
+        this.pushHist(newAnnos, anno.id, pAction, this.state.showSingleAnno);
+        if (anno.status !== annoStatus.NEW) {
+          this.handleAnnoSaveEvent(pAction, anno, {
+            imgActions: actionHistoryStore,
+          });
+        }
+        break;
+      case canvasActions.ANNO_REMOVED_SPECIFIC_NODE:
+        actionHistoryStore = [...this.state.imgActions, pAction];
+        if (!this.checkAnnoLength(anno)) {
+          newAnnos = this.updateSelectedAnno(anno, modes.DELETED);
+          this.showSingleAnno(undefined);
+        } else {
+          newAnnos = this.updateSelectedAnno(anno, modes.CREATE)
         }
         this.pushHist(newAnnos, anno.id, pAction, this.state.showSingleAnno);
         if (anno.status !== annoStatus.NEW) {
@@ -1333,6 +1350,7 @@ class Canvas extends Component {
     //Do not create new Annotation if controlKey was pressed!
     let allowed = false;
     if (this.keyMapper.controlDown) return;
+    if (this.keyMapper.shiftDown) return;
     if (this.props.selectedTool) {
       const maxAnnos = this.props.canvasConfig.annos.maxAnnos;
       if (maxAnnos) {
@@ -1587,6 +1605,7 @@ class Canvas extends Component {
    *      the new annos list that was set in state
    */
   updateSelectedAnno(anno, mode = undefined, returnNewAnno = false) {
+    // console.log('updateSelectedAnno: ', mode, anno)
     if (!anno) return;
     const { newAnnos, newAnno } = this.mergeSelectedAnno(anno, mode);
     this.setState({
