@@ -279,8 +279,9 @@ const ToolBar = (props) => {
                   <Card.Content description="Redo: Hit STRG + R" />
                 </Card>
                 <Card>
-                  <Card.Content header="Add a node to Line/Polygon" />
-                  <Card.Content description="Hit STRG + Click left on the line" />
+                  <Card.Content header="Add/ Remove a node to Line/Polygon" />
+                  <Card.Content description="Add: Hit STRG + Click left on the line" />
+                  <Card.Content description="Remove: Hit STRG + Click left on the node to delete" />
                 </Card>
                 <Card>
                   <Card.Content header="Remove a node from Line/Polygon in create mode" />

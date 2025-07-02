@@ -646,7 +646,7 @@ class Canvas extends Component {
         break;
       case canvasActions.ANNO_ADDED_NODE:
         actionHistoryStore = [...this.state.imgActions, pAction];
-        newAnnos = this.updateSelectedAnno(anno, modes.VIEW);
+        newAnnos = this.updateSelectedAnno(anno, modes.ADD);
         this.pushHist(newAnnos, anno.id, pAction, this.state.showSingleAnno);
         this.handleAnnoSaveEvent(pAction, anno, {
           imgActions: actionHistoryStore,
@@ -673,7 +673,7 @@ class Canvas extends Component {
           newAnnos = this.updateSelectedAnno(anno, modes.DELETED);
           this.showSingleAnno(undefined);
         } else {
-          newAnnos = this.updateSelectedAnno(anno, modes.CREATE)
+          newAnnos = this.updateSelectedAnno(anno, modes.ADD)
         }
         this.pushHist(newAnnos, anno.id, pAction, this.state.showSingleAnno);
         if (anno.status !== annoStatus.NEW) {

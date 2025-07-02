@@ -234,7 +234,6 @@ class Polygon extends Component {
   }
 
   removeNode(e, idx) {
-    console.log('POLYGON removeNode:',idx, this.state.anno.status)
     let newAnnoData = [...this.state.anno.data]
     newAnnoData.splice(idx, 1)
     const newAnno = {
