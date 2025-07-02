@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import { uniqueId } from "lodash-es";
 import Annotation from "./Annotation/Annotation";
 import AnnoLabelInput from "./AnnoLabelInput";
-import Annotation from "./Annotation/Annotation";
 import AnnoToolBar from "./AnnoToolBar";
 import ImgBar from "./ImgBar";
 import LabelInput from "./LabelInput";
