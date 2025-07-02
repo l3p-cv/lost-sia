@@ -1,11 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Button, Card } from "semantic-ui-react";
+import {
+  faPaperPlane,
+  faSquare,
+  faTrashCan,
+} from "@fortawesome/free-regular-svg-icons";
 import {
   faArrowLeft,
   faArrowRight,
   faBan,
   faCheck,
   faMaximize,
+  faMinusCircle,
+  faPlusCircle,
   faQuestion,
   faSave,
   faSearch,
@@ -13,18 +18,19 @@ import {
   faTrash,
   faVectorSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
-import SIASettingButton from "./SIASettingButton";
-import SIAFilterButton from "./SIAFilterButton";
+import React, { useEffect, useRef, useState } from "react";
+import { Button, Card } from "semantic-ui-react";
 import Prompt from "./Prompt";
+import SIAFilterButton from "./SIAFilterButton";
+import SIASettingButton from "./SIASettingButton";
 import "./Toolbar.css";
 
+import { CSidebar, CSidebarNav } from "@coreui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ToolbarItem from "./ToolbarItem";
+import * as tbe from "./types/toolbarEvents";
 import * as TOOLS from "./types/tools";
 import * as siaIcons from "./utils/siaIcons";
-import * as tbe from "./types/toolbarEvents";
-import { CSidebar, CSidebarNav } from "@coreui/react";
-import ToolbarItem from "./ToolbarItem";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const ToolBar = (props) => {
   const [position, setPosition] = useState({
@@ -125,6 +131,44 @@ const ToolBar = (props) => {
     if (!props.enabled.toolSelection) return null;
     if (!props.canvasConfig.annos.actions.draw) return null;
     let btns = [];
+
+    if (props.canvasConfig.tools.sam) {
+      btns.push(
+        <ToolbarItem
+          color="#0081FB"
+          active={props.active.selectedTool === TOOLS.POSITIVE_POINT}
+          onClick={(e) => onClick(e, TOOLS.POSITIVE_POINT)}
+          faIcon={faPlusCircle}
+        />,
+      );
+
+      btns.push(
+        <ToolbarItem
+          color="#0081FB"
+          active={props.active.selectedTool === TOOLS.NEGATIVE_POINT}
+          onClick={(e) => onClick(e, TOOLS.NEGATIVE_POINT)}
+          faIcon={faMinusCircle}
+        />,
+      );
+
+      btns.push(
+        <ToolbarItem
+          color="#0081FB"
+          active={props.active.selectedTool === TOOLS.SAM_BBOX}
+          onClick={(e) => onClick(e, TOOLS.SAM_BBOX)}
+          faIcon={faSquare}
+        />,
+      );
+
+      btns.push(
+        <ToolbarItem
+          color="#0081FB"
+          onClick={(e) => triggerToolBarEvent(tbe.CLEAR_SAM_HELPER_ANNOS)}
+          faIcon={faTrashCan}
+        />,
+      );
+    }
+
     if (props.canvasConfig.tools.point) {
       btns.push(
         <ToolbarItem

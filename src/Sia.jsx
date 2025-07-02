@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import ToolBar from "./ToolBar";
 import Canvas from "./Canvas";
-import * as tbe from "./types/toolbarEvents";
-import * as annoActions from "./types/canvasActions";
 import { noAnnos } from "./siaDummyData";
+import ToolBar from "./ToolBar";
+import * as annoActions from "./types/canvasActions";
+import * as tbe from "./types/toolbarEvents";
 
 /**
  * SIA element that handles annotations within an image
@@ -446,6 +446,10 @@ const Sia = (props) => {
         isImageChanging={props.isImageChanging}
         isStaticPosition={props.isStaticPosition}
         fixedImageSize={props.fixedImageSize}
+        samPoints={props.samPoints || []}
+        onSamPointClick={props.onSamPointClick}
+        samBBox={props.samBBox || null}
+        onUpdateSamBBox={props.onUpdateSamBBox}
       />
       <ToolBar
         onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}

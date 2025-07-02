@@ -8,8 +8,8 @@ const ToolbarItem = ({
   faIcon,
   siaIcon,
   onClick,
+  color = "white",
 }) => {
-  let color = "white";
   if (active) color = "red";
   if (disabled) color = "grey";
 
