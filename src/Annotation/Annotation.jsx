@@ -281,6 +281,7 @@ class Annotation extends Component {
     //     this.props.allowedActions,
     //     this.state.anno
     // )
+    if (this.state.anno){console.log('ANNOTATION: ', this.state.anno.mode, this.state.anno)}
     switch (type) {
       case "point":
         return (

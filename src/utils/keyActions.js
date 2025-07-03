@@ -19,6 +19,7 @@ export const TOGGLE_ANNO_COMMENT_INPUT = "toggleAnnoCommentInput";
 class KeyMapper {
   constructor(keyActionHandler = undefined) {
     this.controlDown = false;
+    this.shiftDown = false;
     this.keyActionHandler = keyActionHandler;
   }
 
@@ -36,6 +37,9 @@ class KeyMapper {
       case "Control":
         this.controlDown = true;
         this.triggerKeyAction(ENTER_ANNO_ADD_MODE);
+        break;
+      case "Shift":
+        this.shiftDown = true;
         break;
       case "z":
         if (this.controlDown) {
@@ -90,6 +94,9 @@ class KeyMapper {
       case "Control":
         this.controlDown = false;
         this.triggerKeyAction(LEAVE_ANNO_ADD_MODE);
+        break;
+      case "Shift":
+        this.shiftDown = false;
         break;
       default:
         break;
