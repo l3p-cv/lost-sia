@@ -22,6 +22,10 @@
     ".": {
       "import": "./src/index.js",
       "require": "./src/index.js"
+    },
+    "./utils": {
+      "import": "./src/utils/index.js",
+      "require": "./src/utils/index.js"
     }
   },
   "files": [
@@ -39,14 +43,14 @@
   },
   "dependencies": {
     "@coreui/react": "^5.0.0",
-    "@fortawesome/free-regular-svg-icons": "^6.5.2",
-    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "lodash-es": "^4.17.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-draggable": "^4.4.6",
-    "sass": "^1.77.1",
+    "sass": "^1.89.2",
     "semantic-ui-css": "2.5.0",
     "semantic-ui-react": "^2.0.3"
   },
