@@ -1,8 +1,8 @@
-/** @type { import('@storybook/react').Preview } */
+import type { Preview } from "@storybook/react";
 
-import 'semantic-ui-css/semantic.min.css'
+import "../src/stories/main.scss";
 
-const preview = {
+const preview: Preview = {
   parameters: {
     controls: {
       matchers: {

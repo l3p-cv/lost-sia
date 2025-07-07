@@ -1,3 +1,4 @@
+import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import {
   canvasConfig,
@@ -9,11 +10,22 @@ import {
   possibleLabels,
   imgBlob,
   noAnnos,
-} from "./siaDummyData";
+} from "../siaDummyData";
 
-import Sia from "../Sia";
+import Sia from "../../Sia";
 
-export default {
+export const ActionsData = {
+  onAnnoSaveEvent: fn(),
+  onNotification: fn(),
+  onCanvasKeyDown: fn(),
+  onAnnoEvent: fn(),
+  onGetAnnoExample: fn(),
+  onCanvasEvent: fn(),
+  onToolBarEvent: fn(),
+  onGetFunction: fn(),
+};
+
+const meta = {
   title: "Components/SIA",
   component: Sia,
   parameters: {
@@ -21,23 +33,21 @@ export default {
     layout: "padded",
   },
   tags: ["autodocs"],
+  excludeStories: /.*Data$/,
   args: {
-    onAnnoSaveEvent: fn(),
-    onNotification: fn(),
-    onCanvasKeyDown: fn(),
-    onAnnoEvent: fn(),
-    onGetAnnoExample: fn(),
-    onCanvasEvent: fn(),
-    onToolBarEvent: fn(),
-    onGetFunction: fn(),
+    ...ActionsData,
   },
-};
+} satisfies Meta<typeof Sia>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 /**
  * SIA with dummy data
  */
-export const Primary = {
+export const Default: Story = {
   args: {
+    ...ActionsData,
     annos: noAnnos,
     canvasConfig,
     fullscreen: false,
