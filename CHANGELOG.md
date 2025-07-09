@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Changed
+- Your stuff here
+
+## [2.0.0] - 2025-07-02 
+### Changed
 - Order of buttons in ToolBar: Move setting and filter btn up
 - Added notification that redo/undo is currently not supported
 ### Added 
@@ -13,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set up prettier and formatted all files
 - Added properties `isStaticPosition` and `fixedImageSize` to Sia
 - Added additional Exports so lost-sia provides all necessary Exports to be usable in LOST
+- Be able to remove a specific node of a polygon/ line by pressing ctrl + leftclick on the node to remove
+- Added fetatures for SAM (Segment Anything) proposals -> Be able to define areas of interest boxes/ points for SAM
 ### Removed 
 - autoSave Feature since it caused a lot of runtime errors and instability
 ### Breaking Changes

@@ -13,6 +13,7 @@ export const EDIT_STROKE_WIDTH = "editStrokeWidth";
 export const EDIT_NODE_RADIUS = "editNodeRadius";
 export const APPLY_FILTER = "applyFilter";
 export const SAVE = "save";
+export const CLEAR_SAM_HELPER_ANNOS = "clearSamHelperAnnos"; // for clearing SAM helper annotations
 
 export default {
   TOOL_SELECTED,
@@ -30,4 +31,5 @@ export default {
   EDIT_NODE_RADIUS,
   APPLY_FILTER,
   SAVE,
+  CLEAR_POINTS: CLEAR_SAM_HELPER_ANNOS,
 };

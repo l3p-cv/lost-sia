@@ -135,6 +135,11 @@ class Polygon extends Component {
           );
         }
         break;
+      case modes.ADD:
+        if (e.button === 0) {
+          this.removeNode(e, idx)
+        }
+        break;
       default:
         break;
     }
@@ -228,6 +233,17 @@ class Polygon extends Component {
     this.performedAction(newAnno, canvasActions.ANNO_ADDED_NODE);
   }
 
+  removeNode(e, idx) {
+    let newAnnoData = [...this.state.anno.data]
+    newAnnoData.splice(idx, 1)
+    const newAnno = {
+      ...this.state.anno,
+      data: newAnnoData,
+    };
+    this.setState({ anno: newAnno });
+    this.performedAction(newAnno, canvasActions.ANNO_REMOVED_SPECIFIC_NODE);
+  }
+  
   removeLastNode() {
     const newAnno = {
       ...this.state.anno,
