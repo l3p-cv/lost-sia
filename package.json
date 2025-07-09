@@ -26,10 +26,13 @@
     "./utils": {
       "import": "./src/utils/index.js",
       "require": "./src/utils/index.js"
-    }
+    },
+    "./styles/variables": "./src/styles/_variables.scss",
+    "./styles/coreui": "./src/styles/coreui.scss"
   },
   "files": [
-    "src"
+    "src",
+    "styles"
   ],
   "scripts": {
     "build": "vite build",
