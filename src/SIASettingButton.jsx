@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 
-import { Popup, Icon, Menu, Divider, Checkbox } from "semantic-ui-react";
 import * as tbe from "./types/toolbarEvents";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
-import { CPopover } from "@coreui/react";
+import { CFormSwitch, CPopover } from "@coreui/react";
 import ToolbarItem from "./ToolbarItem";
 class SIASettingButton extends Component {
   constructor(props) {
@@ -39,23 +38,23 @@ class SIASettingButton extends Component {
   renderInfoBoxContent() {
     return (
       <div>
-        <Divider horizontal>Info Boxes</Divider>
-        <Checkbox
+        <h4>Info Boxes</h4>
+        <CFormSwitch
           checked={this.props.uiConfig.annoDetails.visible}
           label="Annotation Details"
-          toggle
+          size="xl"
           onClick={() => this.toggleAnnoDetails()}
         />
-        <Checkbox
+        <CFormSwitch
           checked={this.props.uiConfig.labelInfo.visible}
           label="Label Info"
-          toggle
+          size="xl"
           onClick={() => this.toggleLabelInfo()}
         />
-        <Checkbox
+        <CFormSwitch
           checked={this.props.uiConfig.annoStats.visible}
           label="Anno Stats"
-          toggle
+          size="xl"
           onClick={() => this.toggleAnnoStats()}
         />
       </div>
@@ -85,7 +84,7 @@ class SIASettingButton extends Component {
   renderAnnoStyleContent() {
     return (
       <div>
-        <Divider horizontal>Anno Appearance</Divider>
+        <h4 style={{ marginTop: 25 }}>Anno Appearance</h4>
         <div>Stroke width: {this.props.uiConfig.strokeWidth}</div>
         <input
           type="range"

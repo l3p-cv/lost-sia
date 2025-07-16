@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Divider, Image, Header } from "semantic-ui-react";
 import InfoBox from "./InfoBox";
 import SiaPopup from "../SiaPopup";
 import AnnoExampleViewer from "../AnnoExampleViewer";
@@ -38,7 +37,6 @@ const LabelInfo = (props) => {
   };
 
   const handleImgClick = () => {
-    // console.log("clicked img");
     // setShowExampleViewer(true)
     // requestImg(myLbl, props.selectedAnno)
 
@@ -50,23 +48,17 @@ const LabelInfo = (props) => {
     if (!props.exampleImg) return null;
     return (
       <div>
-        <Divider onClick={() => handleImgClick()} horizontal>
-          {" "}
-          Example{" "}
-        </Divider>
+        <h4 onClick={() => handleImgClick()}>Example:</h4>
         <SiaPopup
           trigger={
-            <Image
+            <img
               src={props.exampleImg.img}
-              rounded
-              centered
-              size="medium"
               onClick={() => handleImgClick()}
+              style={{ borderRadius: 25, width: "100%" }}
             />
           }
           content={"Click on image to view more examples"}
         />
-        {/* <Image src='https://www.gstatic.com/webp/gallery3/1.png'/> */}
       </div>
     );
   };
@@ -82,7 +74,7 @@ const LabelInfo = (props) => {
     if (!myLbl) return "No Label";
     return (
       <div>
-        <Header>{myLbl.label}</Header>
+        <h4>{myLbl.label}</h4>
         <div dangerouslySetInnerHTML={{ __html: myLbl.description }} />
         {renderExampleImg()}
         <AnnoExampleViewer

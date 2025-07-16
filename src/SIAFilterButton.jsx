@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import { Popup, Icon, Menu, Divider, Checkbox } from "semantic-ui-react";
-import * as filterTools from "./filterTools";
+// import * as filterTools from "./filterTools";
 import * as tbe from "./types/toolbarEvents";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
-import { CPopover } from "@coreui/react";
+import { CFormSwitch, CPopover } from "@coreui/react";
 import ToolbarItem from "./ToolbarItem";
 class SIAFilterButton extends Component {
   constructor(props) {
@@ -97,23 +96,23 @@ class SIAFilterButton extends Component {
     const filter = this.props.filter;
     return (
       <div>
-        <Divider horizontal>Rotate</Divider>
-        <Checkbox
+        <h4>Rotate</h4>
+        <CFormSwitch
           checked={filter.rotate.active && filter.rotate.angle === 90}
           label="Rotate 90"
-          toggle
+          size="xl"
           onClick={() => this.rotateImg(90)}
         />
-        <Checkbox
+        <CFormSwitch
           checked={filter.rotate.active && filter.rotate.angle === -90}
           label="Rotate -90"
-          toggle
+          size="xl"
           onClick={() => this.rotateImg(-90)}
         />
-        <Checkbox
+        <CFormSwitch
           checked={filter.rotate.active && filter.rotate.angle === 180}
           label="Rotate 180"
-          toggle
+          size="xl"
           onClick={() => this.rotateImg(180)}
         />
       </div>
@@ -135,11 +134,11 @@ class SIAFilterButton extends Component {
     const filter = this.props.filter;
     return (
       <div>
-        <Divider horizontal>Histogram equalization</Divider>
-        <Checkbox
+        <h4>Histogram equalization</h4>
+        <CFormSwitch
           checked={filter.clahe.active}
           label="Histogram equalization"
-          toggle
+          size="xl"
           onClick={() => this.claheFilter(this.state.clipLimit)}
         />
         <div>Cliplimit: {this.state.clipLimit}</div>

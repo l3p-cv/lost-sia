@@ -1,6 +1,6 @@
 import Prompt from "./Prompt";
 import React from "react";
-import { Card, Divider, Header, Image } from "semantic-ui-react";
+import { Card, Image } from "semantic-ui-react";
 
 const LabelExampleViewer = (props) => {
   const requestExample = (e) => {
@@ -14,9 +14,8 @@ const LabelExampleViewer = (props) => {
     if (!props.exampleImg) return null;
     const description = (
       <div>
-        {/* <Divider horizontal> Description </Divider> */}
         {props.lbl.description}
-        <Divider horizontal> comment </Divider>
+        <h4>Comment:</h4>
         {props.exampleImg.anno ? props.exampleImg.anno.comment : "no comment"}
       </div>
     );

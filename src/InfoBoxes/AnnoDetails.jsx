@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { List, Divider, TextArea, Form, Label, Icon } from "semantic-ui-react";
+import { List, TextArea, Form, Label, Icon } from "semantic-ui-react";
 import InfoBox from "./InfoBox";
 import PopUp from "../SiaPopup";
 
@@ -143,7 +143,6 @@ const AnnoDetails = (props) => {
             />
             {/* <List.Item icon='time' content={props.anno.annoTime} /> */}
           </List>
-          {/* <Divider horizontal> Comment </Divider> */}
           {renderComment()}
         </div>
       );
