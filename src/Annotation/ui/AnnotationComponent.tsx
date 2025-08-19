@@ -16,6 +16,7 @@ type AnnotationComponentProps = {
   annotation: Annotation;
   possibleLabels: Label[];
   svgScale: number;
+  imagePageOffset: Point;
   strokeWidth: number;
   nodeRadius: number;
   isSelected: boolean;
@@ -26,12 +27,20 @@ const AnnotationComponent = ({
   annotation,
   possibleLabels,
   svgScale,
+  imagePageOffset,
   strokeWidth,
   nodeRadius,
   isSelected,
   onAction = (_, __) => {},
 }: AnnotationComponentProps) => {
   const [topLeftPoint, setTopLeftPoint] = useState<Point>({ x: 0, y: 0 });
+
+  const [isModified, setIsModified] = useState<boolean>(false);
+  const [coordinates, setCoordinates] = useState<Point[]>(
+    annotation.coordinates,
+  );
+
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   useEffect(() => {
     // recalculate all coordinates to match the resized image
@@ -98,9 +107,13 @@ const AnnotationComponent = ({
       case AnnotationTool.Polygon:
         return (
           <Polygon
-            coordinates={annotation.coordinates}
+            coordinates={coordinates}
             isSelected={isSelected}
+            imagePageOffset={imagePageOffset}
+            svgScale={svgScale}
             style={annotationStyle}
+            onNodeMoved={setCoordinates}
+            onIsDraggingStateChanged={setIsDragging}
           />
         );
     }
@@ -119,14 +132,16 @@ const AnnotationComponent = ({
         onAction(annotation, CanvasAction.ANNO_SELECTED);
       }}
     >
-      <AnnoBar
-        annotationCoordinates={annotation.coordinates}
-        labels={[]}
-        color={color}
-        isSelected={isSelected}
-        style={annotationStyle}
-        svgScale={svgScale}
-      />
+      {!isDragging && (
+        <AnnoBar
+          annotationCoordinates={coordinates}
+          labels={[]}
+          color={color}
+          isSelected={isSelected}
+          style={annotationStyle}
+          svgScale={svgScale}
+        />
+      )}
       {renderAnno()}
     </g>
   );

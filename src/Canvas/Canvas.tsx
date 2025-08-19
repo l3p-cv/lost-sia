@@ -37,13 +37,14 @@ const Canvas = ({
   onKeyDown: propOnKeyDown,
   onKeyUp: propsOnKeyUp,
 }: CanvasProps) => {
-  // modified annotation coorinates to match the resized image
+  // modified annotation coordinates to match the resized image
   const [scaledAnnotations, setScaledAnnotations] = useState<Annotation[]>([]);
 
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW);
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
 
   const [imageScale, setImageScale] = useState<number>(0);
+  const [imagePageOffset, setImagePageOffset] = useState<Point>();
 
   // default image and svg sizes (for canvas calculation)
   // invalid default value, so that the image uses its default values at first
@@ -81,6 +82,19 @@ const Canvas = ({
 
     handleAnnoEvent(newAnnotation, CanvasAction.ANNO_ENTER_CREATE_MODE);
   };
+
+  useEffect(() => {
+    const { top, left } = imageRef.current.getBoundingClientRect();
+
+    // top and left are in window coordinates
+    // we need to convert them to page coordinates
+    const pageOffset = {
+      x: left + window.scrollX,
+      y: top + window.scrollY,
+    };
+
+    setImagePageOffset(pageOffset);
+  }, [imageRef, imageScale, svgTranslation]);
 
   // const getFittedImageSize = (
   //   imgSize: [number, number],
@@ -349,6 +363,7 @@ const Canvas = ({
     if (imageRef.current === null) return;
     const { width, height } = imageRef.current.getBoundingClientRect();
     setImgSize([width, height]);
+
     console.log("IMG SET", width, height);
   }, [imageRef]);
 
@@ -529,6 +544,7 @@ const Canvas = ({
         annotation={annotation}
         possibleLabels={possibleLabels}
         svgScale={svgScale}
+        imagePageOffset={imagePageOffset}
         nodeRadius={uiConfig.nodeRadius}
         strokeWidth={uiConfig.strokeWidth}
         isSelected={annotation == selectedAnnotation}
