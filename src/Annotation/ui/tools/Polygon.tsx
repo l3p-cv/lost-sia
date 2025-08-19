@@ -3,6 +3,7 @@ import { CSSProperties, ReactElement } from "react";
 // rename type to avoid naming conflict
 import Point from "../../../models/Point";
 import Node from "../atoms/Node";
+import Polyline from "../atoms/Polyline";
 
 type PolygonProps = {
   coordinates: Point[];
@@ -11,6 +12,7 @@ type PolygonProps = {
   svgScale: number;
   style: CSSProperties;
   onNodeMoved: (coordinates: Point[]) => void;
+  onAnnotationMoved: (coordinates: Point[]) => void;
   onIsDraggingStateChanged: (bool) => void;
 };
 
@@ -21,19 +23,9 @@ const Polygon = ({
   svgScale,
   style,
   onNodeMoved,
+  onAnnotationMoved,
   onIsDraggingStateChanged,
 }: PolygonProps) => {
-  // only modify for rendering
-  const _coordinates = [...coordinates];
-
-  // add the first coordinate again as the last one
-  _coordinates.push(_coordinates[0]);
-
-  // draw line between nodes
-  const svgLineCoords: string = _coordinates
-    .map((point: Point) => `${point.x},${point.y}`)
-    .join(" ");
-
   let svgNodes: ReactElement[] = [];
   if (isSelected) {
     svgNodes = coordinates.map((coordinate: Point, index: number) => (
@@ -53,14 +45,17 @@ const Polygon = ({
     ));
   }
 
-  const lineStyle = isSelected
-    ? { ...style, fill: "none" }
-    : { ...style, fillOpacity: 0.3 };
-
   // nodes need to be drawn after the polyline to make them clickable
   return (
     <g>
-      <polyline points={svgLineCoords} style={lineStyle} />
+      <Polyline
+        coordinates={coordinates}
+        style={style}
+        isSelected={isSelected}
+        svgScale={svgScale}
+        onMoved={onAnnotationMoved}
+        onIsDraggingStateChanged={onIsDraggingStateChanged}
+      />
       {svgNodes}
     </g>
   );

@@ -113,6 +113,7 @@ const AnnotationComponent = ({
             svgScale={svgScale}
             style={annotationStyle}
             onNodeMoved={setCoordinates}
+            onAnnotationMoved={setCoordinates}
             onIsDraggingStateChanged={setIsDragging}
           />
         );

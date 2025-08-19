@@ -610,6 +610,10 @@ const Canvas = ({
           onMouseMove={(e) => {
             onMouseMove(e);
           }}
+          onClick={() => {
+            // clicked onto canvas => clear selected anno
+            setSelectedAnnotation(undefined);
+          }}
         >
           <image
             onContextMenu={(e) => e.preventDefault()}
