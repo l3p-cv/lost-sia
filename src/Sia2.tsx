@@ -1,0 +1,167 @@
+import { useEffect, useState, ReactElement } from "react";
+import { CContainer, CRow } from "@coreui/react";
+import Canvas from "./Canvas/Canvas";
+import AllowedTools from "./models/AllowedTools";
+import AnnotationTool from "./models/AnnotationTool";
+import Toolbar from "./Toolbar/Toolbar";
+import UiConfig from "./models/UiConfig";
+import Label from "./models/Label";
+import Annotation from "./Annotation/logic/Annotation";
+import ExternalAnnotation from "./models/ExternalAnnotation";
+import AnnotationMode from "./models/AnnotationMode";
+import AnnotationStatus from "./models/AnnotationStatus";
+
+type SiaProps = {
+  allowedTools?: AllowedTools;
+  additionalButtons?: ReactElement | undefined;
+  defaultAnnotationTool?: AnnotationTool;
+  image: string;
+  initialAnnotations?: ExternalAnnotation[];
+  possibleLabels: Label[];
+  uiConfig: UiConfig;
+  onAnnoCreated?: (createdAnno: Annotation, allAnnos: Annotation[]) => void;
+  onAnnoChanged?: (changedAnno: Annotation, allAnnos: Annotation[]) => void;
+  onAnnoDeleted?: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
+};
+
+const Sia2 = ({
+  allowedTools: propAllowedTools,
+  additionalButtons,
+  uiConfig,
+  defaultAnnotationTool,
+  image,
+  initialAnnotations = [],
+  possibleLabels,
+  onAnnoCreated = (_, __) => {},
+  onAnnoChanged = (_, __) => {},
+  onAnnoDeleted = (_, __) => {},
+}: SiaProps) => {
+  const [allowedTools, setAllowedTools] = useState<AllowedTools>(
+    defaultAnnotationTool,
+  );
+
+  const [siaInitialized, setSiaInitialized] = useState<boolean>(false);
+
+  const [annotations, setAnnotations] = useState<Annotation[]>();
+
+  const [selectedAnnoTool, setSelectedAnnoTool] = useState<AnnotationTool>(
+    AnnotationTool.BBox,
+  );
+
+  // keep track which numbers are already used for annotation ids - even if they are deleted
+  const [usedInternalIds, setUsedInternalIds] = useState<number[]>([]);
+
+  // reset SIA on image change
+  useEffect(() => {
+    if (siaInitialized) setSiaInitialized(false);
+  }, [image]);
+
+  useEffect(() => {
+    if (siaInitialized) return;
+
+    // this is only run during initialization, so internal id list is always empty at this point
+    // fill this without the dedicated createNewInternalAnnotationId to avoid accessing old state
+    // setState in loop thats depending on its value => you are in react hell
+    let internalAnnoId: number = 0;
+
+    // create internal annotation object from external annotations
+    // assign internal id, add default data if not set from the outside
+    const _annotations: Annotation[] = initialAnnotations.map(
+      (externalAnno: ExternalAnnotation) => {
+        const _anno: Annotation = {
+          ...externalAnno,
+          internalId: internalAnnoId++,
+          mode: AnnotationMode.VIEW,
+          selectedNode: 1,
+          status: AnnotationStatus.NEW,
+          annoTime:
+            externalAnno.annoTime !== undefined ? externalAnno.annoTime : 0.0,
+          timestamp:
+            externalAnno.timestamp !== undefined
+              ? externalAnno.timestamp
+              : performance.now(),
+        };
+
+        return _anno;
+      },
+    );
+
+    // list all used internal ids (from 0 to internalAnnoId)
+    setUsedInternalIds([...Array(internalAnnoId).keys()]);
+
+    setAnnotations(_annotations);
+    setSiaInitialized(true);
+  }, [initialAnnotations, siaInitialized]);
+
+  // set default allowed tools if user has not specified them
+  useEffect(() => {
+    const defaultAllowedTools: AllowedTools = {
+      bbox: true,
+      point: true,
+      line: true,
+      junk: true,
+      polygon: true,
+    };
+
+    if (propAllowedTools === undefined)
+      return setAllowedTools(defaultAllowedTools);
+
+    setAllowedTools(propAllowedTools);
+  }, [propAllowedTools]);
+
+  const createNewInternalAnnotationId = (): number => {
+    // find the next free number
+    let newInternalId: number = 0;
+    while (usedInternalIds.includes(newInternalId)) newInternalId++;
+
+    // add it to the used numbers (dereference list to trigger react state change)
+    const _usedInternalIds = [...usedInternalIds];
+    _usedInternalIds.push(newInternalId);
+
+    return newInternalId;
+  };
+
+  if (allowedTools === undefined || siaInitialized === false)
+    return "Loading...";
+
+  return (
+    <CContainer>
+      <CRow style={{ marginBottom: 10 }}>
+        <Toolbar
+          allowedTools={allowedTools}
+          additionalButtons={additionalButtons}
+          selectedTool={selectedAnnoTool}
+          onSetSelectedTool={setSelectedAnnoTool}
+        />
+      </CRow>
+      <CRow>
+        <Canvas
+          annotations={annotations}
+          image={image}
+          selectedAnnoTool={selectedAnnoTool}
+          possibleLabels={possibleLabels}
+          uiConfig={uiConfig}
+          onAnnoCreated={(annotation: Annotation) => {
+            const _annotations: Annotation[] = [...annotations];
+            _annotations.push(annotation);
+            setAnnotations(_annotations);
+            onAnnoCreated(annotation, _annotations);
+          }}
+          onAnnoChanged={(changedAnno: Annotation) => {
+            // update annotation list
+            const annoListIndex: number = annotations.findIndex(
+              (anno) => anno.internalId === changedAnno.internalId,
+            );
+            const _annotations: Annotation[] = [...annotations];
+            _annotations[annoListIndex] = changedAnno;
+            setAnnotations(_annotations);
+            onAnnoChanged(changedAnno, _annotations);
+          }}
+          onRequestNewAnnoId={createNewInternalAnnotationId}
+        />
+      </CRow>
+    </CContainer>
+  );
+};
+
+export default Sia2;

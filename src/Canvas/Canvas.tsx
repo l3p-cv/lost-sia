@@ -9,6 +9,8 @@ import AnnotationComponent from "../Annotation/ui/AnnotationComponent";
 import Label from "../models/Label";
 import UiConfig from "../models/UiConfig";
 import Point from "../models/Point";
+import mouse2 from "../utils/mouse2";
+import AnnotationUtils from "../Annotation/logic/AnnotationUtils";
 // import AnnoLabelInput from "./AnnoLabelInput";
 
 type CanvasProps = {
@@ -16,7 +18,7 @@ type CanvasProps = {
   image: string;
   selectedAnnoTool: AnnotationTool;
   possibleLabels: Label[];
-  preventScrolling: boolean;
+  preventScrolling?: boolean;
   uiConfig: UiConfig;
   onAnnoEvent?: (
     annotation: Annotation,
@@ -24,6 +26,10 @@ type CanvasProps = {
   ) => void | undefined;
   onKeyDown?: (e) => void | undefined;
   onKeyUp?: (e) => void | undefined;
+  onAnnoCreated: (createdAnno: Annotation) => void;
+  onAnnoChanged: (changedAnno: Annotation) => void;
+  // onAnnoDeleted: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
+  onRequestNewAnnoId: () => number;
 };
 
 const Canvas = ({
@@ -31,11 +37,14 @@ const Canvas = ({
   image,
   selectedAnnoTool,
   possibleLabels,
-  preventScrolling,
+  preventScrolling = true,
   uiConfig,
   onAnnoEvent: propsOnAnnoEvent,
   onKeyDown: propOnKeyDown,
   onKeyUp: propsOnKeyUp,
+  onAnnoCreated,
+  onAnnoChanged,
+  onRequestNewAnnoId,
 }: CanvasProps) => {
   // modified annotation coordinates to match the resized image
   const [scaledAnnotations, setScaledAnnotations] = useState<Annotation[]>([]);
@@ -76,14 +85,22 @@ const Canvas = ({
     handleKeyAction(keyAction),
   );
 
-  const createNewAnnotation = (mousePos: Point) => {
-    const newAnnotation = new Annotation(selectedAnnoTool, [mousePos]);
+  const createNewAnnotation = (antiScaledMouseImagePosition: Point) => {
+    const newAnnotationInternalId: number = onRequestNewAnnoId();
+    const newAnnotation = new Annotation(
+      newAnnotationInternalId,
+      selectedAnnoTool,
+      [antiScaledMouseImagePosition],
+    );
     setSelectedAnnotation(newAnnotation);
+    onAnnoCreated(newAnnotation);
 
     handleAnnoEvent(newAnnotation, CanvasAction.ANNO_ENTER_CREATE_MODE);
   };
 
+  // store + update the vector between start of the page and start of the (translated) image to be able to to transformations
   useEffect(() => {
+    // get image starting position in window coordinates
     const { top, left } = imageRef.current.getBoundingClientRect();
 
     // top and left are in window coordinates
@@ -160,18 +177,6 @@ const Canvas = ({
     //   ];
     //   return newImageSize;
     // }
-  };
-
-  const getMousePosition = (e: MouseEvent): [number, number] => {
-    const absPos = getMousePositionAbs(e);
-    return [
-      absPos[0] / svgScale - svgTranslation[0],
-      absPos[1] / svgScale - svgTranslation[1],
-    ];
-  };
-
-  const getMousePositionAbs = (e: MouseEvent): [number, number] => {
-    return [e.pageX - imgSize[0], e.pageY - imgSize[1]];
   };
 
   const handleAnnoEvent = (
@@ -347,6 +352,7 @@ const Canvas = ({
         return annotation;
       },
     );
+
     setScaledAnnotations(newTranslatedAnnotations);
   }, [annotations, canvasSize, imgSize]);
 
@@ -453,12 +459,18 @@ const Canvas = ({
     } else if (e.button === 1) {
       setEditorMode(EditorModes.CAMERA_MOVE);
     } else if (e.button === 2) {
-      const mousePos: [number, number] = getMousePosition(e);
+      const antiScaledMouseImagePosition: Point =
+        mouse2.getAntiScaledMouseImagePosition(e, imagePageOffset, svgScale);
 
       // already creating anno - add a node
-      if (editorMode == EditorModes.CREATE)
-        selectedAnnotation.addNode(mousePos);
-      else createNewAnnotation(mousePos);
+      if (editorMode == EditorModes.CREATE) {
+        const _selectedAnno = AnnotationUtils.addNode(
+          selectedAnnotation,
+          antiScaledMouseImagePosition,
+        );
+        setSelectedAnnotation(_selectedAnno);
+        onAnnoChanged(_selectedAnno);
+      } else createNewAnnotation(antiScaledMouseImagePosition);
     }
   };
 
@@ -539,16 +551,20 @@ const Canvas = ({
     if (editorMode == EditorModes.CAMERA_MOVE) return "";
 
     // draw the annotation using the AnnotationComponent and the scaled coordinates
-    const annos = scaledAnnotations.map((annotation: Annotation) => (
+    const annos = scaledAnnotations.map((scaledAnnotation: Annotation) => (
       <AnnotationComponent
-        annotation={annotation}
+        scaledAnnotation={scaledAnnotation}
         possibleLabels={possibleLabels}
         svgScale={svgScale}
         imagePageOffset={imagePageOffset}
         nodeRadius={uiConfig.nodeRadius}
         strokeWidth={uiConfig.strokeWidth}
-        isSelected={annotation == selectedAnnotation}
+        isSelected={
+          selectedAnnotation !== undefined &&
+          scaledAnnotation.internalId === selectedAnnotation.internalId
+        }
         onAction={onAnnoAction}
+        onAnnoChanged={onAnnoChanged}
       />
     ));
 

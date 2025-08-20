@@ -10,9 +10,16 @@ import { ReactElement } from "react";
 type ToolbarProps = {
   allowedTools: AllowedTools;
   additionalButtons: ReactElement | undefined;
+  selectedTool: AnnotationTool;
+  onSetSelectedTool: (selectedTool: AnnotationTool) => void;
 };
 
-const Toolbar = ({ allowedTools, additionalButtons }: ToolbarProps) => {
+const Toolbar = ({
+  allowedTools,
+  additionalButtons,
+  selectedTool,
+  onSetSelectedTool,
+}: ToolbarProps) => {
   return (
     <CRow>
       <CCol>
@@ -21,8 +28,9 @@ const Toolbar = ({ allowedTools, additionalButtons }: ToolbarProps) => {
 
       <CCol>
         <AnnoToolSelector
-          defaultTool={AnnotationTool.Polygon}
           allowedTools={allowedTools}
+          selectedTool={selectedTool}
+          onSetSelectedTool={onSetSelectedTool}
         />
       </CCol>
 

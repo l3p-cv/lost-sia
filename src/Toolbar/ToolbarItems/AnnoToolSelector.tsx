@@ -6,15 +6,17 @@ import AnnotationTool from "../../models/AnnotationTool";
 import AllowedTools from "../../models/AllowedTools";
 
 type AnnoToolSelectorProps = {
-  defaultTool: AnnotationTool;
   allowedTools: AllowedTools;
+  selectedTool: AnnotationTool;
+  onSetSelectedTool: (selectedTool: AnnotationTool) => void;
 };
 
 const AnnoToolSelector = ({
-  defaultTool,
   allowedTools,
+  selectedTool,
+  onSetSelectedTool,
 }: AnnoToolSelectorProps) => {
-  const [selectedTool, setSelectedTool] = useState<AnnotationTool>(defaultTool);
+  // const [selectedTool, setSelectedTool] = useState<AnnotationTool>(defaultTool);
 
   return (
     <CButtonGroup role="group" aria-label="Basic example">
@@ -22,7 +24,7 @@ const AnnoToolSelector = ({
         <CButton
           color="primary"
           variant={selectedTool == AnnotationTool.Point ? undefined : "outline"}
-          onClick={() => setSelectedTool(AnnotationTool.Point)}
+          onClick={() => onSetSelectedTool(AnnotationTool.Point)}
         >
           {siaIcons.pointIcon()}
         </CButton>
@@ -32,7 +34,7 @@ const AnnoToolSelector = ({
         <CButton
           color="primary"
           variant={selectedTool == AnnotationTool.Line ? undefined : "outline"}
-          onClick={() => setSelectedTool(AnnotationTool.Line)}
+          onClick={() => onSetSelectedTool(AnnotationTool.Line)}
         >
           {siaIcons.lineIcon()}
         </CButton>
@@ -42,7 +44,7 @@ const AnnoToolSelector = ({
         <CButton
           color="primary"
           variant={selectedTool == AnnotationTool.BBox ? undefined : "outline"}
-          onClick={() => setSelectedTool(AnnotationTool.BBox)}
+          onClick={() => onSetSelectedTool(AnnotationTool.BBox)}
         >
           {siaIcons.bBoxIcon()}
         </CButton>
@@ -54,7 +56,7 @@ const AnnoToolSelector = ({
           variant={
             selectedTool == AnnotationTool.Polygon ? undefined : "outline"
           }
-          onClick={() => setSelectedTool(AnnotationTool.Polygon)}
+          onClick={() => onSetSelectedTool(AnnotationTool.Polygon)}
         >
           {siaIcons.polygonIcon()}
         </CButton>

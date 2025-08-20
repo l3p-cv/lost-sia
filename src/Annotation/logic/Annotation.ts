@@ -4,7 +4,8 @@ import AnnotationTool from "../../models/AnnotationTool";
 import Point from "../../models/Point";
 
 class Annotation {
-  id: number;
+  internalId: number;
+  externalId?: string;
   annoTime: number;
   coordinates: Point[];
   labelIds: number[];
@@ -14,27 +15,23 @@ class Annotation {
   type: AnnotationTool;
   timestamp: DOMHighResTimeStamp;
 
-  constructor(type: AnnotationTool, coordinates: Point[]) {
+  constructor(
+    internalId: number,
+    type: AnnotationTool,
+    coordinates: Point[],
+    mode: AnnotationMode = AnnotationMode.CREATE,
+    status: AnnotationStatus = AnnotationStatus.NEW,
+    externalId: string = "",
+  ) {
+    this.internalId = internalId;
+    this.externalId = externalId;
     this.type = type;
-    this.mode = AnnotationMode.CREATE;
-    this.status = AnnotationStatus.NEW;
+    this.mode = mode;
+    this.status = status;
     this.coordinates = coordinates;
     this.selectedNode = 1;
     this.timestamp = performance.now();
     this.annoTime = 0.0;
-  }
-
-  startAnnotimeMeasure() {
-    this.timestamp = performance.now();
-  }
-
-  stopAnnotimeMeasure(): number {
-    const now = performance.now();
-    const duration = (now - this.timestamp) / 1000;
-    this.annoTime += duration;
-    this.timestamp = now;
-
-    return duration;
   }
 }
 

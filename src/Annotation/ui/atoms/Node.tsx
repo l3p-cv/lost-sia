@@ -7,7 +7,8 @@ type NodeProps = {
   imagePageOffset: Point;
   svgScale: number;
   style: CSSProperties;
-  onNodeMoved: (index: number, coordinates: Point) => void;
+  onMoving: (index: number, coordinates: Point) => void;
+  onMoved: () => void;
   onIsDraggingStateChanged: (bool) => void;
 };
 
@@ -17,7 +18,8 @@ const Node = ({
   imagePageOffset,
   svgScale,
   style,
-  onNodeMoved,
+  onMoving, // during moving - update coordinates in parent
+  onMoved, // moving finished - send annotation changed event
   onIsDraggingStateChanged,
 }: NodeProps) => {
   const [hasHalo, setHasHalo] = useState<boolean>(false);
@@ -44,7 +46,7 @@ const Node = ({
       y: mousePositionInImageCoordinates.y / svgScale,
     };
 
-    onNodeMoved(index, antiScaledMousePositionInImageCoordinates);
+    onMoving(index, antiScaledMousePositionInImageCoordinates);
   };
 
   useEffect(() => {
@@ -53,6 +55,7 @@ const Node = ({
 
     const handleMouseUp = () => {
       setIsDragging(false);
+      onMoved();
     };
 
     window.addEventListener("mouseup", handleMouseUp);

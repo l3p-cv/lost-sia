@@ -13,7 +13,7 @@ import transform2 from "../../utils/transform2";
 import Point from "../../models/Point";
 
 type AnnotationComponentProps = {
-  annotation: Annotation;
+  scaledAnnotation: Annotation;
   possibleLabels: Label[];
   svgScale: number;
   imagePageOffset: Point;
@@ -21,10 +21,11 @@ type AnnotationComponentProps = {
   nodeRadius: number;
   isSelected: boolean;
   onAction?: (annotation: Annotation, canvasAction: CanvasAction) => void;
+  onAnnoChanged?: (annotation: Annotation) => void;
 };
 
 const AnnotationComponent = ({
-  annotation,
+  scaledAnnotation,
   possibleLabels,
   svgScale,
   imagePageOffset,
@@ -32,12 +33,13 @@ const AnnotationComponent = ({
   nodeRadius,
   isSelected,
   onAction = (_, __) => {},
+  onAnnoChanged = (_) => {},
 }: AnnotationComponentProps) => {
   const [topLeftPoint, setTopLeftPoint] = useState<Point>({ x: 0, y: 0 });
 
   const [isModified, setIsModified] = useState<boolean>(false);
   const [coordinates, setCoordinates] = useState<Point[]>(
-    annotation.coordinates,
+    scaledAnnotation.coordinates,
   );
 
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -46,10 +48,12 @@ const AnnotationComponent = ({
     // recalculate all coordinates to match the resized image
 
     // get the most top left point
-    const topPoints: Point[] = transform2.getTopPoint(annotation.coordinates);
+    const topPoints: Point[] = transform2.getTopPoint(
+      scaledAnnotation.coordinates,
+    );
     const newTopLeftPoint: Point = transform2.getMostLeftPoints(topPoints)[0];
     setTopLeftPoint(newTopLeftPoint);
-  }, [annotation]);
+  }, [scaledAnnotation]);
 
   const getLabel = (labelId: number): Label | undefined => {
     return possibleLabels.find((label: Label) => {
@@ -58,10 +62,10 @@ const AnnotationComponent = ({
   };
 
   const getColor = () => {
-    if (!annotation.labelIds || annotation.labelIds.length == 0)
+    if (!scaledAnnotation.labelIds || scaledAnnotation.labelIds.length == 0)
       return colorUtils.getDefaultColor();
 
-    const label = getLabel(annotation.labelIds[0]);
+    const label = getLabel(scaledAnnotation.labelIds[0]);
 
     if (label === undefined || label.color === undefined)
       return colorUtils.getDefaultColor();
@@ -78,11 +82,11 @@ const AnnotationComponent = ({
   };
 
   const renderAnno = () => {
-    switch (annotation.type) {
+    switch (scaledAnnotation.type) {
       case AnnotationTool.Point:
         return (
           <PointTool
-            coordinates={annotation.coordinates[0]}
+            coordinates={scaledAnnotation.coordinates[0]}
             isSelected={isSelected}
             style={annotationStyle}
           />
@@ -90,7 +94,7 @@ const AnnotationComponent = ({
       case AnnotationTool.Line:
         return (
           <Line
-            coordinates={annotation.coordinates}
+            coordinates={scaledAnnotation.coordinates}
             isSelected={isSelected}
             style={annotationStyle}
           />
@@ -98,8 +102,8 @@ const AnnotationComponent = ({
       case AnnotationTool.BBox:
         return (
           <BBox
-            startCoords={annotation.coordinates[0]}
-            endCoords={annotation.coordinates[1]}
+            startCoords={scaledAnnotation.coordinates[0]}
+            endCoords={scaledAnnotation.coordinates[1]}
             isSelected={isSelected}
             style={annotationStyle}
           />
@@ -112,8 +116,11 @@ const AnnotationComponent = ({
             imagePageOffset={imagePageOffset}
             svgScale={svgScale}
             style={annotationStyle}
-            onNodeMoved={setCoordinates}
-            onAnnotationMoved={setCoordinates}
+            onMoving={setCoordinates}
+            onMoved={() => {
+              // moving finished - send event to canvas
+              onAnnoChanged({ ...scaledAnnotation, coordinates });
+            }}
             onIsDraggingStateChanged={setIsDragging}
           />
         );
@@ -127,10 +134,8 @@ const AnnotationComponent = ({
       // onMouseDown={(e) => this.onMouseDown(e)}
       // onContextMenu={(e) => this.onContextMenu(e)}
       onClick={(e) => {
-        console.log("YEEEEEEEEEEEE");
-
         e.stopPropagation();
-        onAction(annotation, CanvasAction.ANNO_SELECTED);
+        onAction(scaledAnnotation, CanvasAction.ANNO_SELECTED);
       }}
     >
       {!isDragging && (

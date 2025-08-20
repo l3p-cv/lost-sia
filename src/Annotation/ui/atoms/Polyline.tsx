@@ -6,7 +6,8 @@ type PolylineProps = {
   isSelected: boolean;
   svgScale: number;
   style: CSSProperties;
-  onMoved: (coordinates: Point[]) => void;
+  onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
+  onMoved: () => void; // moving finished - send annotation changed event
   onIsDraggingStateChanged: (bool) => void;
 };
 
@@ -15,6 +16,7 @@ const Polyline = ({
   isSelected,
   svgScale,
   style,
+  onMoving,
   onMoved,
   onIsDraggingStateChanged,
 }: PolylineProps) => {
@@ -32,7 +34,7 @@ const Polyline = ({
       };
     });
 
-    onMoved(movedCoordinates);
+    onMoving(movedCoordinates);
   };
 
   useEffect(() => {
@@ -41,6 +43,7 @@ const Polyline = ({
 
     const handleMouseUp = () => {
       setIsDragging(false);
+      onMoved();
     };
 
     window.addEventListener("mouseup", handleMouseUp);

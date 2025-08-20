@@ -11,8 +11,8 @@ type PolygonProps = {
   imagePageOffset: Point;
   svgScale: number;
   style: CSSProperties;
-  onNodeMoved: (coordinates: Point[]) => void;
-  onAnnotationMoved: (coordinates: Point[]) => void;
+  onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
+  onMoved: (coordinates: Point[]) => void; // moving finished - send annotation changed event
   onIsDraggingStateChanged: (bool) => void;
 };
 
@@ -22,8 +22,8 @@ const Polygon = ({
   imagePageOffset,
   svgScale,
   style,
-  onNodeMoved,
-  onAnnotationMoved,
+  onMoving,
+  onMoved,
   onIsDraggingStateChanged,
 }: PolygonProps) => {
   let svgNodes: ReactElement[] = [];
@@ -35,11 +35,12 @@ const Polygon = ({
         imagePageOffset={imagePageOffset}
         svgScale={svgScale}
         style={style}
-        onNodeMoved={(index, newPoint) => {
+        onMoving={(index, newPoint) => {
           const newCoordinates = [...coordinates];
           newCoordinates[index] = newPoint;
-          onNodeMoved(newCoordinates);
+          onMoving(newCoordinates);
         }}
+        onMoved={() => onMoved(coordinates)}
         onIsDraggingStateChanged={onIsDraggingStateChanged}
       />
     ));
@@ -53,7 +54,8 @@ const Polygon = ({
         style={style}
         isSelected={isSelected}
         svgScale={svgScale}
-        onMoved={onAnnotationMoved}
+        onMoving={onMoving}
+        onMoved={() => onMoved(coordinates)}
         onIsDraggingStateChanged={onIsDraggingStateChanged}
       />
       {svgNodes}
