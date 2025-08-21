@@ -8,7 +8,7 @@ import AnnoBar from "./atoms/AnnoBar";
 import CanvasAction from "../../models/CanvasAction";
 import BBox from "./tools/BBox";
 import Polygon from "./tools/Polygon";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import transform2 from "../../utils/transform2";
 import Point from "../../models/Point";
 
@@ -16,7 +16,7 @@ type AnnotationComponentProps = {
   scaledAnnotation: Annotation;
   possibleLabels: Label[];
   svgScale: number;
-  imagePageOffset: Point;
+  pageToStageOffset: Point;
   strokeWidth: number;
   nodeRadius: number;
   isSelected: boolean;
@@ -28,32 +28,46 @@ const AnnotationComponent = ({
   scaledAnnotation,
   possibleLabels,
   svgScale,
-  imagePageOffset,
+  pageToStageOffset,
   strokeWidth,
   nodeRadius,
   isSelected,
   onAction = (_, __) => {},
   onAnnoChanged = (_) => {},
 }: AnnotationComponentProps) => {
-  const [topLeftPoint, setTopLeftPoint] = useState<Point>({ x: 0, y: 0 });
+  // const [topLeftPoint, setTopLeftPoint] = useState<Point>({ x: 0, y: 0 });
 
   const [isModified, setIsModified] = useState<boolean>(false);
   const [coordinates, setCoordinates] = useState<Point[]>(
     scaledAnnotation.coordinates,
   );
 
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  /**
+   * during user editing of the annotation, multiple events are fired by the children
+   * onMoving for updating the data
+   * onMoved for telling its parents (us) that the user has finished moving
+   * onMoved has no access to up-to-date coordinates, because the state is always one render step behind the setState
+   * since both events are fired during the same render, onMoved would give away old coorinates
+   * use this reference as a workaround to get the up-to-date coordinates even in this edge-case
+   */
+  const coordinatesRef = useRef<Point[]>(coordinates);
 
   useEffect(() => {
-    // recalculate all coordinates to match the resized image
+    coordinatesRef.current = coordinates;
+  }, [coordinates]);
 
-    // get the most top left point
-    const topPoints: Point[] = transform2.getTopPoint(
-      scaledAnnotation.coordinates,
-    );
-    const newTopLeftPoint: Point = transform2.getMostLeftPoints(topPoints)[0];
-    setTopLeftPoint(newTopLeftPoint);
-  }, [scaledAnnotation]);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  // useEffect(() => {
+  //   // recalculate all coordinates to match the resized image
+
+  //   // get the most top left point
+  //   const topPoints: Point[] = transform2.getTopPoint(
+  //     scaledAnnotation.coordinates,
+  //   );
+  //   const newTopLeftPoint: Point = transform2.getMostLeftPoints(topPoints)[0];
+  //   setTopLeftPoint(newTopLeftPoint);
+  // }, [scaledAnnotation]);
 
   const getLabel = (labelId: number): Label | undefined => {
     return possibleLabels.find((label: Label) => {
@@ -113,13 +127,16 @@ const AnnotationComponent = ({
           <Polygon
             coordinates={coordinates}
             isSelected={isSelected}
-            imagePageOffset={imagePageOffset}
+            pageToStageOffset={pageToStageOffset}
             svgScale={svgScale}
             style={annotationStyle}
             onMoving={setCoordinates}
             onMoved={() => {
               // moving finished - send event to canvas
-              onAnnoChanged({ ...scaledAnnotation, coordinates });
+              onAnnoChanged({
+                ...scaledAnnotation,
+                coordinates: coordinatesRef.current,
+              });
             }}
             onIsDraggingStateChanged={setIsDragging}
           />

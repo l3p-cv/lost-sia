@@ -8,7 +8,7 @@ import Polyline from "../atoms/Polyline";
 type PolygonProps = {
   coordinates: Point[];
   isSelected: boolean;
-  imagePageOffset: Point;
+  pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
   onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
@@ -19,7 +19,7 @@ type PolygonProps = {
 const Polygon = ({
   coordinates,
   isSelected,
-  imagePageOffset,
+  pageToStageOffset,
   svgScale,
   style,
   onMoving,
@@ -32,7 +32,7 @@ const Polygon = ({
       <Node
         index={index}
         coordinates={coordinate}
-        imagePageOffset={imagePageOffset}
+        pageToStageOffset={pageToStageOffset}
         svgScale={svgScale}
         style={style}
         onMoving={(index, newPoint) => {

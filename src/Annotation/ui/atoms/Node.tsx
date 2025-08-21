@@ -4,7 +4,7 @@ import Point from "../../../models/Point";
 type NodeProps = {
   index: number;
   coordinates: Point;
-  imagePageOffset: Point;
+  pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
   onMoving: (index: number, coordinates: Point) => void;
@@ -15,7 +15,7 @@ type NodeProps = {
 const Node = ({
   index,
   coordinates,
-  imagePageOffset,
+  pageToStageOffset,
   svgScale,
   style,
   onMoving, // during moving - update coordinates in parent
@@ -36,8 +36,8 @@ const Node = ({
     // https://developer.mozilla.org/en-US/docs/Web/CSS/CSSOM_view/Coordinate_systems
     // convert them into image coordinates by subtrating the offset between image and page
     const mousePositionInImageCoordinates: Point = {
-      x: e.pageX - imagePageOffset.x,
-      y: e.pageY - imagePageOffset.y,
+      x: e.pageX - pageToStageOffset.x,
+      y: e.pageY - pageToStageOffset.y,
     };
 
     // now we need to counter the canvas scaling, because it will be automatically applied when rendering the annotation coordinates

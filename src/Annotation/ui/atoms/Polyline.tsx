@@ -88,7 +88,7 @@ const Polyline = ({
         points={svgLineCoords}
         style={polyLineStyle}
         onMouseDown={() => {
-          setIsDragging(true);
+          if (isSelected) setIsDragging(true);
         }}
         onMouseMove={onMouseMove}
       />
