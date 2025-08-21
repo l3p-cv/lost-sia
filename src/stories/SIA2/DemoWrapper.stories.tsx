@@ -46,11 +46,11 @@ const annotations: ExternalAnnotation[] = [
   },
   {
     coordinates: [
-      { x: 500, y: 300 },
-      { x: 500, y: 320 },
-      { x: 550, y: 370 },
-      { x: 600, y: 350 },
-      { x: 550, y: 450 },
+      { x: 259.883, y: 300.424 },
+      { x: 350, y: 331.5263919270834 },
+      { x: 355, y: 320 },
+      { x: 370, y: 300 },
+      { x: 270, y: 250 },
     ],
     labelIds: [],
     type: AnnotationTool.Polygon,

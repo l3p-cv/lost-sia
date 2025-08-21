@@ -52,8 +52,15 @@ const Canvas = ({
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW);
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
 
-  const [imageScale, setImageScale] = useState<number>(0);
-  const [imagePageOffset, setImagePageOffset] = useState<Point>();
+  // factor to convert coordinates from an (untransformed) image into the stage
+  const [imageToStageFactor, setImageToStageFactor] = useState<number>(0);
+
+  // vector from the top left of the DOM document to the top left of the stage
+  // (events are emitting page coordinates, so we need this to convert them)
+  const [pageToStageOffset, setPageToStageOffset] = useState<Point>({
+    x: -1,
+    y: -1,
+  });
 
   // default image and svg sizes (for canvas calculation)
   // invalid default value, so that the image uses its default values at first
@@ -110,8 +117,8 @@ const Canvas = ({
       y: top + window.scrollY,
     };
 
-    setImagePageOffset(pageOffset);
-  }, [imageRef, imageScale, svgTranslation]);
+    setPageToStageOffset(pageOffset);
+  }, [imageRef, imageToStageFactor, svgTranslation]);
 
   // const getFittedImageSize = (
   //   imgSize: [number, number],
@@ -333,16 +340,11 @@ const Canvas = ({
     // assume the aspect ratio is kept
     const imageToCanvasScale = canvasSize[0] / imgSize[0];
 
-    console.log("imageToCanvasScale", canvasSize, imgSize, imageToCanvasScale);
+    // console.log("imageToCanvasScale", canvasSize, imgSize, imageToCanvasScale);
 
     const newTranslatedAnnotations = annotations.map(
       (annotation: Annotation) => {
         annotation.coordinates = annotation.coordinates.map((point: Point) => {
-          console.log(
-            "Point conversion:",
-            point.x,
-            point.x * imageToCanvasScale,
-          );
           return {
             x: point.x * imageToCanvasScale,
             y: point.y * imageToCanvasScale,
@@ -385,31 +387,29 @@ const Canvas = ({
     )
       return;
 
-    const newImageScale: number = getFittedImageScale(imgSize, containerSize);
+    const newImageToStageFactor: number = getFittedImageScale(
+      imgSize,
+      containerSize,
+    );
 
-    setImageScale(newImageScale);
+    setImageToStageFactor(newImageToStageFactor);
 
     // const newCanvasSize = getFittedImageSize(imgSize, containerSize);
-    // console.log("SET CANVAS", newCanvasSize);
 
     // setCanvasSize(newCanvasSize);
     // setSvgSize(newCanvasSize);
   }, [containerSize, imgSize]);
 
   useEffect(() => {
-    if (imageScale === 0) return;
+    if (imageToStageFactor === 0) return;
 
     const newCanvasSize: [number, number] = [
-      imgSize[0] * imageScale,
-      imgSize[1] * imageScale,
+      imgSize[0] * imageToStageFactor,
+      imgSize[1] * imageToStageFactor,
     ];
 
     setCanvasSize(newCanvasSize);
-  }, [imageScale]);
-
-  useEffect(() => {
-    console.log("SELECTED ANNO UPDTAE", selectedAnnotation);
-  }, [selectedAnnotation]);
+  }, [imageToStageFactor]);
 
   // const moveCamera = (movementX, movementY) => {
   // console.log("MOVE CAMERA", movementX, movementY);
@@ -460,12 +460,12 @@ const Canvas = ({
       setEditorMode(EditorModes.CAMERA_MOVE);
     } else if (e.button === 2) {
       const antiScaledMouseImagePosition: Point =
-        mouse2.getAntiScaledMouseImagePosition(e, imagePageOffset, svgScale);
+        mouse2.getAntiScaledMouseImagePosition(e, pageToStageOffset, svgScale);
 
       // already creating anno - add a node
       if (editorMode == EditorModes.CREATE) {
         const _selectedAnno = AnnotationUtils.addNode(
-          selectedAnnotation,
+          selectedAnnotation!,
           antiScaledMouseImagePosition,
         );
         setSelectedAnnotation(_selectedAnno);
@@ -556,7 +556,7 @@ const Canvas = ({
         scaledAnnotation={scaledAnnotation}
         possibleLabels={possibleLabels}
         svgScale={svgScale}
-        imagePageOffset={imagePageOffset}
+        pageToStageOffset={pageToStageOffset}
         nodeRadius={uiConfig.nodeRadius}
         strokeWidth={uiConfig.strokeWidth}
         isSelected={
@@ -564,7 +564,22 @@ const Canvas = ({
           scaledAnnotation.internalId === selectedAnnotation.internalId
         }
         onAction={onAnnoAction}
-        onAnnoChanged={onAnnoChanged}
+        onAnnoChanged={(annotation: Annotation) => {
+          // convert annotation coordinates from stage space into image space
+          const coordinatesInImageSpace: Point[] = annotation.coordinates.map(
+            (coordinate: Point) => {
+              return {
+                x: coordinate.x / imageToStageFactor,
+                y: coordinate.y / imageToStageFactor,
+              };
+            },
+          );
+
+          annotation.coordinates = coordinatesInImageSpace;
+
+          // send event to parent component
+          onAnnoChanged(annotation);
+        }}
       />
     ));
 

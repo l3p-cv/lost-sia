@@ -22,10 +22,10 @@ const DemoWrapper = ({ annotations = [] }: DemoWrapperProps) => {
       uiConfig={uiConfig}
       image={imgBlob}
       onAnnoCreated={(anno: Annotation, annos: Annotation[]) => {
-        console.log("CREATED");
+        console.log("CREATED", anno);
       }}
       onAnnoChanged={(anno: Annotation, annos: Annotation[]) => {
-        console.log("CHANGED");
+        console.log("CHANGED", anno.coordinates);
       }}
     />
   );
