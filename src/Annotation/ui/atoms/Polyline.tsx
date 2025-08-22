@@ -104,7 +104,6 @@ const Polyline = ({
         mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
 
       let newCoordinates = [...coordinates];
-      // if (coordinates.length > 1) newCoordinates = newCoordinates.splice(0, -1);
       newCoordinates.push(antiScaledMousePositionInStageCoordinates);
 
       onAddNode(newCoordinates);

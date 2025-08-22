@@ -153,7 +153,17 @@ const AnnotationComponent = ({
               });
             }}
             onIsDraggingStateChanged={setIsDragging}
-            onAddNode={setCoordinates}
+            onAddNode={(newCoordinates: Point[]) => {
+              setCoordinates(newCoordinates);
+
+              // last point is mouse - remove it before export
+              let newCoordinatesWithoutMouse = newCoordinates.slice(0, -1);
+
+              onAnnoChanged({
+                ...scaledAnnotation,
+                coordinates: newCoordinatesWithoutMouse,
+              });
+            }}
             onFinishAnnoCreate={finishAnnoCreate}
           />
         );

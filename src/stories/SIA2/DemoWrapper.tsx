@@ -27,7 +27,7 @@ const DemoWrapper = ({ annotations = [] }: DemoWrapperProps) => {
         console.log("CREATED", anno);
       }}
       onAnnoChanged={(anno: Annotation, annos: Annotation[]) => {
-        console.log("CHANGED", anno.coordinates);
+        console.log("CHANGED", anno);
       }}
     />
   );

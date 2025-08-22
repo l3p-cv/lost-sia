@@ -10,6 +10,7 @@ import Label from "../models/Label";
 import UiConfig from "../models/UiConfig";
 import Point from "../models/Point";
 import mouse2 from "../utils/mouse2";
+import AnnotationMode from "../models/AnnotationMode";
 // import AnnoLabelInput from "./AnnoLabelInput";
 
 type CanvasProps = {
@@ -446,6 +447,8 @@ const Canvas = ({
 
   const onFinishCreateAnno = (fullyCreatedAnnotation: Annotation) => {
     setEditorMode(EditorModes.VIEW);
+
+    fullyCreatedAnnotation.mode = AnnotationMode.VIEW;
 
     // convert stage coordinates to image coordinates
     fullyCreatedAnnotation.coordinates = convertStageCoordinatesToImage(
