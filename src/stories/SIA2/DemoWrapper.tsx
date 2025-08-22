@@ -1,4 +1,5 @@
 import Annotation from "../../Annotation/logic/Annotation";
+import AnnotationTool from "../../models/AnnotationTool";
 import UiConfig from "../../models/UiConfig";
 import Sia2 from "../../Sia2";
 
@@ -21,6 +22,7 @@ const DemoWrapper = ({ annotations = [] }: DemoWrapperProps) => {
       possibleLabels={possibleLabels}
       uiConfig={uiConfig}
       image={imgBlob}
+      defaultAnnotationTool={AnnotationTool.Polygon}
       onAnnoCreated={(anno: Annotation, annos: Annotation[]) => {
         console.log("CREATED", anno);
       }}

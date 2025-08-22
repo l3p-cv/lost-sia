@@ -30,6 +30,7 @@ const Polygon = ({
   if (isSelected) {
     svgNodes = coordinates.map((coordinate: Point, index: number) => (
       <Node
+        key={`node_${index}`}
         index={index}
         coordinates={coordinate}
         pageToStageOffset={pageToStageOffset}

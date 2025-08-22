@@ -36,16 +36,16 @@ const Sia2 = ({
   onAnnoChanged = (_, __) => {},
   onAnnoDeleted = (_, __) => {},
 }: SiaProps) => {
-  const [allowedTools, setAllowedTools] = useState<AllowedTools>(
-    defaultAnnotationTool,
-  );
+  const [allowedTools, setAllowedTools] = useState<AllowedTools>();
 
   const [siaInitialized, setSiaInitialized] = useState<boolean>(false);
 
   const [annotations, setAnnotations] = useState<Annotation[]>();
 
   const [selectedAnnoTool, setSelectedAnnoTool] = useState<AnnotationTool>(
-    AnnotationTool.BBox,
+    defaultAnnotationTool !== undefined
+      ? defaultAnnotationTool
+      : AnnotationTool.Point,
   );
 
   // keep track which numbers are already used for annotation ids - even if they are deleted
@@ -126,14 +126,14 @@ const Sia2 = ({
 
   return (
     <CContainer>
-      <CRow style={{ marginBottom: 10 }}>
+      <div style={{ marginBottom: 10 }}>
         <Toolbar
           allowedTools={allowedTools}
           additionalButtons={additionalButtons}
           selectedTool={selectedAnnoTool}
           onSetSelectedTool={setSelectedAnnoTool}
         />
-      </CRow>
+      </div>
       <CRow>
         <Canvas
           annotations={annotations}
