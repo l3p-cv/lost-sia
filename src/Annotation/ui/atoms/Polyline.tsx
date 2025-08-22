@@ -91,6 +91,7 @@ const Polyline = ({
           if (isSelected) setIsDragging(true);
         }}
         onMouseMove={onMouseMove}
+        onContextMenu={(e) => e.preventDefault()}
       />
     </>
   );

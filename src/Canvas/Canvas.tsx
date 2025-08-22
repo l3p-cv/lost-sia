@@ -454,11 +454,12 @@ const Canvas = ({
 
   const onMouseDown = (e: MouseEvent) => {
     if (e.button === 0) {
-      // @TODO
-      // selectAnnotation(undefined);
+      // left click
     } else if (e.button === 1) {
+      // click on mouse wheel
       setEditorMode(EditorModes.CAMERA_MOVE);
     } else if (e.button === 2) {
+      // right click
       const antiScaledMouseImagePosition: Point =
         mouse2.getAntiScaledMouseImagePosition(e, pageToStageOffset, svgScale);
 
@@ -553,6 +554,7 @@ const Canvas = ({
     // draw the annotation using the AnnotationComponent and the scaled coordinates
     const annos = scaledAnnotations.map((scaledAnnotation: Annotation) => (
       <AnnotationComponent
+        key={`annotationComponent_${scaledAnnotation.internalId}`}
         scaledAnnotation={scaledAnnotation}
         possibleLabels={possibleLabels}
         svgScale={svgScale}
@@ -617,8 +619,8 @@ const Canvas = ({
         //       ? this.props.fixedImageSize
         //       : this.state.svg.height
         //   }
-        onKeyDown={(e) => onKeyDown(e)}
-        onKeyUp={(e) => onKeyUp(e)}
+        onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
         // onMouseMove={(e) => this.handleSvgMouseMove(e)}
         tabIndex={0}
         // width="100%"
@@ -627,20 +629,12 @@ const Canvas = ({
       >
         <g
           transform={`scale(${svgScale}) translate(${svgTranslation[0]}, ${svgTranslation[1]})`}
-          onMouseOver={() => {
-            onMouseOver();
-          }}
-          onMouseLeave={() => {
-            onMouseLeave();
-          }}
+          onMouseOver={onMouseOver}
+          onMouseLeave={onMouseLeave}
           // onMouseEnter={() => this.svg.current.focus()}
-          onMouseUp={(e) => {
-            onMouseUp(e);
-          }}
-          onWheel={(e) => onWheel(e)}
-          onMouseMove={(e) => {
-            onMouseMove(e);
-          }}
+          onMouseUp={onMouseUp}
+          onWheel={onWheel}
+          onMouseMove={onMouseMove}
           onClick={() => {
             // clicked onto canvas => clear selected anno
             setSelectedAnnotation(undefined);
@@ -648,7 +642,7 @@ const Canvas = ({
         >
           <image
             onContextMenu={(e) => e.preventDefault()}
-            onMouseDown={(e) => onMouseDown(e)}
+            onMouseDown={onMouseDown}
             href={image}
             ref={imageRef}
             width={canvasSize[0] > 0 ? canvasSize[0] : undefined}

@@ -73,6 +73,7 @@ const Node = ({
         r={12 / svgScale}
         onMouseLeave={(e) => setHasHalo(false)}
         onMouseDown={(e) => onMouseDown()}
+        onContextMenu={(e) => e.preventDefault()}
       />
     );
   };
@@ -85,6 +86,7 @@ const Node = ({
         r={"100%"}
         style={{ opacity: 0 }}
         onMouseMove={(e) => onMouseMove(e)}
+        onContextMenu={(e) => e.preventDefault()}
       />
     );
   };
@@ -103,6 +105,7 @@ const Node = ({
         }}
         onMouseDown={(e) => onMouseDown()}
         onMouseMove={(e) => onMouseMove(e)}
+        onContextMenu={(e) => e.preventDefault()}
       />
     </g>
   );
