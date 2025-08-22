@@ -1,5 +1,6 @@
 import { CSSProperties, MouseEvent, useEffect, useState } from "react";
 import Point from "../../../models/Point";
+import mouse2 from "../../../utils/mouse2";
 
 type NodeProps = {
   index: number;
@@ -32,21 +33,10 @@ const Node = ({
   const onMouseMove = (e: MouseEvent) => {
     if (!isDragging) return;
 
-    // get page coordinates of current mouse position
-    // https://developer.mozilla.org/en-US/docs/Web/CSS/CSSOM_view/Coordinate_systems
-    // convert them into image coordinates by subtrating the offset between image and page
-    const mousePositionInImageCoordinates: Point = {
-      x: e.pageX - pageToStageOffset.x,
-      y: e.pageY - pageToStageOffset.y,
-    };
+    const antiScaledMousePositionInStageCoordinates =
+      mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
 
-    // now we need to counter the canvas scaling, because it will be automatically applied when rendering the annotation coordinates
-    const antiScaledMousePositionInImageCoordinates: Point = {
-      x: mousePositionInImageCoordinates.x / svgScale,
-      y: mousePositionInImageCoordinates.y / svgScale,
-    };
-
-    onMoving(index, antiScaledMousePositionInImageCoordinates);
+    onMoving(index, antiScaledMousePositionInStageCoordinates);
   };
 
   useEffect(() => {

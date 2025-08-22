@@ -461,7 +461,7 @@ const Canvas = ({
     } else if (e.button === 2) {
       // right click
       const antiScaledMouseImagePosition: Point =
-        mouse2.getAntiScaledMouseImagePosition(e, pageToStageOffset, svgScale);
+        mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
 
       // already creating anno - add a node
       if (editorMode == EditorModes.CREATE) {
