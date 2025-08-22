@@ -4,30 +4,38 @@ import { CSSProperties, ReactElement } from "react";
 import Point from "../../../models/Point";
 import Node from "../atoms/Node";
 import Polyline from "../atoms/Polyline";
+import AnnotationMode from "../../../models/AnnotationMode";
 
 type PolygonProps = {
   coordinates: Point[];
   isSelected: boolean;
+  annotationMode: AnnotationMode;
+  setAnnotationMode: (annotationMode: AnnotationMode) => void;
   pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
+  onAddNode: (coordinates: Point[]) => void;
+  onFinishAnnoCreate: () => void;
+  onIsDraggingStateChanged: (bool) => void;
   onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
   onMoved: (coordinates: Point[]) => void; // moving finished - send annotation changed event
-  onIsDraggingStateChanged: (bool) => void;
 };
 
 const Polygon = ({
   coordinates,
   isSelected,
+  annotationMode,
   pageToStageOffset,
   svgScale,
   style,
+  onAddNode,
+  onFinishAnnoCreate,
   onMoving,
   onMoved,
   onIsDraggingStateChanged,
 }: PolygonProps) => {
   let svgNodes: ReactElement[] = [];
-  if (isSelected) {
+  if (isSelected && annotationMode !== AnnotationMode.CREATE) {
     svgNodes = coordinates.map((coordinate: Point, index: number) => (
       <Node
         key={`node_${index}`}
@@ -52,9 +60,13 @@ const Polygon = ({
     <g>
       <Polyline
         coordinates={coordinates}
-        style={style}
         isSelected={isSelected}
+        annotationMode={annotationMode}
+        pageToStageOffset={pageToStageOffset}
+        style={style}
         svgScale={svgScale}
+        onAddNode={onAddNode}
+        onFinishAnnoCreate={onFinishAnnoCreate}
         onMoving={onMoving}
         onMoved={() => onMoved(coordinates)}
         onIsDraggingStateChanged={onIsDraggingStateChanged}

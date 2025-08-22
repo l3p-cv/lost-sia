@@ -11,6 +11,7 @@ import Polygon from "./tools/Polygon";
 import { useEffect, useRef, useState } from "react";
 import transform2 from "../../utils/transform2";
 import Point from "../../models/Point";
+import AnnotationMode from "../../models/AnnotationMode";
 
 type AnnotationComponentProps = {
   scaledAnnotation: Annotation;
@@ -20,6 +21,7 @@ type AnnotationComponentProps = {
   strokeWidth: number;
   nodeRadius: number;
   isSelected: boolean;
+  onFinishAnnoCreate: (fullyCreatedAnnotation: Annotation) => void;
   onAction?: (annotation: Annotation, canvasAction: CanvasAction) => void;
   onAnnoChanged?: (annotation: Annotation) => void;
 };
@@ -32,6 +34,7 @@ const AnnotationComponent = ({
   strokeWidth,
   nodeRadius,
   isSelected,
+  onFinishAnnoCreate,
   onAction = (_, __) => {},
   onAnnoChanged = (_) => {},
 }: AnnotationComponentProps) => {
@@ -40,6 +43,10 @@ const AnnotationComponent = ({
   const [isModified, setIsModified] = useState<boolean>(false);
   const [coordinates, setCoordinates] = useState<Point[]>(
     scaledAnnotation.coordinates,
+  );
+
+  const [annotationMode, setAnnotationMode] = useState<AnnotationMode>(
+    scaledAnnotation.mode,
   );
 
   /**
@@ -68,6 +75,11 @@ const AnnotationComponent = ({
   //   const newTopLeftPoint: Point = transform2.getMostLeftPoints(topPoints)[0];
   //   setTopLeftPoint(newTopLeftPoint);
   // }, [scaledAnnotation]);
+
+  const finishAnnoCreate = () => {
+    setAnnotationMode(AnnotationMode.VIEW);
+    onFinishAnnoCreate(scaledAnnotation);
+  };
 
   const getLabel = (labelId: number): Label | undefined => {
     return possibleLabels.find((label: Label) => {
@@ -128,6 +140,8 @@ const AnnotationComponent = ({
             coordinates={coordinates}
             isSelected={isSelected}
             pageToStageOffset={pageToStageOffset}
+            annotationMode={annotationMode}
+            setAnnotationMode={setAnnotationMode}
             svgScale={svgScale}
             style={annotationStyle}
             onMoving={setCoordinates}
@@ -139,6 +153,8 @@ const AnnotationComponent = ({
               });
             }}
             onIsDraggingStateChanged={setIsDragging}
+            onAddNode={setCoordinates}
+            onFinishAnnoCreate={finishAnnoCreate}
           />
         );
     }
@@ -155,7 +171,7 @@ const AnnotationComponent = ({
         onAction(scaledAnnotation, CanvasAction.ANNO_SELECTED);
       }}
     >
-      {!isDragging && (
+      {!isDragging && annotationMode !== AnnotationMode.CREATE && (
         <AnnoBar
           annotationCoordinates={coordinates}
           labels={[]}

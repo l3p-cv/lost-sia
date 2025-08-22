@@ -10,7 +10,6 @@ import Label from "../models/Label";
 import UiConfig from "../models/UiConfig";
 import Point from "../models/Point";
 import mouse2 from "../utils/mouse2";
-import AnnotationUtils from "../Annotation/logic/AnnotationUtils";
 // import AnnoLabelInput from "./AnnoLabelInput";
 
 type CanvasProps = {
@@ -92,17 +91,24 @@ const Canvas = ({
     handleKeyAction(keyAction),
   );
 
-  const createNewAnnotation = (antiScaledMouseImagePosition: Point) => {
+  const createNewAnnotation = (antiScaledMouseStagePosition: Point) => {
+    // switch to editing mode
+    setEditorMode(EditorModes.CREATE);
+
+    const initialCoords = convertStageCoordinatesToImage([
+      antiScaledMouseStagePosition,
+    ]);
+
     const newAnnotationInternalId: number = onRequestNewAnnoId();
     const newAnnotation = new Annotation(
       newAnnotationInternalId,
       selectedAnnoTool,
-      [antiScaledMouseImagePosition],
+      initialCoords,
     );
     setSelectedAnnotation(newAnnotation);
     onAnnoCreated(newAnnotation);
 
-    handleAnnoEvent(newAnnotation, CanvasAction.ANNO_ENTER_CREATE_MODE);
+    // handleAnnoEvent(newAnnotation, CanvasAction.ANNO_ENTER_CREATE_MODE);
   };
 
   // store + update the vector between start of the page and start of the (translated) image to be able to to transformations
@@ -192,7 +198,7 @@ const Canvas = ({
   ) => {
     switch (canvasAction) {
       case CanvasAction.ANNO_ENTER_CREATE_MODE:
-        setEditorMode(EditorModes.CREATE);
+        // setEditorMode(EditorModes.CREATE);
         break;
       case CanvasAction.ANNO_MARK_EXAMPLE:
         console.log("TODO HANDLE ACTION ANNO_MARK_EXAMPLE");
@@ -438,6 +444,17 @@ const Canvas = ({
   // setSvgTranslation([trans_x, trans_y]);
   // };
 
+  const onFinishCreateAnno = (fullyCreatedAnnotation: Annotation) => {
+    setEditorMode(EditorModes.VIEW);
+
+    // convert stage coordinates to image coordinates
+    fullyCreatedAnnotation.coordinates = convertStageCoordinatesToImage(
+      fullyCreatedAnnotation.coordinates,
+    );
+
+    onAnnoChanged(fullyCreatedAnnotation);
+  };
+
   const onKeyDown = (e) => {
     e.preventDefault();
 
@@ -459,20 +476,27 @@ const Canvas = ({
       // click on mouse wheel
       setEditorMode(EditorModes.CAMERA_MOVE);
     } else if (e.button === 2) {
-      // right click
-      const antiScaledMouseImagePosition: Point =
+      // right click -> start new annotation
+      // clicks during annotation creation will be handled inside the AnnotationComponent
+      const antiScaledMouseStagePosition: Point =
         mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
 
-      // already creating anno - add a node
-      if (editorMode == EditorModes.CREATE) {
-        const _selectedAnno = AnnotationUtils.addNode(
-          selectedAnnotation!,
-          antiScaledMouseImagePosition,
-        );
-        setSelectedAnnotation(_selectedAnno);
-        onAnnoChanged(_selectedAnno);
-      } else createNewAnnotation(antiScaledMouseImagePosition);
+      createNewAnnotation(antiScaledMouseStagePosition);
     }
+  };
+
+  const convertStageCoordinatesToImage = (
+    stageCoordinates: Point[],
+  ): Point[] => {
+    const coordinatesInImageSpace: Point[] = stageCoordinates.map(
+      (coordinate: Point) => {
+        return {
+          x: coordinate.x / imageToStageFactor,
+          y: coordinate.y / imageToStageFactor,
+        };
+      },
+    );
+    return coordinatesInImageSpace;
   };
 
   const onMouseOver = () => {
@@ -565,6 +589,7 @@ const Canvas = ({
           selectedAnnotation !== undefined &&
           scaledAnnotation.internalId === selectedAnnotation.internalId
         }
+        onFinishAnnoCreate={onFinishCreateAnno}
         onAction={onAnnoAction}
         onAnnoChanged={(annotation: Annotation) => {
           // convert annotation coordinates from stage space into image space
@@ -621,6 +646,7 @@ const Canvas = ({
         //   }
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
+        onMouseMove={onMouseMove}
         // onMouseMove={(e) => this.handleSvgMouseMove(e)}
         tabIndex={0}
         // width="100%"

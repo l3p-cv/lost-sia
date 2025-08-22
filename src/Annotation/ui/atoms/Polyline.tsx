@@ -1,11 +1,17 @@
 import { CSSProperties, MouseEvent, useEffect, useState } from "react";
 import Point from "../../../models/Point";
+import AnnotationMode from "../../../models/AnnotationMode";
+import mouse2 from "../../../utils/mouse2";
 
 type PolylineProps = {
   coordinates: Point[];
   isSelected: boolean;
+  annotationMode: AnnotationMode;
+  pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
+  onAddNode: (coordinates: Point[]) => void;
+  onFinishAnnoCreate: () => void;
   onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
   onMoved: () => void; // moving finished - send annotation changed event
   onIsDraggingStateChanged: (bool) => void;
@@ -14,8 +20,12 @@ type PolylineProps = {
 const Polyline = ({
   coordinates,
   isSelected,
-  svgScale,
+  annotationMode,
+  pageToStageOffset,
   style,
+  svgScale,
+  onAddNode,
+  onFinishAnnoCreate,
   onMoving,
   onMoved,
   onIsDraggingStateChanged,
@@ -23,18 +33,35 @@ const Polyline = ({
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const onMouseMove = (e: MouseEvent) => {
-    if (!isDragging) return;
+    if (isDragging) {
+      // apply mouse move to all coordinates
+      const movedCoordinates: Point[] = coordinates.map((coordinate: Point) => {
+        return {
+          // counter the canvas scaling (it will be automatically applied when rendering the annotation coordinates)
+          x: (coordinate.x += e.movementX / svgScale),
+          y: (coordinate.y += e.movementY / svgScale),
+        };
+      });
 
-    // apply mouse move to all coordinates
-    const movedCoordinates: Point[] = coordinates.map((coordinate: Point) => {
-      return {
-        // counter the canvas scaling (it will be automatically applied when rendering the annotation coordinates)
-        x: (coordinate.x += e.movementX / svgScale),
-        y: (coordinate.y += e.movementY / svgScale),
-      };
-    });
+      onMoving(movedCoordinates);
+    }
 
-    onMoving(movedCoordinates);
+    if (annotationMode === AnnotationMode.CREATE) {
+      const mousePointInStage = mouse2.getAntiScaledMouseStagePosition(
+        e,
+        pageToStageOffset,
+        svgScale,
+      );
+
+      let newCoords: Point[] = [...coordinates];
+
+      // last coordinate = mouse position - update it
+      if (coordinates.length > 1) newCoords = coordinates.slice(0, -1);
+
+      newCoords.push(mousePointInStage);
+
+      onMoving(newCoords);
+    }
   };
 
   useEffect(() => {
@@ -64,6 +91,26 @@ const Polyline = ({
     .map((point: Point) => `${point.x},${point.y}`)
     .join(" ");
 
+  const mouseDown = (e: MouseEvent) => {
+    if (
+      isSelected &&
+      annotationMode !== AnnotationMode.CREATE &&
+      e.button === 0
+    )
+      setIsDragging(true);
+
+    if (e.button === 2 && annotationMode == AnnotationMode.CREATE) {
+      const antiScaledMousePositionInStageCoordinates =
+        mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
+
+      let newCoordinates = [...coordinates];
+      // if (coordinates.length > 1) newCoordinates = newCoordinates.splice(0, -1);
+      newCoordinates.push(antiScaledMousePositionInStageCoordinates);
+
+      onAddNode(newCoordinates);
+    }
+  };
+
   const renderInfiniteSelectionArea = () => {
     return (
       <circle
@@ -71,7 +118,9 @@ const Polyline = ({
         cy={coordinates[0].y}
         r={"100%"}
         style={{ opacity: 0 }}
+        onMouseDown={mouseDown}
         onMouseMove={onMouseMove}
+        onContextMenu={(e) => e.preventDefault()}
       />
     );
   };
@@ -83,13 +132,15 @@ const Polyline = ({
 
   return (
     <>
-      {isDragging && renderInfiniteSelectionArea()}
+      {(isDragging || annotationMode === AnnotationMode.CREATE) &&
+        renderInfiniteSelectionArea()}
       <polyline
         points={svgLineCoords}
         style={polyLineStyle}
-        onMouseDown={() => {
-          if (isSelected) setIsDragging(true);
-        }}
+        onMouseDown={mouseDown}
+        onDoubleClick={() =>
+          annotationMode === AnnotationMode.CREATE && onFinishAnnoCreate()
+        }
         onMouseMove={onMouseMove}
         onContextMenu={(e) => e.preventDefault()}
       />

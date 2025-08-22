@@ -26,10 +26,6 @@ const Node = ({
   const [hasHalo, setHasHalo] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  const onMouseDown = () => {
-    setIsDragging(true);
-  };
-
   const onMouseMove = (e: MouseEvent) => {
     if (!isDragging) return;
 
@@ -62,7 +58,7 @@ const Node = ({
         cy={coordinates.y}
         r={12 / svgScale}
         onMouseLeave={(e) => setHasHalo(false)}
-        onMouseDown={(e) => onMouseDown()}
+        onMouseDown={() => setIsDragging(true)}
         onContextMenu={(e) => e.preventDefault()}
       />
     );
@@ -93,7 +89,7 @@ const Node = ({
         onMouseOver={() => {
           setHasHalo(true);
         }}
-        onMouseDown={(e) => onMouseDown()}
+        onMouseDown={() => setIsDragging(true)}
         onMouseMove={(e) => onMouseMove(e)}
         onContextMenu={(e) => e.preventDefault()}
       />

@@ -117,6 +117,7 @@ const Sia2 = ({
     // add it to the used numbers (dereference list to trigger react state change)
     const _usedInternalIds = [...usedInternalIds];
     _usedInternalIds.push(newInternalId);
+    setUsedInternalIds(_usedInternalIds);
 
     return newInternalId;
   };
