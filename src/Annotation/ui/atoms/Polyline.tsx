@@ -1,4 +1,4 @@
-import { CSSProperties, MouseEvent, useEffect, useState } from "react";
+import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
 import Point from "../../../models/Point";
 import AnnotationMode from "../../../models/AnnotationMode";
 import mouse2 from "../../../utils/mouse2";
@@ -35,6 +35,15 @@ const Polyline = ({
 }: PolylineProps) => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
+  // onMove and onMouseUp events are fired in the same frame
+  // use a ref to access the updated value without waiting until the next frame
+  const [didItActuallyMove, setDidItActuallyMove] = useState<boolean>(false);
+  const didItActuallyMoveRef = useRef<boolean>(didItActuallyMove);
+
+  useEffect(() => {
+    didItActuallyMoveRef.current = didItActuallyMove;
+  }, [didItActuallyMove]);
+
   const onMouseMove = (e: MouseEvent) => {
     if (isDragging) {
       // apply mouse move to all coordinates
@@ -46,7 +55,11 @@ const Polyline = ({
         };
       });
 
-      onMoving(movedCoordinates);
+      // only escalate event when mouse actually moved
+      if (e.movementX !== 0 || e.movementY !== 0) {
+        setDidItActuallyMove(true);
+        onMoving(movedCoordinates);
+      }
     }
 
     if (annotationMode === AnnotationMode.CREATE) {
@@ -73,7 +86,9 @@ const Polyline = ({
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      onMoved();
+
+      if (didItActuallyMoveRef.current) onMoved();
+      setDidItActuallyMove(false);
     };
 
     window.addEventListener("mouseup", handleMouseUp);

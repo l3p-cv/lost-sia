@@ -6,6 +6,7 @@ import Node from "../atoms/Node";
 import Polyline from "../atoms/Polyline";
 import AnnotationMode from "../../../models/AnnotationMode";
 import AnnotationSettings from "../../../models/AnnotationSettings";
+import Edge from "../atoms/Edge";
 
 type PolygonProps = {
   annotationSettings: AnnotationSettings;
@@ -17,6 +18,7 @@ type PolygonProps = {
   svgScale: number;
   style: CSSProperties;
   onAddNode: (coordinates: Point[]) => void;
+  onDeleteNode: (coordinates: Point[]) => void;
   onFinishAnnoCreate: () => void;
   onIsDraggingStateChanged: (bool) => void;
   onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
@@ -32,12 +34,14 @@ const Polygon = ({
   svgScale,
   style,
   onAddNode,
+  onDeleteNode,
   onFinishAnnoCreate,
   onMoving,
   onMoved,
   onIsDraggingStateChanged,
 }: PolygonProps) => {
   let svgNodes: ReactElement[] = [];
+  let svgEdges: ReactElement[] = [];
   if (isSelected && annotationMode !== AnnotationMode.CREATE) {
     svgNodes = coordinates.map((coordinate: Point, index: number) => (
       <Node
@@ -48,6 +52,11 @@ const Polygon = ({
         pageToStageOffset={pageToStageOffset}
         svgScale={svgScale}
         style={style}
+        onDeleteNode={() => {
+          const newCoordinates = [...coordinates];
+          newCoordinates.splice(index, 1);
+          onDeleteNode(newCoordinates);
+        }}
         onMoving={(index, newPoint) => {
           const newCoordinates = [...coordinates];
           newCoordinates[index] = newPoint;
@@ -57,6 +66,30 @@ const Polygon = ({
         onIsDraggingStateChanged={onIsDraggingStateChanged}
       />
     ));
+
+    svgEdges = coordinates.map((coordinate: Point, index: number) => {
+      const endCoordinates: Point =
+        index + 1 < coordinates.length
+          ? coordinates[index + 1]
+          : coordinates[0];
+
+      return (
+        <Edge
+          key={`edge_${index}`}
+          startCoordinate={coordinate}
+          endCoordinate={endCoordinates}
+          pageToStageOffset={pageToStageOffset}
+          svgScale={svgScale}
+          style={style}
+          onAddNode={(coordinate: Point) => {
+            const newCoordinates = [...coordinates];
+            newCoordinates.splice(index + 1, 0, coordinate);
+
+            onAddNode(newCoordinates);
+          }}
+        />
+      );
+    });
   }
 
   // nodes need to be drawn after the polyline to make them clickable
@@ -76,7 +109,8 @@ const Polygon = ({
         onMoved={() => onMoved(coordinates)}
         onIsDraggingStateChanged={onIsDraggingStateChanged}
       />
-      {svgNodes}
+      {isSelected && annotationSettings.canEdit && svgEdges}
+      {isSelected && svgNodes}
     </g>
   );
 };

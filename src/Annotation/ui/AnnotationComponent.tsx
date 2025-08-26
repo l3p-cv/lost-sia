@@ -96,6 +96,18 @@ const AnnotationComponent = ({
     r: nodeRadius / svgScale,
   };
 
+  const changeAnnoCoords = (newCoordinates: Point[]) => {
+    setCoordinates(newCoordinates);
+
+    // last point is mouse - remove it before export
+    let newCoordinatesWithoutMouse = newCoordinates.slice(0, -1);
+
+    onAnnoChanged({
+      ...scaledAnnotation,
+      coordinates: newCoordinatesWithoutMouse,
+    });
+  };
+
   const renderAnno = () => {
     switch (scaledAnnotation.type) {
       case AnnotationTool.Point:
@@ -134,6 +146,8 @@ const AnnotationComponent = ({
             setAnnotationMode={setAnnotationMode}
             svgScale={svgScale}
             style={annotationStyle}
+            onAddNode={changeAnnoCoords}
+            onDeleteNode={changeAnnoCoords}
             onMoving={setCoordinates}
             onMoved={() => {
               // moving finished - send event to canvas
@@ -143,17 +157,6 @@ const AnnotationComponent = ({
               });
             }}
             onIsDraggingStateChanged={setIsDragging}
-            onAddNode={(newCoordinates: Point[]) => {
-              setCoordinates(newCoordinates);
-
-              // last point is mouse - remove it before export
-              let newCoordinatesWithoutMouse = newCoordinates.slice(0, -1);
-
-              onAnnoChanged({
-                ...scaledAnnotation,
-                coordinates: newCoordinatesWithoutMouse,
-              });
-            }}
             onFinishAnnoCreate={finishAnnoCreate}
           />
         );

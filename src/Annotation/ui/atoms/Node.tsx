@@ -10,6 +10,7 @@ type NodeProps = {
   pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
+  onDeleteNode: () => void;
   onMoving: (index: number, coordinates: Point) => void;
   onMoved: () => void;
   onIsDraggingStateChanged: (bool) => void;
@@ -22,6 +23,7 @@ const Node = ({
   pageToStageOffset,
   svgScale,
   style,
+  onDeleteNode,
   onMoving, // during moving - update coordinates in parent
   onMoved, // moving finished - send annotation changed event
   onIsDraggingStateChanged,
@@ -54,6 +56,13 @@ const Node = ({
     };
   }, [isDragging]);
 
+  const onMouseDown = (e: MouseEvent) => {
+    if (!annotationSettings.canEdit) return;
+
+    if (e.ctrlKey) onDeleteNode();
+    else setIsDragging(true);
+  };
+
   const renderHalo = () => {
     return (
       <circle
@@ -61,7 +70,7 @@ const Node = ({
         cy={coordinates.y}
         r={12 / svgScale}
         onMouseLeave={(e) => annotationSettings.canEdit && setHasHalo(false)}
-        onMouseDown={() => annotationSettings.canEdit && setIsDragging(true)}
+        onMouseDown={onMouseDown}
         onContextMenu={(e) => e.preventDefault()}
       />
     );
@@ -92,7 +101,7 @@ const Node = ({
         onMouseOver={() => {
           annotationSettings.canEdit && setHasHalo(true);
         }}
-        onMouseDown={() => annotationSettings.canEdit && setIsDragging(true)}
+        onMouseDown={onMouseDown}
         onMouseMove={(e) => onMouseMove(e)}
         onContextMenu={(e) => e.preventDefault()}
       />
