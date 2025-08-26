@@ -20,6 +20,10 @@ type SiaProps = {
   possibleLabels: Label[];
   uiConfig: UiConfig;
   onAnnoCreated?: (createdAnno: Annotation, allAnnos: Annotation[]) => void;
+  onAnnoCreationFinished?: (
+    createdAnno: Annotation,
+    allAnnos: Annotation[],
+  ) => void;
   onAnnoChanged?: (changedAnno: Annotation, allAnnos: Annotation[]) => void;
   onAnnoDeleted?: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
 };
@@ -33,6 +37,7 @@ const Sia2 = ({
   initialAnnotations = [],
   possibleLabels,
   onAnnoCreated = (_, __) => {},
+  onAnnoCreationFinished = (_, __) => {},
   onAnnoChanged = (_, __) => {},
   onAnnoDeleted = (_, __) => {},
 }: SiaProps) => {
@@ -157,6 +162,16 @@ const Sia2 = ({
             _annotations[annoListIndex] = changedAnno;
             setAnnotations(_annotations);
             onAnnoChanged(changedAnno, _annotations);
+          }}
+          onAnnoCreationFinished={(changedAnno: Annotation) => {
+            // update annotation list
+            const annoListIndex: number = annotations.findIndex(
+              (anno) => anno.internalId === changedAnno.internalId,
+            );
+            const _annotations: Annotation[] = [...annotations];
+            _annotations[annoListIndex] = changedAnno;
+            setAnnotations(_annotations);
+            onAnnoCreationFinished(changedAnno, _annotations);
           }}
           onRequestNewAnnoId={createNewInternalAnnotationId}
         />

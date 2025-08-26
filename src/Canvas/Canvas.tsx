@@ -11,6 +11,7 @@ import UiConfig from "../models/UiConfig";
 import Point from "../models/Point";
 import mouse2 from "../utils/mouse2";
 import AnnotationMode from "../models/AnnotationMode";
+import LabelInput from "./LabelInput";
 // import AnnoLabelInput from "./AnnoLabelInput";
 
 type CanvasProps = {
@@ -27,6 +28,7 @@ type CanvasProps = {
   onKeyDown?: (e) => void | undefined;
   onKeyUp?: (e) => void | undefined;
   onAnnoCreated: (createdAnno: Annotation) => void;
+  onAnnoCreationFinished: (createdAnno: Annotation) => void;
   onAnnoChanged: (changedAnno: Annotation) => void;
   // onAnnoDeleted: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
   onRequestNewAnnoId: () => number;
@@ -43,6 +45,7 @@ const Canvas = ({
   onKeyDown: propOnKeyDown,
   onKeyUp: propsOnKeyUp,
   onAnnoCreated,
+  onAnnoCreationFinished,
   onAnnoChanged,
   onRequestNewAnnoId,
 }: CanvasProps) => {
@@ -77,6 +80,9 @@ const Canvas = ({
   const [svgTranslation, setSvgTranslation] = useState<[number, number]>([
     0, 0,
   ]);
+
+  const [isLabelInputOpen, setIsLabelInputOpen] = useState<boolean>(false);
+  const [labelInputPosition, setLabelInputPosition] = useState<Point>();
 
   // const [showAnnoLabelInput, setShowAnnoLabelInput] = useState<boolean>(false);
 
@@ -347,18 +353,21 @@ const Canvas = ({
     // assume the aspect ratio is kept
     const imageToCanvasScale = canvasSize[0] / imgSize[0];
 
-    // console.log("imageToCanvasScale", canvasSize, imgSize, imageToCanvasScale);
-
     const newTranslatedAnnotations = annotations.map(
       (annotation: Annotation) => {
-        annotation.coordinates = annotation.coordinates.map((point: Point) => {
-          return {
-            x: point.x * imageToCanvasScale,
-            y: point.y * imageToCanvasScale,
-          };
-        });
+        // destroy reference
+        const newAnnotation = { ...annotation };
 
-        return annotation;
+        newAnnotation.coordinates = newAnnotation.coordinates.map(
+          (point: Point) => {
+            return {
+              x: point.x * imageToCanvasScale,
+              y: point.y * imageToCanvasScale,
+            };
+          },
+        );
+
+        return newAnnotation;
       },
     );
 
@@ -387,8 +396,6 @@ const Canvas = ({
     if (
       containerSize[0] <= 0 ||
       containerSize[1] <= 0 ||
-      // svgSize[0] <= 0 ||
-      // svgSize[1] <= 0 ||
       imgSize[0] <= 0 ||
       imgSize[1] <= 0
     )
@@ -400,11 +407,6 @@ const Canvas = ({
     );
 
     setImageToStageFactor(newImageToStageFactor);
-
-    // const newCanvasSize = getFittedImageSize(imgSize, containerSize);
-
-    // setCanvasSize(newCanvasSize);
-    // setSvgSize(newCanvasSize);
   }, [containerSize, imgSize]);
 
   useEffect(() => {
@@ -456,6 +458,7 @@ const Canvas = ({
     );
 
     onAnnoChanged(fullyCreatedAnnotation);
+    onAnnoCreationFinished(fullyCreatedAnnotation);
   };
 
   const onKeyDown = (e) => {
@@ -593,27 +596,49 @@ const Canvas = ({
           scaledAnnotation.internalId === selectedAnnotation.internalId
         }
         onFinishAnnoCreate={onFinishCreateAnno}
+        onLabelIconClicked={(markerPosition) => {
+          // counter scaling
+          const newMarkerPosition = {
+            x: markerPosition.x,
+            y: markerPosition.y,
+          };
+
+          setLabelInputPosition(newMarkerPosition);
+          setIsLabelInputOpen(true);
+        }}
         onAction={onAnnoAction}
         onAnnoChanged={(annotation: Annotation) => {
-          // convert annotation coordinates from stage space into image space
-          const coordinatesInImageSpace: Point[] = annotation.coordinates.map(
-            (coordinate: Point) => {
-              return {
-                x: coordinate.x / imageToStageFactor,
-                y: coordinate.y / imageToStageFactor,
-              };
-            },
+          // convert stage coordinates to image coordinates
+          const newCoordinates: Point[] = convertStageCoordinatesToImage(
+            annotation.coordinates,
           );
 
-          annotation.coordinates = coordinatesInImageSpace;
+          const newAnnotation = { ...annotation, coordinates: newCoordinates };
 
           // send event to parent component
-          onAnnoChanged(annotation);
+          onAnnoChanged(newAnnotation);
         }}
       />
     ));
 
     return <g>{annos}</g>;
+  };
+
+  const renderInfiniteSelectionArea = () => {
+    // block changing annotations while label selector is open
+    // close label selector when clicked onto canvas
+    return (
+      <circle
+        cx={canvasSize[0] / 2}
+        cy={canvasSize[1] / 2}
+        r={"100%"}
+        style={{ opacity: 0 }}
+        onContextMenu={(e) => e.preventDefault()}
+        onClick={() => {
+          setIsLabelInputOpen(false);
+        }}
+      />
+    );
   };
 
   return (
@@ -631,6 +656,30 @@ const Canvas = ({
           }
         />
       )} */}
+      {isLabelInputOpen && (
+        <div
+          style={{
+            position: "absolute",
+            left: labelInputPosition.x,
+            top: labelInputPosition.y,
+          }}
+        >
+          <LabelInput
+            selectedLabelsIds={selectedAnnotation.labelIds}
+            possibleLabels={possibleLabels}
+            isMultilabel={true}
+            onLabelSelect={(selectedLabelIds: number[]) => {
+              setIsLabelInputOpen(false);
+
+              const updatedAnno = {
+                ...selectedAnnotation,
+                labelIds: [...selectedLabelIds],
+              };
+              onAnnoChanged(updatedAnno);
+            }}
+          />
+        </div>
+      )}
       <svg
         // ref={svgRef}
         // width={svgSize[0] > 0 ? svgSize[0] : "100%"}
@@ -676,20 +725,10 @@ const Canvas = ({
             ref={imageRef}
             width={canvasSize[0] > 0 ? canvasSize[0] : undefined}
             height={canvasSize[1] > 0 ? canvasSize[1] : undefined}
-            // width={
-            //   this.props.fixedImageSize
-            //     ? this.props.fixedImageSize
-            //     : this.state.svg.width
-            // }
-            // height={
-            //   this.props.fixedImageSize
-            //     ? this.props.fixedImageSize
-            //     : this.state.svg.height
-            // }
           />
-          {/* {this.renderAnnotations()} */}
           {renderAnnotations()}
         </g>
+        {isLabelInputOpen && renderInfiniteSelectionArea()}
       </svg>
     </div>
   );

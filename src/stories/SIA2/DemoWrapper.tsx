@@ -26,6 +26,9 @@ const DemoWrapper = ({ annotations = [] }: DemoWrapperProps) => {
       onAnnoCreated={(anno: Annotation, annos: Annotation[]) => {
         console.log("CREATED", anno);
       }}
+      onAnnoCreationFinished={(anno: Annotation, annos: Annotation[]) => {
+        console.log("FINISHED CREATION", anno);
+      }}
       onAnnoChanged={(anno: Annotation, annos: Annotation[]) => {
         console.log("CHANGED", anno);
       }}

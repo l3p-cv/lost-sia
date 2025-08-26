@@ -41,7 +41,7 @@ const annotations: ExternalAnnotation[] = [
       { x: 250, y: 100 },
       { x: 250, y: 200 },
     ],
-    labelIds: [],
+    labelIds: [5],
     type: AnnotationTool.Polygon,
   },
   {
@@ -52,7 +52,7 @@ const annotations: ExternalAnnotation[] = [
       { x: 370, y: 300 },
       { x: 270, y: 250 },
     ],
-    labelIds: [],
+    labelIds: [8, 11],
     type: AnnotationTool.Polygon,
   },
 ];

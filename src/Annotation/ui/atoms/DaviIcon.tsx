@@ -3,13 +3,24 @@ type DaviIconProps = {
   y: number;
   color: string;
   size: number;
+  onClick?: () => void;
 };
 
-const DaviIcon = ({ x, y, color, size = 60 }: DaviIconProps) => {
+const DaviIcon = ({
+  x,
+  y,
+  color,
+  size = 60,
+  onClick = () => {},
+}: DaviIconProps) => {
   const scale: number = size / 1400;
 
   return (
-    <g transform={`translate(${x} ${y}) scale(${scale})`} fill={color}>
+    <g
+      transform={`translate(${x} ${y}) scale(${scale})`}
+      fill={color}
+      onClick={onClick}
+    >
       <path
         id="Maps"
         d="M620.561,817.217c-1.568-3.62-3.771-7.101-4.611-10.885

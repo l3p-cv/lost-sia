@@ -12,19 +12,21 @@ type AnnoBarProps = {
   annotationCoordinates: Point[];
   color: string;
   labels: Label[];
-  defaultLabel?: Label;
+  selectedLabelIds: number[];
   isSelected: boolean;
   svgScale: number;
   style: CSSProperties;
+  onLabelIconClicked: (markerPosition: Point) => void;
 };
 const AnnoBar = ({
   annotationCoordinates,
   color,
   labels,
-  defaultLabel,
+  selectedLabelIds = [],
   isSelected,
   svgScale,
   style,
+  onLabelIconClicked,
 }: AnnoBarProps) => {
   const [barPosition, setBarPosition] = useState<Point>({ x: 0, y: 0 });
   const [barWidth, setBarWidth] = useState<number>(0);
@@ -36,7 +38,7 @@ const AnnoBar = ({
 
   useEffect(() => {
     setLabelText(getLabelText());
-  }, []);
+  }, [selectedLabelIds]);
 
   useEffect(() => {
     // get the most top left point from the annotation
@@ -69,15 +71,13 @@ const AnnoBar = ({
   }, [textRef, labelText, fontSize]);
 
   const getLabelText = () => {
-    if (labels.length === 0) {
-      if (defaultLabel === undefined) return "no label";
-      return defaultLabel.name;
-    }
+    const selectedLabels: Label[] = labels.filter((label: Label) =>
+      selectedLabelIds.includes(label.id),
+    );
 
-    const labelNames: string[] = labels.map((label: Label) => label.name);
-    const newLabelText: string = labelNames.join(", ");
+    const labelText = selectedLabels.map((l) => l.name).join(", ");
 
-    return newLabelText;
+    return labelText.length ? labelText : "no label";
   };
 
   return (
@@ -88,6 +88,7 @@ const AnnoBar = ({
           y={barPosition.y - 30 / svgScale}
           color={color}
           size={60 / svgScale}
+          onClick={() => onLabelIconClicked(barPosition)}
         />
       )}
 

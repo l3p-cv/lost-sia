@@ -8,24 +8,40 @@ import {
 import Label from "../models/Label";
 
 type LabelInputProps = {
+  selectedLabelsIds: number[];
   possibleLabels: Label[];
-  onLabelSelect: (Label) => void;
+  isMultilabel?: boolean;
+  onLabelSelect: (selectedLabelIds: number[]) => void;
 };
 
-const LabelInput = ({ possibleLabels, onLabelSelect }: LabelInputProps) => {
+const LabelInput = ({
+  selectedLabelsIds,
+  possibleLabels,
+  isMultilabel = false,
+  onLabelSelect,
+}: LabelInputProps) => {
   const [filter, setFilter] = useState("");
-  // const [visible, setVisible] = useState(false);
-  // const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   const filteredLabels: Label[] = possibleLabels.filter((label: Label) =>
     label.name.toLowerCase().includes(filter.toLowerCase()),
   );
 
-  // const handleSelect = (label: Label) => {
-  //   // setSelectedItem(item);
-  //   // setVisible(false);
-  //   // setFilter(""); // Zurücksetzen nach Auswahl
-  // };
+  const updateSelectedLabels = (clickedLabel: Label) => {
+    let newLabelIds: number[] = [];
+
+    if (isMultilabel) {
+      newLabelIds = [...selectedLabelsIds];
+      // check if item in list (get its index if so)
+      const foundIndex: number = selectedLabelsIds.indexOf(clickedLabel.id);
+      // add label if not in list, remove label if in list
+      if (foundIndex !== -1) newLabelIds.splice(foundIndex, 1);
+      else newLabelIds.push(clickedLabel.id);
+    }
+    // single-label: just replace list with clicked item
+    else newLabelIds = [clickedLabel.id];
+
+    onLabelSelect(newLabelIds);
+  };
 
   return (
     <CDropdown visible={true}>
@@ -40,7 +56,10 @@ const LabelInput = ({ possibleLabels, onLabelSelect }: LabelInputProps) => {
         </div>
         {filteredLabels.length > 0 ? (
           filteredLabels.map((label: Label) => (
-            <CDropdownItem key={label.id} onClick={() => onLabelSelect(label)}>
+            <CDropdownItem
+              key={label.id}
+              onClick={() => updateSelectedLabels(label)}
+            >
               {label.name}
             </CDropdownItem>
           ))

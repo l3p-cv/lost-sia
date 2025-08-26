@@ -22,6 +22,7 @@ type AnnotationComponentProps = {
   nodeRadius: number;
   isSelected: boolean;
   onFinishAnnoCreate: (fullyCreatedAnnotation: Annotation) => void;
+  onLabelIconClicked: (markerPosition: Point) => void;
   onAction?: (annotation: Annotation, canvasAction: CanvasAction) => void;
   onAnnoChanged?: (annotation: Annotation) => void;
 };
@@ -35,6 +36,7 @@ const AnnotationComponent = ({
   nodeRadius,
   isSelected,
   onFinishAnnoCreate,
+  onLabelIconClicked,
   onAction = (_, __) => {},
   onAnnoChanged = (_) => {},
 }: AnnotationComponentProps) => {
@@ -184,11 +186,13 @@ const AnnotationComponent = ({
       {!isDragging && annotationMode !== AnnotationMode.CREATE && (
         <AnnoBar
           annotationCoordinates={coordinates}
-          labels={[]}
+          labels={possibleLabels}
           color={color}
           isSelected={isSelected}
+          selectedLabelIds={scaledAnnotation.labelIds}
           style={annotationStyle}
           svgScale={svgScale}
+          onLabelIconClicked={onLabelIconClicked}
         />
       )}
       {renderAnno()}
