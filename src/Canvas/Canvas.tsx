@@ -12,10 +12,11 @@ import Point from "../models/Point";
 import mouse2 from "../utils/mouse2";
 import AnnotationMode from "../models/AnnotationMode";
 import LabelInput from "./LabelInput";
-// import AnnoLabelInput from "./AnnoLabelInput";
+import AnnotationSettings from "../models/AnnotationSettings";
 
 type CanvasProps = {
   annotations?: Annotation[];
+  annotationSettings?: AnnotationSettings;
   image: string;
   selectedAnnoTool: AnnotationTool;
   possibleLabels: Label[];
@@ -36,6 +37,7 @@ type CanvasProps = {
 
 const Canvas = ({
   annotations = [],
+  annotationSettings,
   image,
   selectedAnnoTool,
   possibleLabels,
@@ -133,36 +135,6 @@ const Canvas = ({
     setPageToStageOffset(pageOffset);
   }, [imageRef, imageToStageFactor, svgTranslation]);
 
-  // const getFittedImageSize = (
-  //   imgSize: [number, number],
-  //   svgSize: [number, number],
-  // ): [number, number] => {
-  //   if (
-  //     imgSize[0] === 0 ||
-  //     imgSize[1] === 0 ||
-  //     svgSize[0] === 0 ||
-  //     svgSize[1] === 0
-  //   )
-  //     return [0, 0];
-
-  //   const imgAspectRatio = imgSize[0] / imgSize[1];
-  //   const svgAspectRatio = svgSize[0] / svgSize[1];
-
-  //   if (imgAspectRatio > svgAspectRatio) {
-  //     const newImageSize: [number, number] = [
-  //       svgSize[0],
-  //       svgSize[0] / imgAspectRatio,
-  //     ];
-  //     return newImageSize;
-  //   } else {
-  //     const newImageSize: [number, number] = [
-  //       svgSize[1] * imgAspectRatio,
-  //       svgSize[1],
-  //     ];
-  //     return newImageSize;
-  //   }
-  // };
-
   // returns the aspect ratio of the largest image size fitting onto the canvas without changing the aspect ratio
   const getFittedImageScale = (
     imgSize: [number, number],
@@ -176,27 +148,10 @@ const Canvas = ({
     )
       return 0;
 
-    // const imgAspectRatio = imgSize[0] / imgSize[1];
-    // const svgAspectRatio = svgSize[0] / svgSize[1];
-
     const scaleX = svgSize[0] / imgSize[0];
     const scaleY = svgSize[1] / imgSize[1];
 
     return Math.min(scaleX, scaleY);
-
-    // if (imgAspectRatio > svgAspectRatio) {
-    //   const newImageSize: [number, number] = [
-    //     svgSize[0],
-    //     svgSize[0] / imgAspectRatio,
-    //   ];
-    //   return newImageSize;
-    // } else {
-    //   const newImageSize: [number, number] = [
-    //     svgSize[1] * imgAspectRatio,
-    //     svgSize[1],
-    //   ];
-    //   return newImageSize;
-    // }
   };
 
   const handleAnnoEvent = (
@@ -482,6 +437,9 @@ const Canvas = ({
       // click on mouse wheel
       setEditorMode(EditorModes.CAMERA_MOVE);
     } else if (e.button === 2) {
+      // check if annotation creation allowed in settings
+      if (!annotationSettings!.canCreate) return;
+
       // right click -> start new annotation
       // clicks during annotation creation will be handled inside the AnnotationComponent
       const antiScaledMouseStagePosition: Point =
@@ -586,6 +544,7 @@ const Canvas = ({
       <AnnotationComponent
         key={`annotationComponent_${scaledAnnotation.internalId}`}
         scaledAnnotation={scaledAnnotation}
+        annotationSettings={annotationSettings}
         possibleLabels={possibleLabels}
         svgScale={svgScale}
         pageToStageOffset={pageToStageOffset}
@@ -646,16 +605,6 @@ const Canvas = ({
       ref={containerRef}
       style={{ width: "100%", height: "100%", position: "absolute" }}
     >
-      {/* {showAnnoLabelInput && <AnnoLabelInput />} */}
-      {/* {selectedAnnotation && (
-        <AnnoLabelInput
-          annotation={selectedAnnotation}
-          possibleLabels={possibleLabels}
-          onUpdateSelectedAnno={(updatedAnno: Annotation) =>
-            setSelectedAnnotation(updatedAnno)
-          }
-        />
-      )} */}
       {isLabelInputOpen && (
         <div
           style={{
@@ -667,7 +616,7 @@ const Canvas = ({
           <LabelInput
             selectedLabelsIds={selectedAnnotation.labelIds}
             possibleLabels={possibleLabels}
-            isMultilabel={true}
+            isMultilabel={annotationSettings!.canHaveMultipleLabels}
             onLabelSelect={(selectedLabelIds: number[]) => {
               setIsLabelInputOpen(false);
 

@@ -5,8 +5,10 @@ import Point from "../../../models/Point";
 import Node from "../atoms/Node";
 import Polyline from "../atoms/Polyline";
 import AnnotationMode from "../../../models/AnnotationMode";
+import AnnotationSettings from "../../../models/AnnotationSettings";
 
 type PolygonProps = {
+  annotationSettings: AnnotationSettings;
   coordinates: Point[];
   isSelected: boolean;
   annotationMode: AnnotationMode;
@@ -22,6 +24,7 @@ type PolygonProps = {
 };
 
 const Polygon = ({
+  annotationSettings,
   coordinates,
   isSelected,
   annotationMode,
@@ -40,6 +43,7 @@ const Polygon = ({
       <Node
         key={`node_${index}`}
         index={index}
+        annotationSettings={annotationSettings}
         coordinates={coordinate}
         pageToStageOffset={pageToStageOffset}
         svgScale={svgScale}
@@ -59,6 +63,7 @@ const Polygon = ({
   return (
     <g>
       <Polyline
+        annotationSettings={annotationSettings}
         coordinates={coordinates}
         isSelected={isSelected}
         annotationMode={annotationMode}

@@ -4,6 +4,7 @@ import DemoWrapper from "./DemoWrapper";
 import Annotation from "../../Annotation/logic/Annotation";
 import ExternalAnnotation from "../../models/ExternalAnnotation";
 import AnnotationTool from "../../models/AnnotationTool";
+import AnnotationSettings from "../../models/AnnotationSettings";
 
 export const ActionsData = {};
 
@@ -57,9 +58,15 @@ const annotations: ExternalAnnotation[] = [
   },
 ];
 
+const annotationSettings: AnnotationSettings = {
+  canCreate: true,
+  canHaveMultipleLabels: true,
+};
+
 export const WithPolygonAnnotations: Story = {
   args: {
     ...ActionsData,
     annotations,
+    annotationSettings,
   },
 };

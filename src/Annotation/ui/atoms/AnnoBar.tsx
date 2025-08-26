@@ -10,6 +10,7 @@ const TEXT_PADDING = 3;
 
 type AnnoBarProps = {
   annotationCoordinates: Point[];
+  canLabel: boolean;
   color: string;
   labels: Label[];
   selectedLabelIds: number[];
@@ -20,6 +21,7 @@ type AnnoBarProps = {
 };
 const AnnoBar = ({
   annotationCoordinates,
+  canLabel,
   color,
   labels,
   selectedLabelIds = [],
@@ -82,7 +84,7 @@ const AnnoBar = ({
 
   return (
     <g>
-      {isSelected && (
+      {isSelected && canLabel && (
         <DaviIcon
           x={barPosition.x - 33 / svgScale}
           y={barPosition.y - 30 / svgScale}

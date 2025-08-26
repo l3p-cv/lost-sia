@@ -2,11 +2,13 @@ import { CSSProperties, MouseEvent, useEffect, useState } from "react";
 import Point from "../../../models/Point";
 import AnnotationMode from "../../../models/AnnotationMode";
 import mouse2 from "../../../utils/mouse2";
+import AnnotationSettings from "../../../models/AnnotationSettings";
 
 type PolylineProps = {
   coordinates: Point[];
   isSelected: boolean;
   annotationMode: AnnotationMode;
+  annotationSettings: AnnotationSettings;
   pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
@@ -21,6 +23,7 @@ const Polyline = ({
   coordinates,
   isSelected,
   annotationMode,
+  annotationSettings,
   pageToStageOffset,
   style,
   svgScale,
@@ -92,6 +95,8 @@ const Polyline = ({
     .join(" ");
 
   const mouseDown = (e: MouseEvent) => {
+    if (annotationSettings.canEdit === false) return;
+
     if (
       isSelected &&
       annotationMode !== AnnotationMode.CREATE &&

@@ -10,10 +10,12 @@ import Annotation from "./Annotation/logic/Annotation";
 import ExternalAnnotation from "./models/ExternalAnnotation";
 import AnnotationMode from "./models/AnnotationMode";
 import AnnotationStatus from "./models/AnnotationStatus";
+import AnnotationSettings from "./models/AnnotationSettings";
 
 type SiaProps = {
   allowedTools?: AllowedTools;
   additionalButtons?: ReactElement | undefined;
+  annotationSettings?: AnnotationSettings;
   defaultAnnotationTool?: AnnotationTool;
   image: string;
   initialAnnotations?: ExternalAnnotation[];
@@ -31,6 +33,7 @@ type SiaProps = {
 const Sia2 = ({
   allowedTools: propAllowedTools,
   additionalButtons,
+  annotationSettings: propAnnotationSettings,
   uiConfig,
   defaultAnnotationTool,
   image,
@@ -46,6 +49,8 @@ const Sia2 = ({
   const [siaInitialized, setSiaInitialized] = useState<boolean>(false);
 
   const [annotations, setAnnotations] = useState<Annotation[]>();
+  const [annotationSettings, setAnnotationSettings] =
+    useState<AnnotationSettings>();
 
   const [selectedAnnoTool, setSelectedAnnoTool] = useState<AnnotationTool>(
     defaultAnnotationTool !== undefined
@@ -55,6 +60,25 @@ const Sia2 = ({
 
   // keep track which numbers are already used for annotation ids - even if they are deleted
   const [usedInternalIds, setUsedInternalIds] = useState<number[]>([]);
+
+  // update annotation settings if changed in the parent
+  useEffect(() => {
+    const defaultAnnotationSettigs: AnnotationSettings = {
+      canCreate: true,
+      canEdit: true,
+      canHaveMultipleLabels: false,
+      canLabel: true,
+      minimalArea: 250,
+    };
+
+    // use default values if a key is not set
+    const newAnnotationSettings = {
+      ...defaultAnnotationSettigs,
+      ...propAnnotationSettings,
+    };
+
+    setAnnotationSettings(newAnnotationSettings);
+  }, [propAnnotationSettings]);
 
   // reset SIA on image change
   useEffect(() => {
@@ -134,6 +158,7 @@ const Sia2 = ({
     <CContainer>
       <div style={{ marginBottom: 10 }}>
         <Toolbar
+          annotationSettings={annotationSettings}
           allowedTools={allowedTools}
           additionalButtons={additionalButtons}
           selectedTool={selectedAnnoTool}
@@ -143,6 +168,7 @@ const Sia2 = ({
       <CRow>
         <Canvas
           annotations={annotations}
+          annotationSettings={annotationSettings}
           image={image}
           selectedAnnoTool={selectedAnnoTool}
           possibleLabels={possibleLabels}

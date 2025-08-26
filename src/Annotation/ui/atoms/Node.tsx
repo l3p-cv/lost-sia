@@ -1,10 +1,12 @@
 import { CSSProperties, MouseEvent, useEffect, useState } from "react";
 import Point from "../../../models/Point";
 import mouse2 from "../../../utils/mouse2";
+import AnnotationSettings from "../../../models/AnnotationSettings";
 
 type NodeProps = {
   index: number;
   coordinates: Point;
+  annotationSettings: AnnotationSettings;
   pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
@@ -16,6 +18,7 @@ type NodeProps = {
 const Node = ({
   index,
   coordinates,
+  annotationSettings,
   pageToStageOffset,
   svgScale,
   style,
@@ -57,8 +60,8 @@ const Node = ({
         cx={coordinates.x}
         cy={coordinates.y}
         r={12 / svgScale}
-        onMouseLeave={(e) => setHasHalo(false)}
-        onMouseDown={() => setIsDragging(true)}
+        onMouseLeave={(e) => annotationSettings.canEdit && setHasHalo(false)}
+        onMouseDown={() => annotationSettings.canEdit && setIsDragging(true)}
         onContextMenu={(e) => e.preventDefault()}
       />
     );
@@ -87,9 +90,9 @@ const Node = ({
         r={10 / svgScale}
         style={style}
         onMouseOver={() => {
-          setHasHalo(true);
+          annotationSettings.canEdit && setHasHalo(true);
         }}
-        onMouseDown={() => setIsDragging(true)}
+        onMouseDown={() => annotationSettings.canEdit && setIsDragging(true)}
         onMouseMove={(e) => onMouseMove(e)}
         onContextMenu={(e) => e.preventDefault()}
       />

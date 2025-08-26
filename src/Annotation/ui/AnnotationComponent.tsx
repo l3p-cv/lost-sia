@@ -9,12 +9,13 @@ import CanvasAction from "../../models/CanvasAction";
 import BBox from "./tools/BBox";
 import Polygon from "./tools/Polygon";
 import { useEffect, useRef, useState } from "react";
-import transform2 from "../../utils/transform2";
 import Point from "../../models/Point";
 import AnnotationMode from "../../models/AnnotationMode";
+import AnnotationSettings from "../../models/AnnotationSettings";
 
 type AnnotationComponentProps = {
   scaledAnnotation: Annotation;
+  annotationSettings: AnnotationSettings;
   possibleLabels: Label[];
   svgScale: number;
   pageToStageOffset: Point;
@@ -29,6 +30,7 @@ type AnnotationComponentProps = {
 
 const AnnotationComponent = ({
   scaledAnnotation,
+  annotationSettings,
   possibleLabels,
   svgScale,
   pageToStageOffset,
@@ -40,9 +42,6 @@ const AnnotationComponent = ({
   onAction = (_, __) => {},
   onAnnoChanged = (_) => {},
 }: AnnotationComponentProps) => {
-  // const [topLeftPoint, setTopLeftPoint] = useState<Point>({ x: 0, y: 0 });
-
-  const [isModified, setIsModified] = useState<boolean>(false);
   const [coordinates, setCoordinates] = useState<Point[]>(
     scaledAnnotation.coordinates,
   );
@@ -50,6 +49,7 @@ const AnnotationComponent = ({
   const [annotationMode, setAnnotationMode] = useState<AnnotationMode>(
     scaledAnnotation.mode,
   );
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   /**
    * during user editing of the annotation, multiple events are fired by the children
@@ -64,19 +64,6 @@ const AnnotationComponent = ({
   useEffect(() => {
     coordinatesRef.current = coordinates;
   }, [coordinates]);
-
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-
-  // useEffect(() => {
-  //   // recalculate all coordinates to match the resized image
-
-  //   // get the most top left point
-  //   const topPoints: Point[] = transform2.getTopPoint(
-  //     scaledAnnotation.coordinates,
-  //   );
-  //   const newTopLeftPoint: Point = transform2.getMostLeftPoints(topPoints)[0];
-  //   setTopLeftPoint(newTopLeftPoint);
-  // }, [scaledAnnotation]);
 
   const finishAnnoCreate = () => {
     setAnnotationMode(AnnotationMode.VIEW);
@@ -139,6 +126,7 @@ const AnnotationComponent = ({
       case AnnotationTool.Polygon:
         return (
           <Polygon
+            annotationSettings={annotationSettings}
             coordinates={coordinates}
             isSelected={isSelected}
             pageToStageOffset={pageToStageOffset}
@@ -186,6 +174,7 @@ const AnnotationComponent = ({
       {!isDragging && annotationMode !== AnnotationMode.CREATE && (
         <AnnoBar
           annotationCoordinates={coordinates}
+          canLabel={annotationSettings.canLabel}
           labels={possibleLabels}
           color={color}
           isSelected={isSelected}
