@@ -9,7 +9,7 @@ class Annotation {
   annoTime: number;
   coordinates: Point[];
   labelIds: number[];
-  mode: AnnotationMode;
+  mode: AnnotationMode; // do we even need this globally? - only really used inside AnnotationComponent
   selectedNode: number;
   status: AnnotationStatus;
   type: AnnotationTool;
@@ -25,6 +25,7 @@ class Annotation {
   ) {
     this.internalId = internalId;
     this.externalId = externalId;
+    this.labelIds = [];
     this.type = type;
     this.mode = mode;
     this.status = status;
