@@ -86,12 +86,8 @@ const Canvas = ({
   const [isLabelInputOpen, setIsLabelInputOpen] = useState<boolean>(false);
   const [labelInputPosition, setLabelInputPosition] = useState<Point>();
 
-  // const [showAnnoLabelInput, setShowAnnoLabelInput] = useState<boolean>(false);
-
   // outer container - all possible space for creating a canvas
   const containerRef = useRef(null);
-
-  // const svgRef = useRef(null);
 
   // used to get the size of the dynamically loaded image
   const imageRef = useRef(null);
