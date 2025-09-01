@@ -113,9 +113,25 @@ const AnnotationComponent = ({
       case AnnotationTool.Point:
         return (
           <PointTool
-            coordinates={scaledAnnotation.coordinates[0]}
-            isSelected={isSelected}
+            annotationMode={annotationMode}
+            annotationSettings={annotationSettings}
+            coordinates={coordinates[0]}
+            pageToStageOffset={pageToStageOffset}
+            svgScale={svgScale}
             style={annotationStyle}
+            onDeleteNode={() => {
+              console.log("TODO");
+            }}
+            onMoving={(newPoint: Point) => setCoordinates([newPoint])}
+            onMoved={() => {
+              // moving finished - send event to canvas
+              onAnnoChanged({
+                ...scaledAnnotation,
+                coordinates: coordinatesRef.current,
+              });
+            }}
+            onIsDraggingStateChanged={setIsDragging}
+            onFinishAnnoCreate={finishAnnoCreate}
           />
         );
       case AnnotationTool.Line:

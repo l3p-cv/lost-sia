@@ -34,7 +34,7 @@ export const Default: Story = {
   },
 };
 
-const annotations: ExternalAnnotation[] = [
+const polygonAnnotations: ExternalAnnotation[] = [
   {
     coordinates: [
       { x: 50, y: 50 },
@@ -66,7 +66,43 @@ const annotationSettings: AnnotationSettings = {
 export const WithPolygonAnnotations: Story = {
   args: {
     ...ActionsData,
-    annotations,
+    annotations: polygonAnnotations,
+    annotationSettings,
+  },
+};
+
+const pointAnnotations: ExternalAnnotation[] = [
+  {
+    coordinates: [{ x: 50, y: 50 }],
+    labelIds: [5],
+    type: AnnotationTool.Point,
+  },
+  {
+    coordinates: [{ x: 100, y: 100 }],
+    labelIds: [8],
+    type: AnnotationTool.Point,
+  },
+  {
+    coordinates: [{ x: 150, y: 150 }],
+    labelIds: [9],
+    type: AnnotationTool.Point,
+  },
+  {
+    coordinates: [{ x: 100, y: 200 }],
+    labelIds: [10],
+    type: AnnotationTool.Point,
+  },
+  {
+    coordinates: [{ x: 270, y: 250 }],
+    labelIds: [8, 11],
+    type: AnnotationTool.Point,
+  },
+];
+
+export const WithPointAnnotations: Story = {
+  args: {
+    ...ActionsData,
+    annotations: pointAnnotations,
     annotationSettings,
   },
 };
