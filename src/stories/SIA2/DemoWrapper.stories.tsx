@@ -71,6 +71,38 @@ export const WithPolygonAnnotations: Story = {
   },
 };
 
+const lineAnnotations: ExternalAnnotation[] = [
+  {
+    coordinates: [
+      { x: 50, y: 50 },
+      { x: 200, y: 100 },
+      { x: 250, y: 100 },
+      { x: 250, y: 200 },
+    ],
+    labelIds: [5],
+    type: AnnotationTool.Line,
+  },
+  {
+    coordinates: [
+      { x: 259.883, y: 300.424 },
+      { x: 350, y: 331.5263919270834 },
+      { x: 355, y: 320 },
+      { x: 370, y: 300 },
+      { x: 270, y: 250 },
+    ],
+    labelIds: [8, 11],
+    type: AnnotationTool.Line,
+  },
+];
+
+export const WithLineAnnotations: Story = {
+  args: {
+    ...ActionsData,
+    annotations: lineAnnotations,
+    annotationSettings,
+  },
+};
+
 const pointAnnotations: ExternalAnnotation[] = [
   {
     coordinates: [{ x: 50, y: 50 }],

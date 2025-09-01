@@ -137,9 +137,26 @@ const AnnotationComponent = ({
       case AnnotationTool.Line:
         return (
           <Line
-            coordinates={scaledAnnotation.coordinates}
+            annotationSettings={annotationSettings}
+            coordinates={coordinates}
             isSelected={isSelected}
+            pageToStageOffset={pageToStageOffset}
+            annotationMode={annotationMode}
+            setAnnotationMode={setAnnotationMode}
+            svgScale={svgScale}
             style={annotationStyle}
+            onAddNode={changeAnnoCoords}
+            onDeleteNode={changeAnnoCoords}
+            onMoving={setCoordinates}
+            onMoved={() => {
+              // moving finished - send event to canvas
+              onAnnoChanged({
+                ...scaledAnnotation,
+                coordinates: coordinatesRef.current,
+              });
+            }}
+            onIsDraggingStateChanged={setIsDragging}
+            onFinishAnnoCreate={finishAnnoCreate}
           />
         );
       case AnnotationTool.BBox:

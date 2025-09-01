@@ -33,8 +33,8 @@ const Point = ({
   onIsDraggingStateChanged,
 }: PointProps) => {
   useEffect(() => {
-    console.log("HAHA", annotationMode);
-
+    // directly fire finished event when annotation is initialized in creation mode
+    // (this needs to be done down here so that we can take control of the event in other annotation types (like polygon))
     if (annotationMode === AnnotationMode.CREATE) onFinishAnnoCreate();
   }, []);
 
