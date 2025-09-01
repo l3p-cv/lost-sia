@@ -123,6 +123,7 @@ const AnnoBar = ({
         rx={5 / svgScale}
         opacity="0.01"
         style={style}
+        onContextMenu={(e) => e.preventDefault()}
       />
     </g>
   );
