@@ -1,4 +1,4 @@
-import { CSSProperties, MouseEvent, useEffect, useState } from "react";
+import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
 import Point from "../../../models/Point";
 import mouse2 from "../../../utils/mouse2";
 import AnnotationSettings from "../../../models/AnnotationSettings";
@@ -31,13 +31,26 @@ const Node = ({
   const [hasHalo, setHasHalo] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
+  // onMove and onMouseUp events are fired in the same frame
+  // use a ref to access the updated value without waiting until the next frame
+  const [didItActuallyMove, setDidItActuallyMove] = useState<boolean>(false);
+  const didItActuallyMoveRef = useRef<boolean>(didItActuallyMove);
+
+  useEffect(() => {
+    didItActuallyMoveRef.current = didItActuallyMove;
+  }, [didItActuallyMove]);
+
   const onMouseMove = (e: MouseEvent) => {
     if (!isDragging) return;
 
     const antiScaledMousePositionInStageCoordinates =
       mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
 
-    onMoving(index, antiScaledMousePositionInStageCoordinates);
+    // only escalate event when mouse actually moved
+    if (e.movementX !== 0 || e.movementY !== 0) {
+      setDidItActuallyMove(true);
+      onMoving(index, antiScaledMousePositionInStageCoordinates);
+    }
   };
 
   useEffect(() => {
@@ -46,7 +59,8 @@ const Node = ({
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      onMoved();
+      if (didItActuallyMoveRef.current) onMoved();
+      setDidItActuallyMove(false);
     };
 
     window.addEventListener("mouseup", handleMouseUp);
