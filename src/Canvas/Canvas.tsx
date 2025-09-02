@@ -542,9 +542,19 @@ const Canvas = ({
       annotation.coordinates,
     );
 
+    // make sure the coordinates are inside the image bounds
+    const polishedCoordinates = newCoordinates.map((point: Point) => {
+      if (point.x < 0) point.x = 0;
+      if (point.y < 0) point.y = 0;
+      if (point.x > imgSize[0]) point.x = imgSize[0];
+      if (point.y > imgSize[1]) point.y = imgSize[1];
+
+      return point;
+    });
+
     const newAnnotation = {
       ...annotation,
-      coordinates: newCoordinates,
+      coordinates: polishedCoordinates,
     };
 
     // send event to parent component
