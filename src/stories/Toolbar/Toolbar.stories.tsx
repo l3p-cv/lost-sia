@@ -6,6 +6,7 @@ import Toolbar from "../../Toolbar/Toolbar";
 import "../main.scss";
 import AnnotationTool from "../../models/AnnotationTool";
 import AllowedTools from "../../models/AllowedTools";
+import AnnotationSettings from "../../models/AnnotationSettings";
 
 const meta = {
   title: "Components/Toolbar",
@@ -58,9 +59,17 @@ const limitedAllowedTools: AllowedTools = {
   polygon: false,
 };
 
+const annotationSettings: AnnotationSettings = {
+  canCreate: true,
+  canEdit: true,
+  canHaveMultipleLabels: true,
+  canLabel: true,
+};
+
 export const Default: Story = {
   args: {
     defaultTool: AnnotationTool.Line,
+    annotationSettings,
     allowedTools,
   },
 };
@@ -68,6 +77,7 @@ export const Default: Story = {
 export const DifferentDefaultTool: Story = {
   args: {
     defaultTool: AnnotationTool.Polygon,
+    annotationSettings,
     allowedTools,
   },
 };
@@ -75,6 +85,7 @@ export const DifferentDefaultTool: Story = {
 export const LimitedAllowedTools: Story = {
   args: {
     defaultTool: AnnotationTool.BBox,
+    annotationSettings,
     allowedTools: limitedAllowedTools,
   },
 };
