@@ -104,6 +104,10 @@ const Canvas = ({
       antiScaledMouseStagePosition,
     ]);
 
+    // bbox always require 2 points - add first coordinate again
+    if (selectedAnnoTool === AnnotationTool.BBox)
+      initialCoords.push(initialCoords[0]);
+
     const newAnnotationInternalId: number = onRequestNewAnnoId();
     const newAnnotation = new Annotation(
       newAnnotationInternalId,
@@ -532,49 +536,79 @@ const Canvas = ({
     }
   };
 
+  const handleOnAnnoChanged = (annotation: Annotation) => {
+    // convert stage coordinates to image coordinates
+    const newCoordinates: Point[] = convertStageCoordinatesToImage(
+      annotation.coordinates,
+    );
+
+    const newAnnotation = {
+      ...annotation,
+      coordinates: newCoordinates,
+    };
+
+    // send event to parent component
+    onAnnoChanged(newAnnotation);
+  };
+
+  const handleOnLabelIconClicked = (markerPosition: Point) => {
+    // counter scaling
+    const newMarkerPosition = {
+      x: markerPosition.x,
+      y: markerPosition.y,
+    };
+
+    setLabelInputPosition(newMarkerPosition);
+    setIsLabelInputOpen(true);
+  };
+
   const renderAnnotations = () => {
-    if (editorMode == EditorModes.CAMERA_MOVE) return "";
+    // hide ALL annotation when image is moved
+    if (editorMode === EditorModes.CAMERA_MOVE) return "";
 
     // draw the annotation using the AnnotationComponent and the scaled coordinates
-    const annos = scaledAnnotations.map((scaledAnnotation: Annotation) => (
-      <AnnotationComponent
-        key={`annotationComponent_${scaledAnnotation.internalId}`}
-        scaledAnnotation={scaledAnnotation}
-        annotationSettings={annotationSettings}
-        possibleLabels={possibleLabels}
-        svgScale={svgScale}
-        pageToStageOffset={pageToStageOffset}
-        nodeRadius={uiConfig.nodeRadius}
-        strokeWidth={uiConfig.strokeWidth}
-        isSelected={
-          selectedAnnotation !== undefined &&
-          scaledAnnotation.internalId === selectedAnnotation.internalId
-        }
-        onFinishAnnoCreate={onFinishCreateAnno}
-        onLabelIconClicked={(markerPosition) => {
-          // counter scaling
-          const newMarkerPosition = {
-            x: markerPosition.x,
-            y: markerPosition.y,
-          };
+    const annos = scaledAnnotations.map((scaledAnnotation: Annotation) => {
+      // only show selected anno in specific editor modes
+      const editorModesOtherAnnosShouldBeHiddenIn = [
+        EditorModes.CREATE,
+        EditorModes.MOVE,
+      ];
 
-          setLabelInputPosition(newMarkerPosition);
-          setIsLabelInputOpen(true);
-        }}
-        onAction={onAnnoAction}
-        onAnnoChanged={(annotation: Annotation) => {
-          // convert stage coordinates to image coordinates
-          const newCoordinates: Point[] = convertStageCoordinatesToImage(
-            annotation.coordinates,
-          );
+      if (
+        editorModesOtherAnnosShouldBeHiddenIn.includes(editorMode) &&
+        scaledAnnotation.internalId !== selectedAnnotation?.internalId
+      )
+        return;
 
-          const newAnnotation = { ...annotation, coordinates: newCoordinates };
-
-          // send event to parent component
-          onAnnoChanged(newAnnotation);
-        }}
-      />
-    ));
+      return (
+        <AnnotationComponent
+          key={`annotationComponent_${scaledAnnotation.internalId}`}
+          scaledAnnotation={scaledAnnotation}
+          annotationSettings={annotationSettings}
+          possibleLabels={possibleLabels}
+          svgScale={svgScale}
+          pageToStageOffset={pageToStageOffset}
+          nodeRadius={uiConfig.nodeRadius}
+          strokeWidth={uiConfig.strokeWidth}
+          isSelected={
+            scaledAnnotation.internalId === selectedAnnotation?.internalId
+          }
+          onFinishAnnoCreate={onFinishCreateAnno}
+          onLabelIconClicked={handleOnLabelIconClicked}
+          onAction={onAnnoAction}
+          onAnnoChanged={handleOnAnnoChanged}
+          onAnnotationModeChange={(annotationMode: AnnotationMode) => {
+            if (annotationMode === AnnotationMode.MOVE)
+              setEditorMode(EditorModes.MOVE);
+            if (
+              editorMode === EditorModes.MOVE &&
+              annotationMode === AnnotationMode.VIEW
+            )
+              setEditorMode(EditorModes.VIEW);
+          }}
+        />
+      );
+    });
 
     return <g>{annos}</g>;
   };

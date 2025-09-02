@@ -71,6 +71,33 @@ export const WithPolygonAnnotations: Story = {
   },
 };
 
+const bboxAnnotations: ExternalAnnotation[] = [
+  {
+    coordinates: [
+      { x: 50, y: 50 },
+      { x: 200, y: 200 },
+    ],
+    labelIds: [5],
+    type: AnnotationTool.BBox,
+  },
+  {
+    coordinates: [
+      { x: 250, y: 100 },
+      { x: 450, y: 150 },
+    ],
+    labelIds: [8, 11],
+    type: AnnotationTool.BBox,
+  },
+];
+
+export const WithBBoxAnnotations: Story = {
+  args: {
+    ...ActionsData,
+    annotations: bboxAnnotations,
+    annotationSettings,
+  },
+};
+
 const lineAnnotations: ExternalAnnotation[] = [
   {
     coordinates: [
