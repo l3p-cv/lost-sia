@@ -215,10 +215,7 @@ const Polygon = ({
         pageToStageOffset={pageToStageOffset}
         style={style}
         svgScale={svgScale}
-        onAddNode={onAddNode}
         onFinishAnnoCreate={onFinishAnnoCreate}
-        onMoving={onMoving}
-        onMoved={() => onMoved()}
         onIsDraggingStateChanged={onIsDraggingStateChanged}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
