@@ -8,8 +8,8 @@ type EdgeProps = {
   pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
-  onAddNode: (coordinate: Point) => void;
-  onDoubleClick: (e: MouseEvent) => void;
+  onAddNode?: (coordinate: Point) => void;
+  onDoubleClick?: (e: MouseEvent) => void;
   onMouseDown: (e: MouseEvent) => void;
   onMouseMove: (e: MouseEvent) => void;
 };
@@ -20,8 +20,8 @@ const Edge = ({
   pageToStageOffset,
   style,
   svgScale,
-  onAddNode,
-  onDoubleClick,
+  onAddNode = () => {},
+  onDoubleClick = () => {},
   onMouseDown,
   onMouseMove,
 }: EdgeProps) => {

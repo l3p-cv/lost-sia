@@ -26,6 +26,7 @@ type AnnotationComponentProps = {
   onLabelIconClicked: (markerPosition: Point) => void;
   onAction?: (annotation: Annotation, canvasAction: CanvasAction) => void;
   onAnnoChanged?: (annotation: Annotation) => void;
+  onAnnotationModeChange?: (annotationMode: AnnotationMode) => void;
 };
 
 const AnnotationComponent = ({
@@ -41,6 +42,7 @@ const AnnotationComponent = ({
   onLabelIconClicked,
   onAction = (_, __) => {},
   onAnnoChanged = (_) => {},
+  onAnnotationModeChange = (_) => {},
 }: AnnotationComponentProps) => {
   const [coordinates, setCoordinates] = useState<Point[]>(
     scaledAnnotation.coordinates,
@@ -67,7 +69,13 @@ const AnnotationComponent = ({
 
   const finishAnnoCreate = () => {
     setAnnotationMode(AnnotationMode.VIEW);
-    onFinishAnnoCreate(scaledAnnotation);
+
+    const newAnnotation = {
+      ...scaledAnnotation,
+      coordinates: coordinatesRef.current,
+    };
+
+    onFinishAnnoCreate(newAnnotation);
   };
 
   const getLabel = (labelId: number): Label | undefined => {
@@ -108,6 +116,27 @@ const AnnotationComponent = ({
     });
   };
 
+  const onMoving = (newCoords: Point[]) => {
+    if (annotationMode !== AnnotationMode.CREATE)
+      setAnnotationMode(AnnotationMode.MOVE);
+
+    setCoordinates(newCoords);
+  };
+
+  const onMoved = () => {
+    setAnnotationMode(AnnotationMode.VIEW);
+
+    // moving finished - send event to canvas
+    onAnnoChanged({
+      ...scaledAnnotation,
+      coordinates: coordinatesRef.current,
+    });
+  };
+
+  useEffect(() => {
+    onAnnotationModeChange(annotationMode);
+  }, [annotationMode]);
+
   const renderAnno = () => {
     switch (scaledAnnotation.type) {
       case AnnotationTool.Point:
@@ -122,14 +151,11 @@ const AnnotationComponent = ({
             onDeleteNode={() => {
               console.log("TODO");
             }}
-            onMoving={(newPoint: Point) => setCoordinates([newPoint])}
-            onMoved={() => {
-              // moving finished - send event to canvas
-              onAnnoChanged({
-                ...scaledAnnotation,
-                coordinates: coordinatesRef.current,
-              });
+            onMoving={(newPoint: Point) => {
+              setAnnotationMode(AnnotationMode.MOVE);
+              setCoordinates([newPoint]);
             }}
+            onMoved={onMoved}
             onIsDraggingStateChanged={setIsDragging}
             onFinishAnnoCreate={finishAnnoCreate}
           />
@@ -147,14 +173,8 @@ const AnnotationComponent = ({
             style={annotationStyle}
             onAddNode={changeAnnoCoords}
             onDeleteNode={changeAnnoCoords}
-            onMoving={setCoordinates}
-            onMoved={() => {
-              // moving finished - send event to canvas
-              onAnnoChanged({
-                ...scaledAnnotation,
-                coordinates: coordinatesRef.current,
-              });
-            }}
+            onMoving={onMoving}
+            onMoved={onMoved}
             onIsDraggingStateChanged={setIsDragging}
             onFinishAnnoCreate={finishAnnoCreate}
           />
@@ -162,10 +182,21 @@ const AnnotationComponent = ({
       case AnnotationTool.BBox:
         return (
           <BBox
-            startCoords={scaledAnnotation.coordinates[0]}
-            endCoords={scaledAnnotation.coordinates[1]}
+            annotationMode={annotationMode}
+            annotationSettings={annotationSettings}
+            startCoords={coordinates[0]}
+            endCoords={coordinates[1]}
             isSelected={isSelected}
+            pageToStageOffset={pageToStageOffset}
             style={annotationStyle}
+            svgScale={svgScale}
+            onDeleteNode={() => {
+              console.log("TODO");
+            }}
+            onIsDraggingStateChanged={setIsDragging}
+            onFinishAnnoCreate={finishAnnoCreate}
+            onMoving={onMoving}
+            onMoved={onMoved}
           />
         );
       case AnnotationTool.Polygon:
@@ -181,14 +212,8 @@ const AnnotationComponent = ({
             style={annotationStyle}
             onAddNode={changeAnnoCoords}
             onDeleteNode={changeAnnoCoords}
-            onMoving={setCoordinates}
-            onMoved={() => {
-              // moving finished - send event to canvas
-              onAnnoChanged({
-                ...scaledAnnotation,
-                coordinates: coordinatesRef.current,
-              });
-            }}
+            onMoving={onMoving}
+            onMoved={onMoved}
             onIsDraggingStateChanged={setIsDragging}
             onFinishAnnoCreate={finishAnnoCreate}
           />
