@@ -187,6 +187,8 @@ const Sia2 = ({
             const _annotations: Annotation[] = [...annotations];
             _annotations[annoListIndex] = changedAnno;
             setAnnotations(_annotations);
+
+            // inform the outside world about our change
             onAnnoChanged(changedAnno, _annotations);
           }}
           onAnnoCreationFinished={(changedAnno: Annotation) => {

@@ -137,6 +137,13 @@ const AnnotationComponent = ({
     onAnnotationModeChange(annotationMode);
   }, [annotationMode]);
 
+  // apply coordinate changes from sia (e.g. out of image fixes)
+  // ignore outside changes while creating annotation
+  useEffect(() => {
+    if (annotationMode === AnnotationMode.CREATE) return;
+    setCoordinates(scaledAnnotation.coordinates);
+  }, [scaledAnnotation]);
+
   const renderAnno = () => {
     switch (scaledAnnotation.type) {
       case AnnotationTool.Point:
