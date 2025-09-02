@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import Point from "../../../models/Point";
 import AnnotationMode from "../../../models/AnnotationMode";
 import AnnotationSettings from "../../../models/AnnotationSettings";
@@ -11,12 +11,10 @@ type PolygonAreaProps = {
   pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
-  onAddNode: (coordinates: Point[]) => void;
-  onFinishAnnoCreate: () => void;
-  onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
+  onFinishAnnoCreate?: () => void;
   onMouseDown: (e: MouseEvent) => void;
+  onMouseUp?: (e: MouseEvent) => void;
   onMouseMove: (e: MouseEvent) => void;
-  onMoved: () => void; // moving finished - send annotation changed event
   onIsDraggingStateChanged: (bool) => void;
 };
 
@@ -25,8 +23,9 @@ const PolygonArea = ({
   isSelected,
   annotationMode,
   style,
-  onFinishAnnoCreate,
+  onFinishAnnoCreate = () => {},
   onMouseDown,
+  onMouseUp = () => {},
   onMouseMove,
 }: PolygonAreaProps) => {
   // draw line between nodes
@@ -34,16 +33,30 @@ const PolygonArea = ({
     .map((point: Point) => `${point.x},${point.y}`)
     .join(" ");
 
+  const [cursorStyle, setCursorStyle] = useState<string>("pointer");
+
+  useEffect(() => {
+    if (isSelected) setCursorStyle("grab");
+    else setCursorStyle("pointer");
+  }, [isSelected]);
+
   // adjust style for polyline
   const polyLineStyle = { ...style };
-  polyLineStyle.cursor = "pointer";
+  polyLineStyle.cursor = cursorStyle;
   polyLineStyle.fillOpacity = isSelected ? 0 : 0.3;
 
   return (
     <polygon
       points={svgLineCoords}
       style={polyLineStyle}
-      onMouseDown={onMouseDown}
+      onMouseDown={(e) => {
+        isSelected && setCursorStyle("grabbing");
+        onMouseDown(e);
+      }}
+      onMouseUp={(e) => {
+        setCursorStyle("grab");
+        onMouseUp(e);
+      }}
       onDoubleClick={() =>
         annotationMode === AnnotationMode.CREATE && onFinishAnnoCreate()
       }
