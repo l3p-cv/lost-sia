@@ -10,11 +10,13 @@ import { possibleLabels } from "../siaDummyData2";
 type DemoWrapperProps = {
   annotations?: Annotation[];
   annotationSettings?: AnnotationSettings;
+  isLoading?: boolean;
 };
 
 const DemoWrapper = ({
   annotations = [],
   annotationSettings,
+  isLoading = false,
 }: DemoWrapperProps) => {
   const uiConfig: UiConfig = {
     nodeRadius: 4,
@@ -25,6 +27,7 @@ const DemoWrapper = ({
     <Sia2
       annotationSettings={annotationSettings}
       initialAnnotations={annotations}
+      isLoading={isLoading}
       possibleLabels={possibleLabels}
       uiConfig={uiConfig}
       image={imgBlob}

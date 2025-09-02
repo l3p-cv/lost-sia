@@ -7,12 +7,14 @@ import AllowedTools from "../../models/AllowedTools";
 
 type AnnoToolSelectorProps = {
   allowedTools: AllowedTools;
+  isDisabled?: boolean;
   selectedTool: AnnotationTool;
   onSetSelectedTool: (selectedTool: AnnotationTool) => void;
 };
 
 const AnnoToolSelector = ({
   allowedTools,
+  isDisabled = false,
   selectedTool,
   onSetSelectedTool,
 }: AnnoToolSelectorProps) => {
@@ -23,6 +25,7 @@ const AnnoToolSelector = ({
       {allowedTools.point && (
         <CButton
           color="primary"
+          disabled={isDisabled}
           variant={selectedTool == AnnotationTool.Point ? undefined : "outline"}
           onClick={() => onSetSelectedTool(AnnotationTool.Point)}
         >
@@ -33,6 +36,7 @@ const AnnoToolSelector = ({
       {allowedTools.line && (
         <CButton
           color="primary"
+          disabled={isDisabled}
           variant={selectedTool == AnnotationTool.Line ? undefined : "outline"}
           onClick={() => onSetSelectedTool(AnnotationTool.Line)}
         >
@@ -43,6 +47,7 @@ const AnnoToolSelector = ({
       {allowedTools.bbox && (
         <CButton
           color="primary"
+          disabled={isDisabled}
           variant={selectedTool == AnnotationTool.BBox ? undefined : "outline"}
           onClick={() => onSetSelectedTool(AnnotationTool.BBox)}
         >
@@ -53,6 +58,7 @@ const AnnoToolSelector = ({
       {allowedTools.polygon && (
         <CButton
           color="primary"
+          disabled={isDisabled}
           variant={
             selectedTool == AnnotationTool.Polygon ? undefined : "outline"
           }

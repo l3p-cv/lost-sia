@@ -1,5 +1,5 @@
 import { useEffect, useState, ReactElement } from "react";
-import { CContainer, CRow } from "@coreui/react";
+import { CContainer, CRow, CSpinner } from "@coreui/react";
 import Canvas from "./Canvas/Canvas";
 import AllowedTools from "./models/AllowedTools";
 import AnnotationTool from "./models/AnnotationTool";
@@ -18,6 +18,7 @@ type SiaProps = {
   annotationSettings?: AnnotationSettings;
   defaultAnnotationTool?: AnnotationTool;
   image: string;
+  isLoading?: boolean;
   initialAnnotations?: ExternalAnnotation[];
   possibleLabels: Label[];
   uiConfig: UiConfig;
@@ -37,6 +38,7 @@ const Sia2 = ({
   uiConfig,
   defaultAnnotationTool,
   image,
+  isLoading = false,
   initialAnnotations = [],
   possibleLabels,
   onAnnoCreated = (_, __) => {},
@@ -152,7 +154,11 @@ const Sia2 = ({
   };
 
   if (allowedTools === undefined || siaInitialized === false)
-    return "Loading...";
+    return (
+      <div className="d-flex justify-content-center">
+        <CSpinner color="primary" style={{ width: "5rem", height: "5rem" }} />
+      </div>
+    );
 
   return (
     <CContainer>
@@ -161,48 +167,59 @@ const Sia2 = ({
           annotationSettings={annotationSettings}
           allowedTools={allowedTools}
           additionalButtons={additionalButtons}
+          isDisabled={isLoading}
           selectedTool={selectedAnnoTool}
           onSetSelectedTool={setSelectedAnnoTool}
         />
       </div>
       <CRow>
-        <Canvas
-          annotations={annotations}
-          annotationSettings={annotationSettings}
-          image={image}
-          selectedAnnoTool={selectedAnnoTool}
-          possibleLabels={possibleLabels}
-          uiConfig={uiConfig}
-          onAnnoCreated={(annotation: Annotation) => {
-            const _annotations: Annotation[] = [...annotations];
-            _annotations.push(annotation);
-            setAnnotations(_annotations);
-            onAnnoCreated(annotation, _annotations);
-          }}
-          onAnnoChanged={(changedAnno: Annotation) => {
-            // update annotation list
-            const annoListIndex: number = annotations.findIndex(
-              (anno) => anno.internalId === changedAnno.internalId,
-            );
-            const _annotations: Annotation[] = [...annotations];
-            _annotations[annoListIndex] = changedAnno;
-            setAnnotations(_annotations);
+        {isLoading && (
+          <div className="d-flex justify-content-center">
+            <CSpinner
+              color="primary"
+              style={{ width: "5rem", height: "5rem", marginTop: 200 }}
+            />
+          </div>
+        )}
+        {!isLoading && (
+          <Canvas
+            annotations={annotations}
+            annotationSettings={annotationSettings}
+            image={image}
+            selectedAnnoTool={selectedAnnoTool}
+            possibleLabels={possibleLabels}
+            uiConfig={uiConfig}
+            onAnnoCreated={(annotation: Annotation) => {
+              const _annotations: Annotation[] = [...annotations];
+              _annotations.push(annotation);
+              setAnnotations(_annotations);
+              onAnnoCreated(annotation, _annotations);
+            }}
+            onAnnoChanged={(changedAnno: Annotation) => {
+              // update annotation list
+              const annoListIndex: number = annotations.findIndex(
+                (anno) => anno.internalId === changedAnno.internalId,
+              );
+              const _annotations: Annotation[] = [...annotations];
+              _annotations[annoListIndex] = changedAnno;
+              setAnnotations(_annotations);
 
-            // inform the outside world about our change
-            onAnnoChanged(changedAnno, _annotations);
-          }}
-          onAnnoCreationFinished={(changedAnno: Annotation) => {
-            // update annotation list
-            const annoListIndex: number = annotations.findIndex(
-              (anno) => anno.internalId === changedAnno.internalId,
-            );
-            const _annotations: Annotation[] = [...annotations];
-            _annotations[annoListIndex] = changedAnno;
-            setAnnotations(_annotations);
-            onAnnoCreationFinished(changedAnno, _annotations);
-          }}
-          onRequestNewAnnoId={createNewInternalAnnotationId}
-        />
+              // inform the outside world about our change
+              onAnnoChanged(changedAnno, _annotations);
+            }}
+            onAnnoCreationFinished={(changedAnno: Annotation) => {
+              // update annotation list
+              const annoListIndex: number = annotations.findIndex(
+                (anno) => anno.internalId === changedAnno.internalId,
+              );
+              const _annotations: Annotation[] = [...annotations];
+              _annotations[annoListIndex] = changedAnno;
+              setAnnotations(_annotations);
+              onAnnoCreationFinished(changedAnno, _annotations);
+            }}
+            onRequestNewAnnoId={createNewInternalAnnotationId}
+          />
+        )}
       </CRow>
     </CContainer>
   );

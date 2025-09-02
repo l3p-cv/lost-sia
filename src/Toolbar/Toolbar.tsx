@@ -12,6 +12,7 @@ type ToolbarProps = {
   annotationSettings: AnnotationSettings;
   allowedTools: AllowedTools;
   additionalButtons: ReactElement | undefined;
+  isDisabled?: boolean;
   selectedTool: AnnotationTool;
   onSetSelectedTool: (selectedTool: AnnotationTool) => void;
 };
@@ -20,19 +21,21 @@ const Toolbar = ({
   annotationSettings,
   allowedTools,
   additionalButtons,
+  isDisabled = false,
   selectedTool,
   onSetSelectedTool,
 }: ToolbarProps) => {
   return (
     <CRow>
       <CCol>
-        <ImageTools canJunk={allowedTools.junk} />
+        <ImageTools canJunk={allowedTools.junk} isDisabled={isDisabled} />
       </CCol>
 
       {annotationSettings.canCreate && (
         <CCol>
           <AnnoToolSelector
             allowedTools={allowedTools}
+            isDisabled={isDisabled}
             selectedTool={selectedTool}
             onSetSelectedTool={onSetSelectedTool}
           />
@@ -40,7 +43,7 @@ const Toolbar = ({
       )}
 
       <CCol>
-        <AccessibilityTools />
+        <AccessibilityTools isDisabled={isDisabled} />
       </CCol>
 
       {additionalButtons && <CCol>{additionalButtons}</CCol>}
