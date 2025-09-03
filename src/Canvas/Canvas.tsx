@@ -22,6 +22,7 @@ type CanvasProps = {
   annotationSettings?: AnnotationSettings;
   image: string;
   isImageJunk?: boolean;
+  selectedAnnotation: Annotation | undefined;
   selectedAnnoTool: AnnotationTool;
   possibleLabels: Label[];
   preventScrolling?: boolean;
@@ -37,6 +38,7 @@ type CanvasProps = {
   onAnnoChanged: (changedAnno: Annotation) => void;
   // onAnnoDeleted: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
   onRequestNewAnnoId: () => number;
+  onSelectAnnotation: (annotation?: Annotation) => void;
 };
 
 const Canvas = ({
@@ -44,6 +46,7 @@ const Canvas = ({
   annotationSettings,
   image,
   isImageJunk = false,
+  selectedAnnotation,
   selectedAnnoTool,
   possibleLabels,
   preventScrolling = true,
@@ -55,12 +58,12 @@ const Canvas = ({
   onAnnoCreationFinished,
   onAnnoChanged,
   onRequestNewAnnoId,
+  onSelectAnnotation,
 }: CanvasProps) => {
   // modified annotation coordinates to match the resized image
   const [scaledAnnotations, setScaledAnnotations] = useState<Annotation[]>([]);
 
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW);
-  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
 
   // factor to convert coordinates from an (untransformed) image into the stage
   const [imageToStageFactor, setImageToStageFactor] = useState<number>(0);
@@ -119,7 +122,7 @@ const Canvas = ({
       selectedAnnoTool,
       initialCoords,
     );
-    setSelectedAnnotation(newAnnotation);
+    // setSelectedAnnotation(newAnnotation);
     onAnnoCreated(newAnnotation);
 
     // handleAnnoEvent(newAnnotation, CanvasAction.ANNO_ENTER_CREATE_MODE);
@@ -301,7 +304,6 @@ const Canvas = ({
   // apply translations to annotations
   useEffect(() => {
     if (
-      annotations.length == 0 ||
       canvasSize[0] <= 0 ||
       canvasSize[1] <= 0 ||
       imgSize[0] <= 0 ||
@@ -534,7 +536,7 @@ const Canvas = ({
   const onAnnoAction = (annotation: Annotation, canvasAction: CanvasAction) => {
     switch (canvasAction) {
       case CanvasAction.ANNO_SELECTED:
-        setSelectedAnnotation(annotation);
+        onSelectAnnotation(annotation);
         break;
       default:
         console.log("Unknown Canvas Action:", canvasAction);
@@ -733,7 +735,7 @@ const Canvas = ({
           onMouseMove={onMouseMove}
           onClick={() => {
             // clicked onto canvas => clear selected anno
-            setSelectedAnnotation(undefined);
+            onSelectAnnotation(undefined);
           }}
         >
           <image

@@ -21,6 +21,7 @@ type ToolbarProps = {
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
   onSetIsImageJunk?: (isImageJunk: boolean) => void;
   onSetSelectedTool?: (selectedTool: AnnotationTool) => void;
+  onShouldDeleteSelectedAnnotation?: () => void;
 };
 
 const Toolbar = ({
@@ -35,6 +36,7 @@ const Toolbar = ({
   onImageLabelsChanged = () => {},
   onSetIsImageJunk = () => {},
   onSetSelectedTool = () => {},
+  onShouldDeleteSelectedAnnotation = () => {},
 }: ToolbarProps) => {
   return (
     <CRow>
@@ -57,6 +59,7 @@ const Toolbar = ({
             isDisabled={isDisabled}
             selectedTool={selectedTool}
             onSetSelectedTool={onSetSelectedTool}
+            onShouldDeleteSelectedAnnotation={onShouldDeleteSelectedAnnotation}
           />
         </CCol>
       )}

@@ -58,9 +58,11 @@ const Sia2 = ({
 
   const [siaInitialized, setSiaInitialized] = useState<boolean>(false);
 
-  const [annotations, setAnnotations] = useState<Annotation[]>();
+  const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [annotationSettings, setAnnotationSettings] =
     useState<AnnotationSettings>();
+
+  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
 
   const [selectedAnnoTool, setSelectedAnnoTool] = useState<AnnotationTool>(
     defaultAnnotationTool !== undefined
@@ -75,6 +77,26 @@ const Sia2 = ({
 
   // keep track which numbers are already used for annotation ids - even if they are deleted
   const [usedInternalIds, setUsedInternalIds] = useState<number[]>([]);
+
+  const deleteSelectedAnnotation = () => {
+    if (selectedAnnotation === undefined) return;
+
+    // get index of selected annotation
+    const annoListIndex: number = annotations!.findIndex(
+      (anno) => anno.internalId === selectedAnnotation.internalId,
+    );
+
+    // dereference list to force state update
+    const _annotations: Annotation[] = [...annotations];
+
+    // remove annotation
+    _annotations.splice(annoListIndex, 1);
+
+    setAnnotations(_annotations);
+
+    // inform the outside world about our changes
+    onAnnoDeleted(selectedAnnotation, _annotations);
+  };
 
   // update annotation settings if changed in the parent
   useEffect(() => {
@@ -194,6 +216,7 @@ const Sia2 = ({
             setIsImageJunk(newJunkState);
             onIsImageJunk(newJunkState);
           }}
+          onShouldDeleteSelectedAnnotation={deleteSelectedAnnotation}
         />
       </div>
       <CRow>
@@ -212,6 +235,7 @@ const Sia2 = ({
             annotationSettings={annotationSettings}
             image={image}
             isImageJunk={isImageJunk}
+            selectedAnnotation={selectedAnnotation}
             selectedAnnoTool={selectedAnnoTool}
             possibleLabels={possibleLabels}
             uiConfig={uiConfig}
@@ -219,6 +243,7 @@ const Sia2 = ({
               const _annotations: Annotation[] = [...annotations];
               _annotations.push(annotation);
               setAnnotations(_annotations);
+              setSelectedAnnotation(annotation);
               onAnnoCreated(annotation, _annotations);
             }}
             onAnnoChanged={(changedAnno: Annotation) => {
@@ -244,6 +269,8 @@ const Sia2 = ({
               onAnnoCreationFinished(changedAnno, _annotations);
             }}
             onRequestNewAnnoId={createNewInternalAnnotationId}
+            onSelectAnnotation={setSelectedAnnotation}
+            // eventDeleteSelectedAnnotation={deleteSelectedAnnotation}
           />
         )}
       </CRow>

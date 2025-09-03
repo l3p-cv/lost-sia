@@ -41,6 +41,9 @@ const DemoWrapper = ({
       onAnnoChanged={(anno: Annotation, annos: Annotation[]) => {
         console.log("CHANGED", anno);
       }}
+      onAnnoDeleted={(anno: Annotation, annos: Annotation[]) => {
+        console.log("DELETED", anno, annos);
+      }}
       onImageLabelsChanged={(imageLabelIds: number[]) => {
         console.log("IMAGE LABEL IDS CHANGED", imageLabelIds);
       }}

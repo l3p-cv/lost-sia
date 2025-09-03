@@ -13,6 +13,7 @@ type AnnoToolSelectorProps = {
   isDisabled?: boolean;
   selectedTool: AnnotationTool;
   onSetSelectedTool: (selectedTool: AnnotationTool) => void;
+  onShouldDeleteSelectedAnnotation?: () => void;
 };
 
 const AnnoToolSelector = ({
@@ -20,6 +21,7 @@ const AnnoToolSelector = ({
   isDisabled = false,
   selectedTool,
   onSetSelectedTool,
+  onShouldDeleteSelectedAnnotation = () => {},
 }: AnnoToolSelectorProps) => {
   // const [selectedTool, setSelectedTool] = useState<AnnotationTool>(defaultTool);
 
@@ -75,7 +77,7 @@ const AnnoToolSelector = ({
         color="primary"
         variant="outline"
         disabled={isDisabled}
-        onClick={() => {}}
+        onClick={onShouldDeleteSelectedAnnotation}
       >
         <FontAwesomeIcon icon={faTrash as IconProp} size="lg" />
       </CButton>
