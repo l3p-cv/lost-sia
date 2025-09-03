@@ -1,24 +1,46 @@
-import { CButton, CButtonGroup } from "@coreui/react";
+import { CButton, CButtonGroup, CPopover } from "@coreui/react";
 import { faBan, faTag, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import ImageLabel from "./ImageToolItems/ImageLabel";
+import Label from "../../models/Label";
 
 type ImageToolsProps = {
   canJunk: boolean;
+  imageLabelIds?: number[];
   isDisabled?: boolean;
+  possibleLabels: Label[];
+  onImageLabelsChanged?: (selectedImageIds: number[]) => void;
 };
 
-const ImageTools = ({ canJunk, isDisabled = false }: ImageToolsProps) => {
+const ImageTools = ({
+  canJunk,
+  isDisabled = false,
+  imageLabelIds = [],
+  possibleLabels,
+  onImageLabelsChanged = () => {},
+}: ImageToolsProps) => {
+  const customPopoverStyle = {
+    "--cui-popover-max-width": "800px",
+  };
+
   return (
-    <CButtonGroup role="group" aria-label="Basic example">
-      <CButton
-        color="primary"
-        variant="outline"
-        disabled={isDisabled}
-        onClick={() => {}}
+    <CButtonGroup role="group" aria-label="Image Tools">
+      <CPopover
+        placement="bottom"
+        content={
+          <ImageLabel
+            selectedLabelIds={imageLabelIds}
+            possibleLabels={possibleLabels}
+            onImageLabelsChanged={onImageLabelsChanged}
+          />
+        }
+        style={customPopoverStyle}
       >
-        <FontAwesomeIcon icon={faTag as IconProp} size="lg" />
-      </CButton>
+        <CButton color="primary" variant="outline" disabled={isDisabled}>
+          <FontAwesomeIcon icon={faTag as IconProp} size="lg" />
+        </CButton>
+      </CPopover>
 
       {canJunk && (
         <CButton

@@ -7,28 +7,41 @@ import AllowedTools from "../models/AllowedTools";
 import AccessibilityTools from "./ToolbarItems/AccessibilityTools";
 import { ReactElement } from "react";
 import AnnotationSettings from "../models/AnnotationSettings";
+import Label from "../models/Label";
 
 type ToolbarProps = {
   annotationSettings: AnnotationSettings;
   allowedTools: AllowedTools;
   additionalButtons: ReactElement | undefined;
+  imageLabelIds?: number[];
   isDisabled?: boolean;
+  possibleLabels: Label[];
   selectedTool: AnnotationTool;
-  onSetSelectedTool: (selectedTool: AnnotationTool) => void;
+  onImageLabelsChanged?: (selectedImageIds: number[]) => void;
+  onSetSelectedTool?: (selectedTool: AnnotationTool) => void;
 };
 
 const Toolbar = ({
   annotationSettings,
   allowedTools,
   additionalButtons,
+  imageLabelIds = [],
   isDisabled = false,
+  possibleLabels,
   selectedTool,
-  onSetSelectedTool,
+  onImageLabelsChanged = () => {},
+  onSetSelectedTool = () => {},
 }: ToolbarProps) => {
   return (
     <CRow>
       <CCol>
-        <ImageTools canJunk={allowedTools.junk} isDisabled={isDisabled} />
+        <ImageTools
+          canJunk={allowedTools.junk}
+          imageLabelIds={imageLabelIds}
+          isDisabled={isDisabled}
+          possibleLabels={possibleLabels}
+          onImageLabelsChanged={onImageLabelsChanged}
+        />
       </CCol>
 
       {annotationSettings.canCreate && (

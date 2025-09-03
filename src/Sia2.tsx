@@ -20,6 +20,7 @@ type SiaProps = {
   image: string;
   isLoading?: boolean;
   initialAnnotations?: ExternalAnnotation[];
+  initialImageLabelIds?: number[];
   possibleLabels: Label[];
   uiConfig: UiConfig;
   onAnnoCreated?: (createdAnno: Annotation, allAnnos: Annotation[]) => void;
@@ -29,6 +30,7 @@ type SiaProps = {
   ) => void;
   onAnnoChanged?: (changedAnno: Annotation, allAnnos: Annotation[]) => void;
   onAnnoDeleted?: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
+  onImageLabelsChanged?: (selectedImageIds: number[]) => void;
 };
 
 const Sia2 = ({
@@ -40,11 +42,13 @@ const Sia2 = ({
   image,
   isLoading = false,
   initialAnnotations = [],
+  initialImageLabelIds = [],
   possibleLabels,
   onAnnoCreated = (_, __) => {},
   onAnnoCreationFinished = (_, __) => {},
   onAnnoChanged = (_, __) => {},
   onAnnoDeleted = (_, __) => {},
+  onImageLabelsChanged = () => {},
 }: SiaProps) => {
   const [allowedTools, setAllowedTools] = useState<AllowedTools>();
 
@@ -59,6 +63,9 @@ const Sia2 = ({
       ? defaultAnnotationTool
       : AnnotationTool.Point,
   );
+
+  const [imageLabelIds, setImageLabelIds] =
+    useState<number[]>(initialImageLabelIds);
 
   // keep track which numbers are already used for annotation ids - even if they are deleted
   const [usedInternalIds, setUsedInternalIds] = useState<number[]>([]);
@@ -168,7 +175,13 @@ const Sia2 = ({
           allowedTools={allowedTools}
           additionalButtons={additionalButtons}
           isDisabled={isLoading}
+          imageLabelIds={imageLabelIds}
+          possibleLabels={possibleLabels}
           selectedTool={selectedAnnoTool}
+          onImageLabelsChanged={(newImageLabelIds: number[]) => {
+            setImageLabelIds(newImageLabelIds);
+            onImageLabelsChanged(newImageLabelIds);
+          }}
           onSetSelectedTool={setSelectedAnnoTool}
         />
       </div>

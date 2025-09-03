@@ -7,6 +7,7 @@ import "../main.scss";
 import AnnotationTool from "../../models/AnnotationTool";
 import AllowedTools from "../../models/AllowedTools";
 import AnnotationSettings from "../../models/AnnotationSettings";
+import { possibleLabels } from "../siaDummyData2";
 
 const meta = {
   title: "Components/Toolbar",
@@ -66,26 +67,35 @@ const annotationSettings: AnnotationSettings = {
   canLabel: true,
 };
 
+const defaultArgs = {
+  defaultTool: AnnotationTool.Line,
+  annotationSettings,
+  allowedTools,
+  possibleLabels,
+};
+
 export const Default: Story = {
-  args: {
-    defaultTool: AnnotationTool.Line,
-    annotationSettings,
-    allowedTools,
-  },
+  args: defaultArgs,
 };
 
 export const DifferentDefaultTool: Story = {
   args: {
+    ...defaultArgs,
     defaultTool: AnnotationTool.Polygon,
-    annotationSettings,
-    allowedTools,
   },
 };
 
 export const LimitedAllowedTools: Story = {
   args: {
+    ...defaultArgs,
     defaultTool: AnnotationTool.BBox,
-    annotationSettings,
     allowedTools: limitedAllowedTools,
+  },
+};
+
+export const WithImageLabels: Story = {
+  args: {
+    ...defaultArgs,
+    imageLabelIds: [2, 9],
   },
 };
