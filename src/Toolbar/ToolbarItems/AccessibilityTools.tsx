@@ -7,6 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { useState } from "react";
+import InstructionsModal from "./InstructionsModal";
 
 type AccessibilityToolsProps = {
   isDisabled?: boolean;
@@ -15,6 +17,9 @@ type AccessibilityToolsProps = {
 const AccessibilityTools = ({
   isDisabled = false,
 }: AccessibilityToolsProps) => {
+  const [isInstructionsModalVisible, setIsInstructionsModalVisible] =
+    useState<boolean>(false);
+
   return (
     <CButtonGroup role="group" aria-label="Basic example">
       <CButton
@@ -48,10 +53,15 @@ const AccessibilityTools = ({
         color="primary"
         disabled={isDisabled}
         variant="outline"
-        onClick={() => {}}
+        onClick={() => setIsInstructionsModalVisible(true)}
       >
         <FontAwesomeIcon icon={faQuestion as IconProp} size="lg" />
       </CButton>
+
+      <InstructionsModal
+        isOpen={isInstructionsModalVisible}
+        setIsOpen={setIsInstructionsModalVisible}
+      />
     </CButtonGroup>
   );
 };
