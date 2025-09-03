@@ -50,3 +50,13 @@ export const Loading: Story = {
     possibleLabels: [],
   },
 };
+
+export const Junk: Story = {
+  args: {
+    ...ActionsData,
+    initialIsImageJunk: true,
+    uiConfig,
+    image: imgBlob,
+    possibleLabels: [],
+  },
+};

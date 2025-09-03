@@ -13,11 +13,15 @@ import mouse2 from "../utils/mouse2";
 import AnnotationMode from "../models/AnnotationMode";
 import LabelInput from "./LabelInput";
 import AnnotationSettings from "../models/AnnotationSettings";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBan } from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type CanvasProps = {
   annotations?: Annotation[];
   annotationSettings?: AnnotationSettings;
   image: string;
+  isImageJunk?: boolean;
   selectedAnnoTool: AnnotationTool;
   possibleLabels: Label[];
   preventScrolling?: boolean;
@@ -39,6 +43,7 @@ const Canvas = ({
   annotations = [],
   annotationSettings,
   image,
+  isImageJunk = false,
   selectedAnnoTool,
   possibleLabels,
   preventScrolling = true,
@@ -640,11 +645,14 @@ const Canvas = ({
     );
   };
 
+  const canvasDivStyle = {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+  };
+
   return (
-    <div
-      ref={containerRef}
-      style={{ width: "100%", height: "100%", position: "absolute" }}
-    >
+    <div ref={containerRef} style={canvasDivStyle}>
       {isLabelInputOpen && (
         <div
           style={{
@@ -669,6 +677,27 @@ const Canvas = ({
           />
         </div>
       )}
+
+      {isImageJunk && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            textAlign: "center",
+            color: "white",
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faBan as IconProp}
+            size="5x"
+            style={{ marginBottom: 15 }}
+          />
+          <h2>Marked as Junk</h2>
+        </div>
+      )}
+
       <svg
         // ref={svgRef}
         // width={svgSize[0] > 0 ? svgSize[0] : "100%"}
@@ -718,6 +747,20 @@ const Canvas = ({
           {renderAnnotations()}
         </g>
         {isLabelInputOpen && renderInfiniteSelectionArea()}
+
+        {isImageJunk && (
+          <rect
+            x="0"
+            y="0"
+            width={canvasSize[0]}
+            height={canvasSize[1]}
+            style={{ opacity: 0.8 }}
+            onContextMenu={(e) => e.preventDefault()}
+            onClick={() => {
+              setIsLabelInputOpen(false);
+            }}
+          />
+        )}
       </svg>
     </div>
   );

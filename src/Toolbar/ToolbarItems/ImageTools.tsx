@@ -9,16 +9,20 @@ type ImageToolsProps = {
   canJunk: boolean;
   imageLabelIds?: number[];
   isDisabled?: boolean;
+  isImageJunk?: boolean;
   possibleLabels: Label[];
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
+  onSetIsImageJunk?: (isImageJunk: boolean) => void;
 };
 
 const ImageTools = ({
   canJunk,
   isDisabled = false,
+  isImageJunk = false,
   imageLabelIds = [],
   possibleLabels,
   onImageLabelsChanged = () => {},
+  onSetIsImageJunk = () => {},
 }: ImageToolsProps) => {
   const customPopoverStyle = {
     "--cui-popover-max-width": "800px",
@@ -45,22 +49,13 @@ const ImageTools = ({
       {canJunk && (
         <CButton
           color="primary"
-          variant="outline"
+          variant={isImageJunk ? "" : "outline"}
           disabled={isDisabled}
-          onClick={() => {}}
+          onClick={() => onSetIsImageJunk(!isImageJunk)}
         >
           <FontAwesomeIcon icon={faBan as IconProp} size="lg" />
         </CButton>
       )}
-
-      <CButton
-        color="primary"
-        variant="outline"
-        disabled={isDisabled}
-        onClick={() => {}}
-      >
-        <FontAwesomeIcon icon={faTrash as IconProp} size="lg" />
-      </CButton>
     </CButtonGroup>
   );
 };

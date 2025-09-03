@@ -13,11 +13,13 @@ type ToolbarProps = {
   annotationSettings: AnnotationSettings;
   allowedTools: AllowedTools;
   additionalButtons: ReactElement | undefined;
+  isImageJunk?: boolean;
   imageLabelIds?: number[];
   isDisabled?: boolean;
   possibleLabels: Label[];
   selectedTool: AnnotationTool;
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
+  onSetIsImageJunk?: (isImageJunk: boolean) => void;
   onSetSelectedTool?: (selectedTool: AnnotationTool) => void;
 };
 
@@ -25,11 +27,13 @@ const Toolbar = ({
   annotationSettings,
   allowedTools,
   additionalButtons,
+  isImageJunk = false,
   imageLabelIds = [],
   isDisabled = false,
   possibleLabels,
   selectedTool,
   onImageLabelsChanged = () => {},
+  onSetIsImageJunk = () => {},
   onSetSelectedTool = () => {},
 }: ToolbarProps) => {
   return (
@@ -37,10 +41,12 @@ const Toolbar = ({
       <CCol>
         <ImageTools
           canJunk={allowedTools.junk}
+          isImageJunk={isImageJunk}
           imageLabelIds={imageLabelIds}
           isDisabled={isDisabled}
           possibleLabels={possibleLabels}
           onImageLabelsChanged={onImageLabelsChanged}
+          onSetIsImageJunk={onSetIsImageJunk}
         />
       </CCol>
 

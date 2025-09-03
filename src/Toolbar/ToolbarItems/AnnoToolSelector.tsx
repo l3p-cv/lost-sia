@@ -4,6 +4,9 @@ import { useState } from "react";
 
 import AnnotationTool from "../../models/AnnotationTool";
 import AllowedTools from "../../models/AllowedTools";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 type AnnoToolSelectorProps = {
   allowedTools: AllowedTools;
@@ -67,6 +70,15 @@ const AnnoToolSelector = ({
           {siaIcons.polygonIcon()}
         </CButton>
       )}
+
+      <CButton
+        color="primary"
+        variant="outline"
+        disabled={isDisabled}
+        onClick={() => {}}
+      >
+        <FontAwesomeIcon icon={faTrash as IconProp} size="lg" />
+      </CButton>
     </CButtonGroup>
   );
 };

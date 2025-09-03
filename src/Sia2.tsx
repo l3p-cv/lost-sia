@@ -21,6 +21,7 @@ type SiaProps = {
   isLoading?: boolean;
   initialAnnotations?: ExternalAnnotation[];
   initialImageLabelIds?: number[];
+  initialIsImageJunk?: boolean;
   possibleLabels: Label[];
   uiConfig: UiConfig;
   onAnnoCreated?: (createdAnno: Annotation, allAnnos: Annotation[]) => void;
@@ -31,6 +32,7 @@ type SiaProps = {
   onAnnoChanged?: (changedAnno: Annotation, allAnnos: Annotation[]) => void;
   onAnnoDeleted?: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
+  onIsImageJunk?: (isJunk: boolean) => void;
 };
 
 const Sia2 = ({
@@ -43,12 +45,14 @@ const Sia2 = ({
   isLoading = false,
   initialAnnotations = [],
   initialImageLabelIds = [],
+  initialIsImageJunk = false,
   possibleLabels,
   onAnnoCreated = (_, __) => {},
   onAnnoCreationFinished = (_, __) => {},
   onAnnoChanged = (_, __) => {},
   onAnnoDeleted = (_, __) => {},
   onImageLabelsChanged = () => {},
+  onIsImageJunk = () => {},
 }: SiaProps) => {
   const [allowedTools, setAllowedTools] = useState<AllowedTools>();
 
@@ -66,6 +70,8 @@ const Sia2 = ({
 
   const [imageLabelIds, setImageLabelIds] =
     useState<number[]>(initialImageLabelIds);
+
+  const [isImageJunk, setIsImageJunk] = useState<boolean>(initialIsImageJunk);
 
   // keep track which numbers are already used for annotation ids - even if they are deleted
   const [usedInternalIds, setUsedInternalIds] = useState<number[]>([]);
@@ -175,6 +181,7 @@ const Sia2 = ({
           allowedTools={allowedTools}
           additionalButtons={additionalButtons}
           isDisabled={isLoading}
+          isImageJunk={isImageJunk}
           imageLabelIds={imageLabelIds}
           possibleLabels={possibleLabels}
           selectedTool={selectedAnnoTool}
@@ -183,6 +190,10 @@ const Sia2 = ({
             onImageLabelsChanged(newImageLabelIds);
           }}
           onSetSelectedTool={setSelectedAnnoTool}
+          onSetIsImageJunk={(newJunkState: boolean) => {
+            setIsImageJunk(newJunkState);
+            onIsImageJunk(newJunkState);
+          }}
         />
       </div>
       <CRow>
@@ -194,11 +205,13 @@ const Sia2 = ({
             />
           </div>
         )}
+
         {!isLoading && (
           <Canvas
             annotations={annotations}
             annotationSettings={annotationSettings}
             image={image}
+            isImageJunk={isImageJunk}
             selectedAnnoTool={selectedAnnoTool}
             possibleLabels={possibleLabels}
             uiConfig={uiConfig}
