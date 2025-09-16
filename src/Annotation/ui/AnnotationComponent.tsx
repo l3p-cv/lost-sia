@@ -107,8 +107,14 @@ const AnnotationComponent = ({
   const changeAnnoCoords = (newCoordinates: Point[]) => {
     setCoordinates(newCoordinates);
 
-    // last point is mouse - remove it before export
-    let newCoordinatesWithoutMouse = newCoordinates.slice(0, -1);
+    let newCoordinatesWithoutMouse = newCoordinates;
+
+    // while adding/moving the annotation, the mouse cursor is the last point of the coordinates
+    // remove it before saving the annotation
+    if ([AnnotationMode.ADD, AnnotationMode.MOVE].includes(annotationMode)) {
+      // last point is mouse - remove it before export
+      newCoordinatesWithoutMouse = newCoordinates.slice(0, -1);
+    }
 
     onAnnoChanged({
       ...scaledAnnotation,

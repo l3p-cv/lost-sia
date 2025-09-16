@@ -24,6 +24,7 @@ type CanvasProps = {
   isImageJunk?: boolean;
   selectedAnnotation: Annotation | undefined;
   selectedAnnoTool: AnnotationTool;
+  toolbarHeight?: number;
   possibleLabels: Label[];
   preventScrolling?: boolean;
   uiConfig: UiConfig;
@@ -46,10 +47,11 @@ const Canvas = ({
   annotationSettings,
   image,
   isImageJunk = false,
-  selectedAnnotation,
-  selectedAnnoTool,
   possibleLabels,
   preventScrolling = true,
+  selectedAnnotation,
+  selectedAnnoTool,
+  toolbarHeight = 0,
   uiConfig,
   onAnnoEvent: propsOnAnnoEvent,
   onKeyDown: propOnKeyDown,
@@ -60,6 +62,10 @@ const Canvas = ({
   onRequestNewAnnoId,
   onSelectAnnotation,
 }: CanvasProps) => {
+  // check to reset values after image change
+  const [isCanvasInitialized, setIsCanvasInitialized] =
+    useState<boolean>(false);
+
   // modified annotation coordinates to match the resized image
   const [scaledAnnotations, setScaledAnnotations] = useState<Annotation[]>([]);
 
@@ -116,17 +122,55 @@ const Canvas = ({
     if (selectedAnnoTool === AnnotationTool.BBox)
       initialCoords.push(initialCoords[0]);
 
+    // someone decided to use percentages as the image coordinates
+    // convert them from pixel coordinates back to percentages here
+    const percentagedInitialCoords = initialCoords.map((point: Point) => {
+      return {
+        x: point.x / imgSize[0],
+        y: point.y / imgSize[1],
+      };
+    });
+
     const newAnnotationInternalId: number = onRequestNewAnnoId();
     const newAnnotation = new Annotation(
       newAnnotationInternalId,
       selectedAnnoTool,
-      initialCoords,
+      percentagedInitialCoords,
     );
     // setSelectedAnnotation(newAnnotation);
     onAnnoCreated(newAnnotation);
 
     // handleAnnoEvent(newAnnotation, CanvasAction.ANNO_ENTER_CREATE_MODE);
   };
+
+  const resetCanvas = () => {
+    setIsCanvasInitialized(false);
+
+    setScaledAnnotations([]);
+    setEditorMode(EditorModes.VIEW);
+    setImageToStageFactor(0);
+
+    setPageToStageOffset({
+      x: -1,
+      y: -1,
+    });
+
+    setImgSize([-1, -1]);
+
+    // largest possible annotation size fitting the whole image
+    setCanvasSize([-1, -1]);
+
+    setSvgScale(1.0);
+    setSvgTranslation([0, 0]);
+
+    setIsLabelInputOpen(false);
+    setLabelInputPosition();
+  };
+
+  // image changed after init -> reset everything
+  useEffect(() => {
+    if (isCanvasInitialized) resetCanvas();
+  }, [image]);
 
   // store + update the vector between start of the page and start of the (translated) image to be able to to transformations
   useEffect(() => {
@@ -315,7 +359,25 @@ const Canvas = ({
     // assume the aspect ratio is kept
     const imageToCanvasScale = canvasSize[0] / imgSize[0];
 
-    const newTranslatedAnnotations = annotations.map(
+    // someone decided to use percentages as the image coordinates
+    // convert them into pixel coordinates here
+    const pixelatedAnnotations = annotations.map((annotation: Annotation) => {
+      // destroy reference
+      const newAnnotation = { ...annotation };
+
+      newAnnotation.coordinates = newAnnotation.coordinates.map(
+        (point: Point) => {
+          return {
+            x: point.x * imgSize[0],
+            y: point.y * imgSize[1],
+          };
+        },
+      );
+
+      return newAnnotation;
+    });
+
+    const newTranslatedAnnotations = pixelatedAnnotations.map(
       (annotation: Annotation) => {
         // destroy reference
         const newAnnotation = { ...annotation };
@@ -341,7 +403,14 @@ const Canvas = ({
     if (containerRef.current === null) return;
     const { width, height } = containerRef.current.getBoundingClientRect();
     // setSvgSize([width, height]);
-    setContainerSize([width, height]);
+
+    // for whatever reason the ref adds the toolbars height to the available space, leading to a container size reaching outside the bottom
+    // remove its height here manually
+    const heightWithoutToolbar: number = height - toolbarHeight;
+
+    setContainerSize([width, heightWithoutToolbar]);
+
+    console.log("CONT SET", [width, heightWithoutToolbar]);
   }, [containerRef]);
 
   // notify component about default image size
@@ -415,9 +484,20 @@ const Canvas = ({
     fullyCreatedAnnotation.mode = AnnotationMode.VIEW;
 
     // convert stage coordinates to image coordinates
-    fullyCreatedAnnotation.coordinates = convertStageCoordinatesToImage(
+    const cordinatesForImage = convertStageCoordinatesToImage(
       fullyCreatedAnnotation.coordinates,
     );
+
+    // someone decided to use percentages as the image coordinates
+    // convert them from pixel coordinates back to percentages here
+    const percentagedCoordinates = cordinatesForImage.map((point: Point) => {
+      return {
+        x: point.x / imgSize[0],
+        y: point.y / imgSize[1],
+      };
+    });
+
+    fullyCreatedAnnotation.coordinates = percentagedCoordinates;
 
     onAnnoChanged(fullyCreatedAnnotation);
     onAnnoCreationFinished(fullyCreatedAnnotation);
@@ -559,9 +639,18 @@ const Canvas = ({
       return point;
     });
 
+    // someone decided to use percentages as the image coordinates
+    // convert them from pixel coordinates back to percentages here
+    const percentagedAnnotations = polishedCoordinates.map((point: Point) => {
+      return {
+        x: point.x / imgSize[0],
+        y: point.y / imgSize[1],
+      };
+    });
+
     const newAnnotation = {
       ...annotation,
-      coordinates: polishedCoordinates,
+      coordinates: percentagedAnnotations,
     };
 
     // send event to parent component
@@ -569,18 +658,21 @@ const Canvas = ({
   };
 
   const handleOnLabelIconClicked = (markerPosition: Point) => {
-    // counter scaling
-    const newMarkerPosition = {
-      x: markerPosition.x,
-      y: markerPosition.y,
+    // marker position is in stage coordinates relative to the top left corner of the image
+    // the dom needs values in page coordinates
+    // convert the coordinates here
+    // also counter the coordinate changes when the stage is zoomed in
+    const pageMarkerPosition: Point = {
+      x: markerPosition.x * svgScale + pageToStageOffset.x,
+      y: markerPosition.y * svgScale + pageToStageOffset.y,
     };
 
-    setLabelInputPosition(newMarkerPosition);
+    setLabelInputPosition(pageMarkerPosition);
     setIsLabelInputOpen(true);
   };
 
   const renderAnnotations = () => {
-    // hide ALL annotation when image is moved
+    // hide all annotations when image is moved
     if (editorMode === EditorModes.CAMERA_MOVE) return "";
 
     // draw the annotation using the AnnotationComponent and the scaled coordinates
@@ -647,14 +739,14 @@ const Canvas = ({
     );
   };
 
-  const canvasDivStyle = {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-  };
-
   return (
-    <div ref={containerRef} style={canvasDivStyle}>
+    <div
+      ref={containerRef}
+      style={{
+        width: "100%",
+        height: "100%",
+      }}
+    >
       {isLabelInputOpen && (
         <div
           style={{
@@ -674,7 +766,7 @@ const Canvas = ({
                 ...selectedAnnotation,
                 labelIds: [...selectedLabelIds],
               };
-              onAnnoChanged(updatedAnno);
+              handleOnAnnoChanged(updatedAnno);
             }}
           />
         </div>

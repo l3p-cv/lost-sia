@@ -1,5 +1,5 @@
-import { useEffect, useState, ReactElement } from "react";
-import { CContainer, CRow, CSpinner } from "@coreui/react";
+import { useEffect, useState, ReactElement, useRef } from "react";
+import { CSpinner } from "@coreui/react";
 import Canvas from "./Canvas/Canvas";
 import AllowedTools from "./models/AllowedTools";
 import AnnotationTool from "./models/AnnotationTool";
@@ -23,7 +23,7 @@ type SiaProps = {
   initialImageLabelIds?: number[];
   initialIsImageJunk?: boolean;
   possibleLabels: Label[];
-  uiConfig: UiConfig;
+  uiConfig?: UiConfig;
   onAnnoCreated?: (createdAnno: Annotation, allAnnos: Annotation[]) => void;
   onAnnoCreationFinished?: (
     createdAnno: Annotation,
@@ -39,7 +39,7 @@ const Sia2 = ({
   allowedTools: propAllowedTools,
   additionalButtons,
   annotationSettings: propAnnotationSettings,
-  uiConfig,
+  uiConfig: propUiConfig,
   defaultAnnotationTool,
   image,
   isLoading = false,
@@ -54,6 +54,11 @@ const Sia2 = ({
   onImageLabelsChanged = () => {},
   onIsImageJunk = () => {},
 }: SiaProps) => {
+  const marginBetweenToolbarAndContainerPixels: number = 10;
+
+  // ref for accessing the toolbar height (adjustable by screen size + custom components)
+  const toolbarContainerRef = useRef(null);
+
   const [allowedTools, setAllowedTools] = useState<AllowedTools>();
 
   const [siaInitialized, setSiaInitialized] = useState<boolean>(false);
@@ -62,6 +67,8 @@ const Sia2 = ({
   const [annotationSettings, setAnnotationSettings] =
     useState<AnnotationSettings>();
 
+  const [uiConfig, setUiConfig] = useState<UiConfig>();
+
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
 
   const [selectedAnnoTool, setSelectedAnnoTool] = useState<AnnotationTool>(
@@ -69,6 +76,13 @@ const Sia2 = ({
       ? defaultAnnotationTool
       : AnnotationTool.Point,
   );
+
+  // for adjusting the container/canvas size
+  const [toolbarHeight, setToolbarHeight] = useState<number>(-1);
+
+  const [outerContainerStyle, setOuterContainerStyle] = useState({
+    height: `100%`,
+  });
 
   const [imageLabelIds, setImageLabelIds] =
     useState<number[]>(initialImageLabelIds);
@@ -98,6 +112,12 @@ const Sia2 = ({
     onAnnoDeleted(selectedAnnotation, _annotations);
   };
 
+  const resetSIA = () => {
+    setSiaInitialized(false);
+    setAnnotations();
+    setSelectedAnnotation();
+  };
+
   // update annotation settings if changed in the parent
   useEffect(() => {
     const defaultAnnotationSettigs: AnnotationSettings = {
@@ -117,9 +137,25 @@ const Sia2 = ({
     setAnnotationSettings(newAnnotationSettings);
   }, [propAnnotationSettings]);
 
+  useEffect(() => {
+    const defaultUiConfig: UiConfig = {
+      nodeRadius: 4,
+      strokeWidth: 4,
+    };
+
+    // use default values if a key is not set
+    const newUiConfig = {
+      ...defaultUiConfig,
+      ...propUiConfig,
+    };
+
+    setUiConfig(newUiConfig);
+  }, [propUiConfig]);
+
   // reset SIA on image change
   useEffect(() => {
-    if (siaInitialized) setSiaInitialized(false);
+    // new image - fully reset SIA
+    if (siaInitialized) resetSIA();
   }, [image]);
 
   useEffect(() => {
@@ -175,6 +211,14 @@ const Sia2 = ({
     setAllowedTools(propAllowedTools);
   }, [propAllowedTools]);
 
+  useEffect(() => {
+    if (toolbarHeight < 0) return;
+
+    setOuterContainerStyle({
+      height: `calc(100% - ${toolbarHeight}px)`,
+    });
+  }, [toolbarHeight]);
+
   const createNewInternalAnnotationId = (): number => {
     // find the next free number
     let newInternalId: number = 0;
@@ -188,6 +232,14 @@ const Sia2 = ({
     return newInternalId;
   };
 
+  useEffect(() => {
+    if (toolbarContainerRef.current === null) return;
+    const { width, height } =
+      toolbarContainerRef.current.getBoundingClientRect();
+
+    setToolbarHeight(height + marginBetweenToolbarAndContainerPixels);
+  }, [toolbarContainerRef, siaInitialized]);
+
   if (allowedTools === undefined || siaInitialized === false)
     return (
       <div className="d-flex justify-content-center">
@@ -196,8 +248,13 @@ const Sia2 = ({
     );
 
   return (
-    <CContainer>
-      <div style={{ marginBottom: 10 }}>
+    <>
+      <div
+        ref={toolbarContainerRef}
+        style={{
+          marginBottom: marginBetweenToolbarAndContainerPixels,
+        }}
+      >
         <Toolbar
           annotationSettings={annotationSettings}
           allowedTools={allowedTools}
@@ -219,7 +276,7 @@ const Sia2 = ({
           onShouldDeleteSelectedAnnotation={deleteSelectedAnnotation}
         />
       </div>
-      <CRow>
+      <div style={outerContainerStyle}>
         {isLoading && (
           <div className="d-flex justify-content-center">
             <CSpinner
@@ -229,7 +286,7 @@ const Sia2 = ({
           </div>
         )}
 
-        {!isLoading && (
+        {!isLoading && toolbarHeight > 0 && (
           <Canvas
             annotations={annotations}
             annotationSettings={annotationSettings}
@@ -273,8 +330,8 @@ const Sia2 = ({
             // eventDeleteSelectedAnnotation={deleteSelectedAnnotation}
           />
         )}
-      </CRow>
-    </CContainer>
+      </div>
+    </>
   );
 };
 

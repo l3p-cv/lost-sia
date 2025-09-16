@@ -3,6 +3,7 @@ import './SIA.scss'
 
 export { default as Canvas } from "./Canvas.jsx";
 export { default as Sia } from './Sia'
+export { default as Sia2 } from './Sia2'
 export { default  as dummyData } from './siaDummyData'
 export { default as transform } from './utils/transform'
 export { default as annoConversion } from './utils/annoConversion'

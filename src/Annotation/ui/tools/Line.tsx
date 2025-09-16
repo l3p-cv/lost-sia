@@ -185,6 +185,8 @@ const Line = ({
           style={style}
           onAddNode={(coordinate: Point) => {
             const newCoordinates = [...coordinates];
+
+            // add element at index while keeping the others
             newCoordinates.splice(index + 1, 0, coordinate);
 
             onAddNode(newCoordinates);

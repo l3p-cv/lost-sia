@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import {connect} from 'react-redux'
 import { List, Label } from "semantic-ui-react";
 import InfoBox from "./InfoBox";
 import * as colorlut from "../utils/colorlut";
