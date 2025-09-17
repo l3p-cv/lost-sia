@@ -1,8 +1,8 @@
 enum AnnotationTool {
-  Point,
-  Line,
   BBox,
   Polygon,
+  Point,
+  Line,
 }
 
 export default AnnotationTool;
