@@ -9,7 +9,6 @@ import Label from "./models/Label";
 import Annotation from "./Annotation/logic/Annotation";
 import ExternalAnnotation from "./models/ExternalAnnotation";
 import AnnotationMode from "./models/AnnotationMode";
-import AnnotationStatus from "./models/AnnotationStatus";
 import AnnotationSettings from "./models/AnnotationSettings";
 
 type SiaProps = {
@@ -61,8 +60,6 @@ const Sia2 = ({
 
   const [allowedTools, setAllowedTools] = useState<AllowedTools>();
 
-  const [siaInitialized, setSiaInitialized] = useState<boolean>(false);
-
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [annotationSettings, setAnnotationSettings] =
     useState<AnnotationSettings>();
@@ -112,11 +109,60 @@ const Sia2 = ({
     onAnnoDeleted(selectedAnnotation, _annotations);
   };
 
-  const resetSIA = () => {
-    setSiaInitialized(false);
-    setAnnotations();
-    setSelectedAnnotation();
+  const createInitialAnnotations = () => {
+    // this is only run during initialization, so internal id list is always empty at this point
+    // fill this without the dedicated createNewInternalAnnotationId to avoid accessing old state
+    // setState in loop thats depending on its value => you are in react hell
+    let internalAnnoId: number = 0;
+
+    // create internal annotation object from external annotations
+    // assign internal id, add default data if not set from the outside
+    const _annotations: Annotation[] = initialAnnotations.map(
+      (externalAnno: ExternalAnnotation) => {
+        const _anno: Annotation = {
+          ...externalAnno,
+          internalId: internalAnnoId++,
+          mode: AnnotationMode.VIEW,
+          selectedNode: 1,
+          status: externalAnno.status,
+          annoTime:
+            externalAnno.annoTime !== undefined ? externalAnno.annoTime : 0.0,
+          timestamp:
+            externalAnno.timestamp !== undefined
+              ? externalAnno.timestamp
+              : performance.now(),
+        };
+
+        return _anno;
+      },
+    );
+
+    // list all used internal ids (from 0 to internalAnnoId)
+    setUsedInternalIds([...Array(internalAnnoId).keys()]);
+
+    setAnnotations(_annotations);
   };
+
+  const createNewInternalAnnotationId = (): number => {
+    // find the next free number
+    let newInternalId: number = 0;
+    while (usedInternalIds.includes(newInternalId)) newInternalId++;
+
+    // add it to the used numbers (dereference list to trigger react state change)
+    const _usedInternalIds = [...usedInternalIds];
+    _usedInternalIds.push(newInternalId);
+    setUsedInternalIds(_usedInternalIds);
+
+    return newInternalId;
+  };
+
+  useEffect(() => {
+    // update the initial annotations only when the image is not set
+    // (the annotations are always loaded before the image)
+    if (image !== undefined) return;
+
+    createInitialAnnotations();
+  }, [initialAnnotations]);
 
   // update annotation settings if changed in the parent
   useEffect(() => {
@@ -152,49 +198,6 @@ const Sia2 = ({
     setUiConfig(newUiConfig);
   }, [propUiConfig]);
 
-  // reset SIA on image change
-  useEffect(() => {
-    // new image - fully reset SIA
-    if (siaInitialized) resetSIA();
-  }, [image]);
-
-  useEffect(() => {
-    if (siaInitialized) return;
-
-    // this is only run during initialization, so internal id list is always empty at this point
-    // fill this without the dedicated createNewInternalAnnotationId to avoid accessing old state
-    // setState in loop thats depending on its value => you are in react hell
-    let internalAnnoId: number = 0;
-
-    // create internal annotation object from external annotations
-    // assign internal id, add default data if not set from the outside
-    const _annotations: Annotation[] = initialAnnotations.map(
-      (externalAnno: ExternalAnnotation) => {
-        const _anno: Annotation = {
-          ...externalAnno,
-          internalId: internalAnnoId++,
-          mode: AnnotationMode.VIEW,
-          selectedNode: 1,
-          status: AnnotationStatus.NEW,
-          annoTime:
-            externalAnno.annoTime !== undefined ? externalAnno.annoTime : 0.0,
-          timestamp:
-            externalAnno.timestamp !== undefined
-              ? externalAnno.timestamp
-              : performance.now(),
-        };
-
-        return _anno;
-      },
-    );
-
-    // list all used internal ids (from 0 to internalAnnoId)
-    setUsedInternalIds([...Array(internalAnnoId).keys()]);
-
-    setAnnotations(_annotations);
-    setSiaInitialized(true);
-  }, [initialAnnotations, siaInitialized]);
-
   // set default allowed tools if user has not specified them
   useEffect(() => {
     const defaultAllowedTools: AllowedTools = {
@@ -211,36 +214,23 @@ const Sia2 = ({
     setAllowedTools(propAllowedTools);
   }, [propAllowedTools]);
 
-  useEffect(() => {
-    if (toolbarHeight < 0) return;
+  // useEffect(() => {
+  //   if (toolbarHeight < 0) return;
 
-    setOuterContainerStyle({
-      height: `calc(100% - ${toolbarHeight}px)`,
-    });
-  }, [toolbarHeight]);
+  //   setOuterContainerStyle({
+  //     height: `calc(100% - ${toolbarHeight}px)`,
+  //   });
+  // }, [toolbarHeight]);
 
-  const createNewInternalAnnotationId = (): number => {
-    // find the next free number
-    let newInternalId: number = 0;
-    while (usedInternalIds.includes(newInternalId)) newInternalId++;
+  // useEffect(() => {
+  //   if (toolbarContainerRef.current === null) return;
+  //   const { width, height } =
+  //     toolbarContainerRef.current.getBoundingClientRect();
 
-    // add it to the used numbers (dereference list to trigger react state change)
-    const _usedInternalIds = [...usedInternalIds];
-    _usedInternalIds.push(newInternalId);
-    setUsedInternalIds(_usedInternalIds);
+  //   setToolbarHeight(height + marginBetweenToolbarAndContainerPixels);
+  // }, [toolbarContainerRef]);
 
-    return newInternalId;
-  };
-
-  useEffect(() => {
-    if (toolbarContainerRef.current === null) return;
-    const { width, height } =
-      toolbarContainerRef.current.getBoundingClientRect();
-
-    setToolbarHeight(height + marginBetweenToolbarAndContainerPixels);
-  }, [toolbarContainerRef, siaInitialized]);
-
-  if (allowedTools === undefined || siaInitialized === false)
+  if (allowedTools === undefined)
     return (
       <div className="d-flex justify-content-center">
         <CSpinner color="primary" style={{ width: "5rem", height: "5rem" }} />
@@ -286,7 +276,7 @@ const Sia2 = ({
           </div>
         )}
 
-        {!isLoading && toolbarHeight > 0 && (
+        {image && annotations && (
           <Canvas
             annotations={annotations}
             annotationSettings={annotationSettings}
@@ -311,7 +301,6 @@ const Sia2 = ({
               const _annotations: Annotation[] = [...annotations];
               _annotations[annoListIndex] = changedAnno;
               setAnnotations(_annotations);
-
               // inform the outside world about our change
               onAnnoChanged(changedAnno, _annotations);
             }}
