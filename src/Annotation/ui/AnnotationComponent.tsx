@@ -155,22 +155,18 @@ const AnnotationComponent = ({
       case AnnotationTool.Point:
         return (
           <PointTool
-            annotationMode={annotationMode}
+            isSelected={isSelected}
             annotationSettings={annotationSettings}
             coordinates={coordinates[0]}
             pageToStageOffset={pageToStageOffset}
             svgScale={svgScale}
             style={annotationStyle}
-            onDeleteNode={() => {
-              console.log("TODO");
-            }}
             onMoving={(newPoint: Point) => {
               setAnnotationMode(AnnotationMode.MOVE);
               setCoordinates([newPoint]);
             }}
             onMoved={onMoved}
             onIsDraggingStateChanged={setIsDragging}
-            onFinishAnnoCreate={finishAnnoCreate}
           />
         );
       case AnnotationTool.Line:

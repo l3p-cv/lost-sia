@@ -112,12 +112,6 @@ const Sia2 = ({
     onAnnoDeleted(selectedAnnotation, _annotations);
   };
 
-  const resetSIA = () => {
-    setSiaInitialized(false);
-    setAnnotations();
-    setSelectedAnnotation();
-  };
-
   // update annotation settings if changed in the parent
   useEffect(() => {
     const defaultAnnotationSettigs: AnnotationSettings = {
@@ -152,15 +146,7 @@ const Sia2 = ({
     setUiConfig(newUiConfig);
   }, [propUiConfig]);
 
-  // reset SIA on image change
   useEffect(() => {
-    // new image - fully reset SIA
-    if (siaInitialized) resetSIA();
-  }, [image]);
-
-  useEffect(() => {
-    if (siaInitialized) return;
-
     // this is only run during initialization, so internal id list is always empty at this point
     // fill this without the dedicated createNewInternalAnnotationId to avoid accessing old state
     // setState in loop thats depending on its value => you are in react hell
@@ -175,7 +161,7 @@ const Sia2 = ({
           internalId: internalAnnoId++,
           mode: AnnotationMode.VIEW,
           selectedNode: 1,
-          status: AnnotationStatus.NEW,
+          status: AnnotationStatus.DATABASE, // annos are initial annotations. Mark them as "already existed"
           annoTime:
             externalAnno.annoTime !== undefined ? externalAnno.annoTime : 0.0,
           timestamp:
@@ -193,7 +179,7 @@ const Sia2 = ({
 
     setAnnotations(_annotations);
     setSiaInitialized(true);
-  }, [initialAnnotations, siaInitialized]);
+  }, [isLoading]);
 
   // set default allowed tools if user has not specified them
   useEffect(() => {
@@ -317,12 +303,22 @@ const Sia2 = ({
             }}
             onAnnoCreationFinished={(changedAnno: Annotation) => {
               // update annotation list
-              const annoListIndex: number = annotations.findIndex(
-                (anno) => anno.internalId === changedAnno.internalId,
-              );
               const _annotations: Annotation[] = [...annotations];
-              _annotations[annoListIndex] = changedAnno;
+
+              // point annotations are created in one frame
+              // they dont exist in the annotations list yet, so just append them
+              if (changedAnno.type === AnnotationTool.Point)
+                _annotations.push(changedAnno);
+              else {
+                // all other annotation types
+                const annoListIndex: number = annotations.findIndex(
+                  (anno) => anno.internalId === changedAnno.internalId,
+                );
+                _annotations[annoListIndex] = changedAnno;
+              }
               setAnnotations(_annotations);
+
+              // inform the outer world about our changes
               onAnnoCreationFinished(changedAnno, _annotations);
             }}
             onRequestNewAnnoId={createNewInternalAnnotationId}

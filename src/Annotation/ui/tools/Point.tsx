@@ -1,43 +1,33 @@
-import { CSSProperties, useEffect } from "react";
+import { CSSProperties } from "react";
 
 // rename type to avoid naming conflict
 import TPoint from "../../../models/Point";
 import AnnotationSettings from "../../../models/AnnotationSettings";
 import Node from "../atoms/Node";
-import AnnotationMode from "../../../models/AnnotationMode";
 
 type PointProps = {
-  annotationMode: AnnotationMode;
   annotationSettings: AnnotationSettings;
   coordinates: TPoint;
+  isSelected: boolean;
   pageToStageOffset: TPoint;
   svgScale: number;
   style: CSSProperties;
-  onDeleteNode: (coordinates: TPoint) => void;
-  onFinishAnnoCreate: () => void;
   onIsDraggingStateChanged: (bool) => void;
   onMoving: (coordinates: TPoint) => void; // during moving - update coordinates in parent
   onMoved: (coordinates: TPoint[]) => void; // moving finished - send annotation changed event
 };
 
 const Point = ({
-  annotationMode,
   annotationSettings,
   coordinates,
+  isSelected,
   pageToStageOffset,
   svgScale,
   style,
-  onFinishAnnoCreate,
   onMoving,
   onMoved,
   onIsDraggingStateChanged,
 }: PointProps) => {
-  useEffect(() => {
-    // directly fire finished event when annotation is initialized in creation mode
-    // (this needs to be done down here so that we can take control of the event in other annotation types (like polygon))
-    if (annotationMode === AnnotationMode.CREATE) onFinishAnnoCreate();
-  }, []);
-
   return (
     <Node
       index={0}
@@ -47,10 +37,10 @@ const Point = ({
       svgScale={svgScale}
       style={style}
       onDeleteNode={
-        // just remove da whole thing
+        // just do nothing (we cannot delete a node from a point - delete the whole point instead)
         () => {}
       }
-      onMoving={(_, newPoint) => onMoving(newPoint)}
+      onMoving={(_, newPoint) => isSelected && onMoving(newPoint)}
       onMoved={() => onMoved([coordinates])}
       onIsDraggingStateChanged={onIsDraggingStateChanged}
     />

@@ -137,10 +137,20 @@ const Canvas = ({
       selectedAnnoTool,
       percentagedInitialCoords,
     );
-    // setSelectedAnnotation(newAnnotation);
     onAnnoCreated(newAnnotation);
 
-    // handleAnnoEvent(newAnnotation, CanvasAction.ANNO_ENTER_CREATE_MODE);
+    // points are created in only one frame
+    // (no size / shape has to be defined)
+    // throw the creation event directly from here and skip it inside the point component
+    if (selectedAnnoTool === AnnotationTool.Point) {
+      // onFinishCreateAnno assumes coordinates are in stage
+      // quickly convert them before calling it
+      const newPointAnnotation = {
+        ...newAnnotation,
+        coordinates: [antiScaledMouseStagePosition],
+      };
+      onFinishCreateAnno(newPointAnnotation);
+    }
   };
 
   const resetCanvas = () => {

@@ -87,15 +87,6 @@ const BBox = ({
       setIsEdgeDragging(true);
   };
 
-  const onMouseUp = (e: MouseEvent) => {
-    if (
-      isSelected &&
-      annotationMode === AnnotationMode.CREATE &&
-      e.button === 2
-    )
-      onFinishAnnoCreate();
-  };
-
   const onMouseMove = (e: MouseEvent) => {
     if (isAnnoDragging) {
       // we always get 4 coordinates (the rectangle corners)
@@ -304,7 +295,6 @@ const BBox = ({
         r={"100%"}
         style={{ opacity: 0 }}
         onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
         onMouseMove={(e: MouseEvent) => {
           isForEdge && isEdgeDragging && moveEdge(dragSelectedEdgeIndex, e);
           !isForEdge && onMouseMove(e);
@@ -328,7 +318,6 @@ const BBox = ({
         svgScale={svgScale}
         onIsDraggingStateChanged={onIsDraggingStateChanged}
         onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
       />
       {isEdgeDragging && renderInfiniteSelectionArea(true)}
