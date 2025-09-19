@@ -416,10 +416,6 @@ const Sia = (props) => {
 
   return (
     <div className={`sia-app ${fullscreenCSS}`} ref={containerRef}>
-      <Toolbar
-        allowedTools={allowedTools}
-        additionalButtons={<NavigationButtons />}
-      />
       <Canvas
         container={containerRef}
         onAnnoEvent={(anno, annos, action) =>
