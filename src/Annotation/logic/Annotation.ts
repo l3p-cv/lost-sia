@@ -20,7 +20,7 @@ class Annotation {
     type: AnnotationTool,
     coordinates: Point[],
     mode: AnnotationMode = AnnotationMode.CREATE,
-    status: AnnotationStatus = AnnotationStatus.NEW,
+    status: AnnotationStatus = AnnotationStatus.CREATING,
     externalId: string = "",
   ) {
     this.internalId = internalId;

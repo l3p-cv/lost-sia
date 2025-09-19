@@ -10,6 +10,7 @@ import Annotation from "./Annotation/logic/Annotation";
 import ExternalAnnotation from "./models/ExternalAnnotation";
 import AnnotationMode from "./models/AnnotationMode";
 import AnnotationSettings from "./models/AnnotationSettings";
+import AnnotationStatus from "./models/AnnotationStatus";
 
 type SiaProps = {
   allowedTools?: AllowedTools;
@@ -301,6 +302,7 @@ const Sia2 = ({
               const _annotations: Annotation[] = [...annotations];
               _annotations[annoListIndex] = changedAnno;
               setAnnotations(_annotations);
+
               // inform the outside world about our change
               onAnnoChanged(changedAnno, _annotations);
             }}
@@ -319,6 +321,9 @@ const Sia2 = ({
                 );
                 _annotations[annoListIndex] = changedAnno;
               }
+
+              // mark annotation as fully created
+              changedAnno.status = AnnotationStatus.CREATED;
               setAnnotations(_annotations);
 
               // inform the outer world about our changes
