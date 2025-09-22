@@ -49,7 +49,7 @@ const ImageTools = ({
       {canJunk && (
         <CButton
           color="primary"
-          variant={isImageJunk ? "" : "outline"}
+          variant={isImageJunk ? undefined : "outline"}
           disabled={isDisabled}
           onClick={() => onSetIsImageJunk(!isImageJunk)}
         >
