@@ -1,7 +1,7 @@
 import AnnotationMode from "../../models/AnnotationMode";
 import AnnotationStatus from "../../models/AnnotationStatus";
 import AnnotationTool from "../../models/AnnotationTool";
-import Point from "../../models/Point";
+import { Point } from "../../types";
 
 class Annotation {
   internalId: number;

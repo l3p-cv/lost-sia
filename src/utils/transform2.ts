@@ -1,4 +1,4 @@
-import Point from "../models/Point";
+import { Point } from "../types";
 
 export function toSia(data, image, type, imgOffset) {
   switch (type) {

@@ -8,7 +8,7 @@ import CanvasAction from "../models/CanvasAction";
 import AnnotationComponent from "../Annotation/ui/AnnotationComponent";
 import Label from "../models/Label";
 import UiConfig from "../models/UiConfig";
-import Point from "../models/Point";
+import { Point } from "../types";
 import mouse2 from "../utils/mouse2";
 import AnnotationMode from "../models/AnnotationMode";
 import LabelInput from "./LabelInput";

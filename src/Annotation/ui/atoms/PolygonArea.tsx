@@ -1,5 +1,5 @@
 import { CSSProperties, useEffect, useState } from "react";
-import Point from "../../../models/Point";
+import { Point } from "../../../types";
 import AnnotationMode from "../../../models/AnnotationMode";
 import AnnotationSettings from "../../../models/AnnotationSettings";
 

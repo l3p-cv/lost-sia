@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 
 // rename type to avoid naming conflict
-import TPoint from "../../../models/Point";
+import { Point as TPoint } from "../../../types";
 import AnnotationSettings from "../../../models/AnnotationSettings";
 import Node from "../atoms/Node";
 

@@ -1,6 +1,6 @@
 import AnnotationStatus from "./AnnotationStatus";
 import AnnotationTool from "./AnnotationTool";
-import Point from "./Point";
+import { Point } from "../types";
 
 type ExternalAnnotation = {
   externalId?: string;

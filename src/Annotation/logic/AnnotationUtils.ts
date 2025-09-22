@@ -1,4 +1,4 @@
-import Point from "../../models/Point";
+import { Point } from "../../types";
 import Annotation from "./Annotation";
 
 const addNode = (annotation: Annotation, point: Point) => {

@@ -8,6 +8,7 @@
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
   "type": "module",
+  "types": "dist/index.d.ts",
   "keywords": [
     "lost",
     "annotation",
@@ -20,16 +21,25 @@
   },
   "exports": {
     ".": {
-      "import": "./src/index.js",
-      "require": "./src/index.js"
+      "development": {
+        "types": "./src/types.ts",
+        "import": "./src/index.ts"
+      },
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
     },
     "./utils": {
-      "import": "./src/utils/index.js",
-      "require": "./src/utils/index.js"
+      "development": "./src/utils/index.js",
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.js"
     },
     "./models": {
-      "import": "./src/models/index.js",
-      "require": "./src/models/index.js"
+      "development": "./src/models/index.js",
+      "types": "./dist/models/index.d.ts",
+      "import": "./dist/models/index.js",
+      "require": "./dist/models/index.js"
     },
     "./styles/variables": "./src/styles/_variables.scss",
     "./styles/coreui": "./src/styles/coreui.scss"
@@ -62,7 +72,8 @@
     "react-draggable": "^4.4.6",
     "sass": "^1.89.2",
     "semantic-ui-css": "2.5.0",
-    "semantic-ui-react": "^2.0.3"
+    "semantic-ui-react": "^2.0.3",
+    "vite-plugin-dts": "^4.5.4"
   },
   "peerDependencies": {
     "lodash": "^4.17.15",

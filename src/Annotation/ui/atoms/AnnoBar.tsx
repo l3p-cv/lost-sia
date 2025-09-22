@@ -1,6 +1,6 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import Label from "../../../models/Label";
-import Point from "../../../models/Point";
+import { Point } from "../../../types";
 import transform from "../../../utils/transform2";
 import DaviIcon from "./DaviIcon";
 

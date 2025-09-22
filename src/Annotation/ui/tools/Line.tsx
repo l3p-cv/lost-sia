@@ -1,7 +1,7 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 
 // rename type to avoid naming conflict
-import Point from "../../../models/Point";
+import { Point } from "../../../types";
 import Node from "../atoms/Node";
 import Polyline from "../atoms/PolygonArea";
 import AnnotationMode from "../../../models/AnnotationMode";

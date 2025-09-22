@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import Point from "../../../models/Point";
+import { Point } from "../../../types";
 import mouse2 from "../../../utils/mouse2";
 
 type EdgeProps = {

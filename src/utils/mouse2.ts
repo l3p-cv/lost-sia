@@ -1,4 +1,4 @@
-import Point from "../models/Point";
+import { Point } from "../types";
 
 /**
  * returns the position of the pouse relative to the (scaled) stage

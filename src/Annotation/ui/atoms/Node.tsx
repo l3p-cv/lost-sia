@@ -1,5 +1,5 @@
 import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
-import Point from "../../../models/Point";
+import { Point } from "../../../types";
 import mouse2 from "../../../utils/mouse2";
 import AnnotationSettings from "../../../models/AnnotationSettings";
 
