@@ -17,7 +17,7 @@ type SiaProps = {
   additionalButtons?: ReactElement | undefined;
   annotationSettings?: AnnotationSettings;
   defaultAnnotationTool?: AnnotationTool;
-  image: string;
+  image?: string;
   isLoading?: boolean;
   initialAnnotations?: ExternalAnnotation[];
   initialImageLabelIds?: number[];
@@ -85,7 +85,7 @@ const Sia2 = ({
   const [imageLabelIds, setImageLabelIds] =
     useState<number[]>(initialImageLabelIds);
 
-  const [isImageJunk, setIsImageJunk] = useState<boolean>(initialIsImageJunk);
+  const [isImageJunk, setIsImageJunk] = useState<boolean>();
 
   // keep track which numbers are already used for annotation ids - even if they are deleted
   const [usedInternalIds, setUsedInternalIds] = useState<number[]>([]);
@@ -163,6 +163,7 @@ const Sia2 = ({
     if (image !== undefined) return;
 
     createInitialAnnotations();
+    setIsImageJunk(initialIsImageJunk);
   }, [initialAnnotations]);
 
   // update annotation settings if changed in the parent
