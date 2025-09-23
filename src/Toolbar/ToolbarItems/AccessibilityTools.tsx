@@ -22,16 +22,16 @@ const AccessibilityTools = ({
 
   return (
     <CButtonGroup role="group" aria-label="Basic example">
-      <CButton
+      {/* <CButton
         color="primary"
         disabled={isDisabled}
         variant="outline"
         onClick={() => {}}
       >
         <FontAwesomeIcon icon={faFilter as IconProp} size="lg" />
-      </CButton>
+      </CButton> */}
 
-      <CButton
+      {/* <CButton
         color="primary"
         disabled={isDisabled}
         variant="outline"
@@ -47,7 +47,7 @@ const AccessibilityTools = ({
         onClick={() => {}}
       >
         <FontAwesomeIcon icon={faCog as IconProp} size="lg" />
-      </CButton>
+      </CButton> */}
 
       <CButton
         color="primary"
