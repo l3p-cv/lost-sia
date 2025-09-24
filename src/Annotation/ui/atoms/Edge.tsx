@@ -5,6 +5,7 @@ import mouse2 from "../../../utils/mouse2";
 type EdgeProps = {
   startCoordinate: Point;
   endCoordinate: Point;
+  isDisabled?: boolean;
   pageToStageOffset: Point;
   svgScale: number;
   style: CSSProperties;
@@ -17,6 +18,7 @@ type EdgeProps = {
 const Edge = ({
   startCoordinate,
   endCoordinate,
+  isDisabled = false,
   pageToStageOffset,
   style,
   svgScale,
@@ -47,6 +49,7 @@ const Edge = ({
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onContextMenu={(e) => e.preventDefault()}
+      stroke-dasharray={isDisabled ? "10,5" : "0"}
     />
   );
 };

@@ -696,6 +696,11 @@ const Canvas = ({
           isSelected={
             scaledAnnotation.internalId === selectedAnnotation?.internalId
           }
+          isDisabled={
+            // dont let annotation be selected twice in polygon selection mode
+            isPolygonSelectionMode &&
+            scaledAnnotation.internalId === selectedAnnotation?.internalId
+          }
           onFinishAnnoCreate={onFinishCreateAnno}
           onLabelIconClicked={handleOnLabelIconClicked}
           onAction={onAnnoAction}

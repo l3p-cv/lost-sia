@@ -6,6 +6,7 @@ import AnnotationSettings from "../../../models/AnnotationSettings";
 type PolygonAreaProps = {
   coordinates: Point[];
   isSelected: boolean;
+  isDisabled?: boolean;
   annotationMode: AnnotationMode;
   annotationSettings: AnnotationSettings;
   pageToStageOffset: Point;
@@ -21,6 +22,7 @@ type PolygonAreaProps = {
 const PolygonArea = ({
   coordinates,
   isSelected,
+  isDisabled = false,
   annotationMode,
   style,
   onFinishAnnoCreate = () => {},
@@ -36,14 +38,18 @@ const PolygonArea = ({
   const [cursorStyle, setCursorStyle] = useState<string>("pointer");
 
   useEffect(() => {
+    if (isDisabled) return setCursorStyle("not-allowed");
     if (isSelected) setCursorStyle("grab");
     else setCursorStyle("pointer");
-  }, [isSelected]);
+  }, [isSelected, isDisabled]);
 
   // adjust style for polyline
   const polyLineStyle = { ...style };
   polyLineStyle.cursor = cursorStyle;
   polyLineStyle.fillOpacity = isSelected ? 0 : 0.3;
+
+  // dont show the polygon edges (the line does what as a stripe if enabled)
+  if (isSelected && isDisabled) polyLineStyle.stroke = "none";
 
   return (
     <polygon

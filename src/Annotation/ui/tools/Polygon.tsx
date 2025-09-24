@@ -13,6 +13,7 @@ type PolygonProps = {
   annotationSettings: AnnotationSettings;
   coordinates: Point[];
   isSelected: boolean;
+  isDisabled?: boolean;
   annotationMode: AnnotationMode;
   setAnnotationMode: (annotationMode: AnnotationMode) => void;
   pageToStageOffset: Point;
@@ -30,6 +31,7 @@ const Polygon = ({
   annotationSettings,
   coordinates,
   isSelected,
+  isDisabled = false,
   annotationMode,
   pageToStageOffset,
   svgScale,
@@ -168,6 +170,7 @@ const Polygon = ({
           key={`edge_${index}`}
           startCoordinate={coordinate}
           endCoordinate={endCoordinates}
+          isDisabled={isDisabled && isSelected}
           pageToStageOffset={pageToStageOffset}
           svgScale={svgScale}
           style={style}
@@ -211,6 +214,7 @@ const Polygon = ({
         annotationSettings={annotationSettings}
         coordinates={coordinates}
         isSelected={isSelected}
+        isDisabled={isDisabled}
         annotationMode={annotationMode}
         pageToStageOffset={pageToStageOffset}
         style={style}

@@ -22,6 +22,7 @@ type AnnotationComponentProps = {
   strokeWidth: number;
   nodeRadius: number;
   isSelected: boolean;
+  isDisabled?: boolean;
   onFinishAnnoCreate: (fullyCreatedAnnotation: Annotation) => void;
   onLabelIconClicked: (markerPosition: Point) => void;
   onAction?: (annotation: Annotation, canvasAction: CanvasAction) => void;
@@ -38,6 +39,7 @@ const AnnotationComponent = ({
   strokeWidth,
   nodeRadius,
   isSelected,
+  isDisabled = false,
   onFinishAnnoCreate,
   onLabelIconClicked,
   onAction = (_, __) => {},
@@ -214,6 +216,7 @@ const AnnotationComponent = ({
             annotationSettings={annotationSettings}
             coordinates={coordinates}
             isSelected={isSelected}
+            isDisabled={isDisabled}
             pageToStageOffset={pageToStageOffset}
             annotationMode={annotationMode}
             setAnnotationMode={setAnnotationMode}
