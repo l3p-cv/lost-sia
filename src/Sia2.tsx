@@ -324,40 +324,43 @@ const Sia2 = ({
               // update annotation list
               const _annotations: Annotation[] = [...annotations];
 
+              // remove the previous annotations we used to do the operation with
+              if (isPolygonSelectionMode) {
+                if (polygonOperationResult?.annotationsToDelete !== undefined) {
+                  // we also want to remove the current selected annotation
+                  polygonOperationResult.annotationsToDelete.push(
+                    selectedAnnotation!,
+                  );
+
+                  polygonOperationResult.annotationsToDelete.forEach(
+                    (annotation) => {
+                      // remove annotations "the official way" (inform the server what we did)
+                      deleteAnnotationByInternalId(annotation.internalId);
+
+                      // since we are updating the annotations list after all the deletions again, their disappearance wouldn't be noticed
+                      // therefore also manually remove the annotations here
+
+                      // get index of selected annotation
+                      const annoListIndex: number = _annotations!.findIndex(
+                        (anno) => anno.internalId === annotation.internalId,
+                      );
+
+                      // remove annotation from object
+                      _annotations.splice(annoListIndex, 1);
+                    },
+                  );
+                }
+
+                // the polygon selection mode hands annotations to SIA in one single frame
+                // add the new annotation here
+                _annotations.push(changedAnno);
+              }
+
               // point annotations are created in one frame
               // they dont exist in the annotations list yet, so just append them
-              // the polygon selection mode also hands annotations to SIA in one single frame
-              if (
-                changedAnno.type === AnnotationTool.Point ||
-                isPolygonSelectionMode
-              )
+              if (changedAnno.type === AnnotationTool.Point)
                 _annotations.push(changedAnno);
-
-              // remove the previous annotations we used to do the operation with
-              if (polygonOperationResult?.annotationsToDelete !== undefined) {
-                // we also want to remove the current selected annotation
-                polygonOperationResult.annotationsToDelete.push(
-                  selectedAnnotation!,
-                );
-
-                polygonOperationResult.annotationsToDelete.forEach(
-                  (annotation) => {
-                    // remove annotations "the official way" (inform the server what we did)
-                    deleteAnnotationByInternalId(annotation.internalId);
-
-                    // since we are updating the annotations list after all the deletions again, their disappearance wouldn't be noticed
-                    // therefore also manually remove the annotations here
-
-                    // get index of selected annotation
-                    const annoListIndex: number = _annotations!.findIndex(
-                      (anno) => anno.internalId === annotation.internalId,
-                    );
-
-                    // remove annotation from object
-                    _annotations.splice(annoListIndex, 1)[0];
-                  },
-                );
-              } else {
+              else {
                 // all other annotation types
                 const annoListIndex: number = annotations.findIndex(
                   (anno) => anno.internalId === changedAnno.internalId,
