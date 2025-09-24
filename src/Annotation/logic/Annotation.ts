@@ -6,14 +6,14 @@ import { Point } from "../../types";
 class Annotation {
   internalId: number;
   externalId?: string;
-  annoTime: number;
+  annoTime?: number;
   coordinates: Point[];
-  labelIds: number[];
+  labelIds?: number[];
   mode: AnnotationMode; // do we even need this globally? - only really used inside AnnotationComponent
   selectedNode: number;
-  status: AnnotationStatus;
+  status?: AnnotationStatus;
   type: AnnotationTool;
-  timestamp: DOMHighResTimeStamp;
+  timestamp?: DOMHighResTimeStamp;
 
   constructor(
     internalId: number,

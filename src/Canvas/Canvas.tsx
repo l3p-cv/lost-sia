@@ -8,7 +8,7 @@ import CanvasAction from "../models/CanvasAction";
 import AnnotationComponent from "../Annotation/ui/AnnotationComponent";
 import Label from "../models/Label";
 import UiConfig from "../models/UiConfig";
-import { Point } from "../types";
+import { Point, PolygonOperationResult } from "../types";
 import mouse2 from "../utils/mouse2";
 import AnnotationMode from "../models/AnnotationMode";
 import LabelInput from "./LabelInput";
@@ -16,15 +16,18 @@ import AnnotationSettings from "../models/AnnotationSettings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBan } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import AnnotationStatus from "../models/AnnotationStatus";
 
 type CanvasProps = {
   annotations?: Annotation[];
   annotationSettings?: AnnotationSettings;
   image: string;
   isImageJunk?: boolean;
+  isPolygonSelectionMode?: boolean;
   selectedAnnotation: Annotation | undefined;
   selectedAnnoTool: AnnotationTool;
   toolbarHeight?: number;
+  polygonOperationResult?: PolygonOperationResult;
   possibleLabels: Label[];
   preventScrolling?: boolean;
   uiConfig: UiConfig;
@@ -47,6 +50,8 @@ const Canvas = ({
   annotationSettings,
   image,
   isImageJunk = false,
+  isPolygonSelectionMode = false,
+  polygonOperationResult = { annotationsToDelete: [], polygonsToCreate: [] },
   possibleLabels,
   preventScrolling = true,
   selectedAnnotation,
@@ -487,6 +492,29 @@ const Canvas = ({
   // }
   // setSvgTranslation([trans_x, trans_y]);
   // };
+
+  useEffect(() => {
+    if (!isPolygonSelectionMode) return;
+
+    const newAnnotationInternalId: number = onRequestNewAnnoId();
+
+    if (polygonOperationResult.polygonsToCreate === undefined) return;
+
+    // create all polygons calculated from the outside world
+    polygonOperationResult.polygonsToCreate.forEach(
+      (polygonToCreate: Point[]) => {
+        const newAnnotation: Annotation = new Annotation(
+          newAnnotationInternalId,
+          AnnotationTool.Polygon,
+          polygonToCreate,
+          AnnotationMode.VIEW,
+          AnnotationStatus.CREATED,
+        );
+
+        onFinishCreateAnno(newAnnotation);
+      },
+    );
+  }, [polygonOperationResult]);
 
   const onFinishCreateAnno = (fullyCreatedAnnotation: Annotation) => {
     setEditorMode(EditorModes.VIEW);

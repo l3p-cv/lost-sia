@@ -11,14 +11,17 @@ import ExternalAnnotation from "./models/ExternalAnnotation";
 import AnnotationMode from "./models/AnnotationMode";
 import AnnotationSettings from "./models/AnnotationSettings";
 import AnnotationStatus from "./models/AnnotationStatus";
+import { PolygonOperationResult } from "./types";
 
 type SiaProps = {
-  allowedTools?: AllowedTools;
   additionalButtons?: ReactElement | undefined;
+  allowedTools?: AllowedTools;
+  polygonOperationResult?: PolygonOperationResult;
   annotationSettings?: AnnotationSettings;
   defaultAnnotationTool?: AnnotationTool;
   image?: string;
   isLoading?: boolean;
+  isPolygonSelectionMode?: boolean;
   initialAnnotations?: ExternalAnnotation[];
   initialImageLabelIds?: number[];
   initialIsImageJunk?: boolean;
@@ -33,16 +36,19 @@ type SiaProps = {
   onAnnoDeleted?: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
   onIsImageJunk?: (isJunk: boolean) => void;
+  onSelectAnnotation: (annotation?: Annotation) => void;
 };
 
 const Sia2 = ({
-  allowedTools: propAllowedTools,
   additionalButtons,
+  allowedTools: propAllowedTools,
+  polygonOperationResult = { annotationsToDelete: [], polygonsToCreate: [] },
   annotationSettings: propAnnotationSettings,
   uiConfig: propUiConfig,
   defaultAnnotationTool,
   image,
   isLoading = false,
+  isPolygonSelectionMode = false,
   initialAnnotations = [],
   initialImageLabelIds = [],
   initialIsImageJunk = false,
@@ -53,6 +59,7 @@ const Sia2 = ({
   onAnnoDeleted = (_, __) => {},
   onImageLabelsChanged = () => {},
   onIsImageJunk = () => {},
+  onSelectAnnotation = () => {},
 }: SiaProps) => {
   const marginBetweenToolbarAndContainerPixels: number = 10;
 
@@ -90,24 +97,28 @@ const Sia2 = ({
   // keep track which numbers are already used for annotation ids - even if they are deleted
   const [usedInternalIds, setUsedInternalIds] = useState<number[]>([]);
 
-  const deleteSelectedAnnotation = () => {
-    if (selectedAnnotation === undefined) return;
-
+  const deleteAnnotationByInternalId = (internalId: number) => {
     // get index of selected annotation
     const annoListIndex: number = annotations!.findIndex(
-      (anno) => anno.internalId === selectedAnnotation.internalId,
+      (anno) => anno.internalId === internalId,
     );
 
     // dereference list to force state update
     const _annotations: Annotation[] = [...annotations];
 
     // remove annotation
-    _annotations.splice(annoListIndex, 1);
+    const removedAnno: Annotation = _annotations.splice(annoListIndex, 1)[0];
 
     setAnnotations(_annotations);
 
     // inform the outside world about our changes
-    onAnnoDeleted(selectedAnnotation, _annotations);
+    onAnnoDeleted(removedAnno, _annotations);
+  };
+
+  const deleteSelectedAnnotation = () => {
+    if (selectedAnnotation === undefined) return;
+
+    deleteAnnotationByInternalId(selectedAnnotation.internalId);
   };
 
   const createInitialAnnotations = () => {
@@ -284,8 +295,10 @@ const Sia2 = ({
             annotationSettings={annotationSettings}
             image={image}
             isImageJunk={isImageJunk}
+            isPolygonSelectionMode={isPolygonSelectionMode}
             selectedAnnotation={selectedAnnotation}
             selectedAnnoTool={selectedAnnoTool}
+            polygonOperationResult={polygonOperationResult}
             possibleLabels={possibleLabels}
             uiConfig={uiConfig}
             onAnnoCreated={(annotation: Annotation) => {
@@ -313,9 +326,38 @@ const Sia2 = ({
 
               // point annotations are created in one frame
               // they dont exist in the annotations list yet, so just append them
-              if (changedAnno.type === AnnotationTool.Point)
+              // the polygon selection mode also hands annotations to SIA in one single frame
+              if (
+                changedAnno.type === AnnotationTool.Point ||
+                isPolygonSelectionMode
+              )
                 _annotations.push(changedAnno);
-              else {
+
+              // remove the previous annotations we used to do the operation with
+              if (polygonOperationResult?.annotationsToDelete !== undefined) {
+                // we also want to remove the current selected annotation
+                polygonOperationResult.annotationsToDelete.push(
+                  selectedAnnotation!,
+                );
+
+                polygonOperationResult.annotationsToDelete.forEach(
+                  (annotation) => {
+                    // remove annotations "the official way" (inform the server what we did)
+                    deleteAnnotationByInternalId(annotation.internalId);
+
+                    // since we are updating the annotations list after all the deletions again, their disappearance wouldn't be noticed
+                    // therefore also manually remove the annotations here
+
+                    // get index of selected annotation
+                    const annoListIndex: number = _annotations!.findIndex(
+                      (anno) => anno.internalId === annotation.internalId,
+                    );
+
+                    // remove annotation from object
+                    _annotations.splice(annoListIndex, 1)[0];
+                  },
+                );
+              } else {
                 // all other annotation types
                 const annoListIndex: number = annotations.findIndex(
                   (anno) => anno.internalId === changedAnno.internalId,
@@ -323,15 +365,19 @@ const Sia2 = ({
                 _annotations[annoListIndex] = changedAnno;
               }
 
+              setAnnotations(_annotations);
+
               // mark annotation as fully created
               changedAnno.status = AnnotationStatus.CREATED;
-              setAnnotations(_annotations);
 
               // inform the outer world about our changes
               onAnnoCreationFinished(changedAnno, _annotations);
             }}
             onRequestNewAnnoId={createNewInternalAnnotationId}
-            onSelectAnnotation={setSelectedAnnotation}
+            onSelectAnnotation={(annotation) => {
+              setSelectedAnnotation(annotation);
+              onSelectAnnotation(annotation);
+            }}
             // eventDeleteSelectedAnnotation={deleteSelectedAnnotation}
           />
         )}
