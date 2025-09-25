@@ -39,8 +39,8 @@ const Toolbar = ({
   onShouldDeleteSelectedAnnotation = () => {},
 }: ToolbarProps) => {
   return (
-    <CRow>
-      <CCol>
+    <CRow xs={{ gutterY: 2 }}>
+      <CCol xs={4} sm={2} xxl={1}>
         <ImageTools
           canJunk={allowedTools.junk}
           isImageJunk={isImageJunk}
@@ -52,8 +52,12 @@ const Toolbar = ({
         />
       </CCol>
 
+      <CCol xs={2} sm={1}>
+        <AccessibilityTools isDisabled={isDisabled} />
+      </CCol>
+
       {annotationSettings.canCreate && (
-        <CCol>
+        <CCol xs={8} sm={5} md={4} xl={3} xxl={3}>
           <AnnoToolSelector
             allowedTools={allowedTools}
             isDisabled={isDisabled}
@@ -64,11 +68,7 @@ const Toolbar = ({
         </CCol>
       )}
 
-      <CCol>
-        <AccessibilityTools isDisabled={isDisabled} />
-      </CCol>
-
-      {additionalButtons && <CCol>{additionalButtons}</CCol>}
+      {additionalButtons && additionalButtons}
     </CRow>
   );
 };
