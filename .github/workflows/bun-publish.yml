@@ -15,8 +15,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-      - run: npm ci
-      - run: npm test
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun test
 
   publish-npm:
     needs: build
@@ -27,7 +30,10 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NPM_CONFIG_TOKEN: ${{secrets.npm_token}}
