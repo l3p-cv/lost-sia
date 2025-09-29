@@ -8,7 +8,7 @@ import CanvasAction from "../models/CanvasAction";
 import AnnotationComponent from "../Annotation/ui/AnnotationComponent";
 import Label from "../models/Label";
 import UiConfig from "../models/UiConfig";
-import { Point, PolygonOperationResult } from "../types";
+import { Point, PolygonOperationResult, SIANotification } from "../types";
 import mouse2 from "../utils/mouse2";
 import AnnotationMode from "../models/AnnotationMode";
 import LabelInput from "./LabelInput";
@@ -37,6 +37,7 @@ type CanvasProps = {
   onAnnoCreationFinished: (createdAnno: Annotation) => void;
   onAnnoChanged: (changedAnno: Annotation) => void;
   // onAnnoDeleted: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
+  onNotification?: (notification: SIANotification) => void;
   onRequestNewAnnoId: () => number;
   onSelectAnnotation: (annotation?: Annotation) => void;
 };
@@ -59,6 +60,7 @@ const Canvas = ({
   onAnnoCreated,
   onAnnoCreationFinished,
   onAnnoChanged,
+  onNotification = (_) => {},
   onRequestNewAnnoId,
   onSelectAnnotation,
 }: CanvasProps) => {
@@ -714,6 +716,7 @@ const Canvas = ({
             )
               setEditorMode(EditorModes.VIEW);
           }}
+          onNotification={onNotification}
         />
       );
     });

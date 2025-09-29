@@ -1,13 +1,14 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 
 // rename type to avoid naming conflict
-import { Point } from "../../../types";
+import { Point, SIANotification } from "../../../types";
 import Node from "../atoms/Node";
 import PolygonArea from "../atoms/PolygonArea";
 import AnnotationMode from "../../../models/AnnotationMode";
 import AnnotationSettings from "../../../models/AnnotationSettings";
 import Edge from "../atoms/Edge";
 import mouse2 from "../../../utils/mouse2";
+import { NotificationType } from "../../../models";
 
 type PolygonProps = {
   annotationSettings: AnnotationSettings;
@@ -25,6 +26,7 @@ type PolygonProps = {
   onIsDraggingStateChanged: (bool) => void;
   onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
   onMoved: () => void; // moving finished - send annotation changed event
+  onNotification?: (notification: SIANotification) => void;
 };
 
 const Polygon = ({
@@ -39,9 +41,10 @@ const Polygon = ({
   onAddNode,
   onDeleteNode,
   onFinishAnnoCreate,
+  onIsDraggingStateChanged,
   onMoving,
   onMoved,
-  onIsDraggingStateChanged,
+  onNotification = (_) => {},
 }: PolygonProps) => {
   const [isAnnoDragging, setIsAnnoDragging] = useState<boolean>(false);
 
@@ -50,6 +53,17 @@ const Polygon = ({
   const [didAnnoActuallyMove, setDidAnnoActuallyMove] =
     useState<boolean>(false);
   const didAnnoActuallyMoveRef = useRef<boolean>(didAnnoActuallyMove);
+
+  const handleFinishAnnoCreate = () => {
+    if (coordinates.length < 3)
+      return onNotification({
+        message: "Polygons must have at least 3 nodes",
+        title: "Polygon Error",
+        type: NotificationType.ERROR,
+      });
+
+    onFinishAnnoCreate();
+  };
 
   useEffect(() => {
     didAnnoActuallyMoveRef.current = didAnnoActuallyMove;
@@ -181,7 +195,7 @@ const Polygon = ({
             onAddNode(newCoordinates);
           }}
           onDoubleClick={() =>
-            annotationMode === AnnotationMode.CREATE && onFinishAnnoCreate()
+            annotationMode === AnnotationMode.CREATE && handleFinishAnnoCreate()
           }
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
@@ -219,7 +233,7 @@ const Polygon = ({
         pageToStageOffset={pageToStageOffset}
         style={style}
         svgScale={svgScale}
-        onFinishAnnoCreate={onFinishAnnoCreate}
+        onFinishAnnoCreate={handleFinishAnnoCreate}
         onIsDraggingStateChanged={onIsDraggingStateChanged}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}

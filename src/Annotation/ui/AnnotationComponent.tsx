@@ -9,7 +9,7 @@ import CanvasAction from "../../models/CanvasAction";
 import BBox from "./tools/BBox";
 import Polygon from "./tools/Polygon";
 import { useEffect, useRef, useState } from "react";
-import { Point } from "../../types";
+import { Point, SIANotification } from "../../types";
 import AnnotationMode from "../../models/AnnotationMode";
 import AnnotationSettings from "../../models/AnnotationSettings";
 
@@ -28,6 +28,7 @@ type AnnotationComponentProps = {
   onAction?: (annotation: Annotation, canvasAction: CanvasAction) => void;
   onAnnoChanged?: (annotation: Annotation) => void;
   onAnnotationModeChange?: (annotationMode: AnnotationMode) => void;
+  onNotification?: (notification: SIANotification) => void;
 };
 
 const AnnotationComponent = ({
@@ -45,6 +46,7 @@ const AnnotationComponent = ({
   onAction = (_, __) => {},
   onAnnoChanged = (_) => {},
   onAnnotationModeChange = (_) => {},
+  onNotification = (_) => {},
 }: AnnotationComponentProps) => {
   const [coordinates, setCoordinates] = useState<Point[]>(
     scaledAnnotation.coordinates,
@@ -226,6 +228,7 @@ const AnnotationComponent = ({
             onDeleteNode={changeAnnoCoords}
             onMoving={onMoving}
             onMoved={onMoved}
+            onNotification={onNotification}
             onIsDraggingStateChanged={setIsDragging}
             onFinishAnnoCreate={finishAnnoCreate}
           />

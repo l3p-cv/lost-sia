@@ -11,7 +11,7 @@ import ExternalAnnotation from "./models/ExternalAnnotation";
 import AnnotationMode from "./models/AnnotationMode";
 import AnnotationSettings from "./models/AnnotationSettings";
 import AnnotationStatus from "./models/AnnotationStatus";
-import { PolygonOperationResult } from "./types";
+import { PolygonOperationResult, SIANotification } from "./types";
 
 type SiaProps = {
   additionalButtons?: ReactElement | undefined;
@@ -36,6 +36,7 @@ type SiaProps = {
   onAnnoDeleted?: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
   onIsImageJunk?: (isJunk: boolean) => void;
+  onNotification?: (notification: SIANotification) => void;
   onSelectAnnotation: (annotation?: Annotation) => void;
 };
 
@@ -59,6 +60,7 @@ const Sia2 = ({
   onAnnoDeleted = (_, __) => {},
   onImageLabelsChanged = () => {},
   onIsImageJunk = () => {},
+  onNotification = (_) => {},
   onSelectAnnotation = () => {},
 }: SiaProps) => {
   const marginBetweenToolbarAndContainerPixels: number = 10;
@@ -376,6 +378,7 @@ const Sia2 = ({
               // inform the outer world about our changes
               onAnnoCreationFinished(changedAnno, _annotations);
             }}
+            onNotification={onNotification}
             onRequestNewAnnoId={createNewInternalAnnotationId}
             onSelectAnnotation={(annotation) => {
               setSelectedAnnotation(annotation);

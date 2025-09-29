@@ -1,8 +1,13 @@
-import Annotation from "../Annotation/logic/Annotation"
-import AnnotationMode from "./AnnotationMode"
-import AnnotationStatus from "./AnnotationStatus"
-import AnnotationTool from "./AnnotationTool"
+import Annotation from "../Annotation/logic/Annotation";
+import AnnotationMode from "./AnnotationMode";
+import AnnotationStatus from "./AnnotationStatus";
+import AnnotationTool from "./AnnotationTool";
+import NotificationType from "./NotificationType";
 
 export {
-  Annotation, AnnotationMode,AnnotationStatus, AnnotationTool
-}
+  Annotation,
+  AnnotationMode,
+  AnnotationStatus,
+  AnnotationTool,
+  NotificationType,
+};
