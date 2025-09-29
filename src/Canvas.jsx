@@ -1,4 +1,3 @@
-import _ from "lodash";
 import React, { Component } from "react";
 import { uniqueId } from "lodash-es";
 import Annotation from "./Annotation/Annotation";
@@ -435,7 +434,7 @@ class Canvas extends Component {
   handleKeyAction(action) {
     const anno = this.findAnno(this.state.selectedAnnoId);
     const camKeyStepSize = 20 * this.state.svg.scale;
-    console.log('handleKeyAction', action, anno)
+    console.log("handleKeyAction", action, anno);
 
     switch (action) {
       case keyActions.EDIT_LABEL:
@@ -508,7 +507,7 @@ class Canvas extends Component {
           this.recreateAnnotation(this.state.selectedAnnoId);
         break;
       default:
-        // console.warn("Unknown key action", action);
+      // console.warn("Unknown key action", action);
     }
   }
 
@@ -594,7 +593,7 @@ class Canvas extends Component {
     // console.log("handleAnnoEvent", pAction, anno);
     let newAnnos = undefined;
     let actionHistoryStore = undefined;
-    console.log('canvasActions: ', anno, pAction)
+    console.log("canvasActions: ", anno, pAction);
 
     switch (pAction) {
       case canvasActions.ANNO_ENTER_CREATE_MODE:
@@ -681,7 +680,7 @@ class Canvas extends Component {
           newAnnos = this.updateSelectedAnno(anno, modes.DELETED);
           this.showSingleAnno(undefined);
         } else {
-          newAnnos = this.updateSelectedAnno(anno, modes.ADD)
+          newAnnos = this.updateSelectedAnno(anno, modes.ADD);
         }
         this.pushHist(newAnnos, anno.id, pAction, this.state.showSingleAnno);
         if (anno.status !== annoStatus.NEW) {
