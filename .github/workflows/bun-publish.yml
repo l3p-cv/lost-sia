@@ -38,6 +38,7 @@ jobs:
         with:
           tag: ${{ github.event.release.tag_name }}
       - run: bun install --frozen-lockfile
+      - run: bun run build
       - run: bun publish
         env:
           NPM_CONFIG_TOKEN: ${{secrets.npm_token}}
