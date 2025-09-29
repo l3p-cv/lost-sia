@@ -1,39 +1,51 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { extname, relative, resolve } from "path";
-import { fileURLToPath } from "node:url";
-import { glob } from "glob";
-// import dts from 'vite-plugin-dts';
-import dts from 'unplugin-dts/vite'
+import { globSync } from "glob";
+import dts from "unplugin-dts/vite";
 
-// https://vitejs.dev/config/
+const tsFiles = globSync("src/**/*.ts?(x)", { ignore: ["src/**/*.stories.tsx"] });
+
+const inputs = Object.fromEntries(
+  tsFiles.map((file) => [
+    relative(resolve("src"), file.slice(0, file.length - extname(file).length)),
+    resolve(file),
+  ])
+);
+
 export default defineConfig({
-  plugins: [react(), dts({ bundleTypes: true })],
-  build: {
-    copyPublicDir: false,
-    lib: {
-      entry: resolve(__dirname, "lib/main.ts"),
-      name: "LOST-SIA",
-      formats: ["es"],
-    },
-    rollupOptions: {
-      external: ["react", "react/jsx-runtime"],
-      input: Object.fromEntries(
-        glob
-          .sync("src/**/*.{ts,tsx,js,jsx}", { ignore: "src/**/*.stories.tsx" })
-          .map((file) => [
-            // The name of the entry point
-            // lib/nested/foo.ts becomes nested/foo
-            relative("src", file.slice(0, file.length - extname(file).length)),
-            // The absolute path to the entry file
-            // lib/nested/foo.ts becomes /project/lib/nested/foo.ts
-            fileURLToPath(new URL(file, import.meta.url)),
-          ]),
-      ),
-      output: {
-        // assetFileNames: 'assets/[name][extname]',
-        entryFileNames: "[name].js",
+    plugins: [
+      react(),
+      dts({
+        entryRoot: "src",
+        outDir: "dist",
+        bundle: false,
+      }),
+    ],
+    build: {
+      copyPublicDir: false,
+      lib: false,
+      rollupOptions: {
+        external: ["react", "react-dom", "react/jsx-runtime"],
+        input: inputs,
+        preserveEntrySignatures: "exports-only",
+
+        output: [
+          {
+            format: "es",
+            dir: "dist",
+            entryFileNames: "[name].js",
+            preserveModules: true,
+            preserveModulesRoot: "src",
+          },
+          {
+            format: "cjs",
+            dir: "dist",
+            entryFileNames: "[name].cjs",
+            preserveModules: true,
+            preserveModulesRoot: "src",
+          },
+        ],
       },
     },
-  },
 });
