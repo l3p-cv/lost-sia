@@ -202,6 +202,7 @@ const Sia2 = ({
     const defaultUiConfig: UiConfig = {
       nodeRadius: 4,
       strokeWidth: 4,
+      imageCentered: true,
     };
 
     // use default values if a key is not set

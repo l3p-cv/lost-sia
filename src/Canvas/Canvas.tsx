@@ -139,6 +139,8 @@ const Canvas = ({
       // page to stage offset marks the top left point of the stage
       // add the space to the translation to center the image
       setImageCenteringSpace(spaceToLeft);
+    } else {
+      setImageCenteringSpace(0);
     }
 
     // top and left are in window coordinates
@@ -778,7 +780,7 @@ const Canvas = ({
         // style={{ position: "absolute" }}
       >
         <g
-          transform={`scale(${svgScale}) translate(${svgTranslation.x}, ${svgTranslation.y})`}
+          transform={`scale(${svgScale}) translate(${svgTranslation.x + imageCenteringSpace}, ${svgTranslation.y})`}
           onMouseOver={onMouseOver}
           onMouseLeave={onMouseLeave}
           // onMouseEnter={() => this.svg.current.focus()}
