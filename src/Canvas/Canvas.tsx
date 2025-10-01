@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import AnnotationTool from "../models/AnnotationTool";
 import EditorModes from "../models/EditorModes";
 import KeyMapper from "../utils/KeyMapper";
@@ -8,7 +8,12 @@ import CanvasAction from "../models/CanvasAction";
 import AnnotationComponent from "../Annotation/ui/AnnotationComponent";
 import Label from "../models/Label";
 import UiConfig from "../models/UiConfig";
-import { Point, PolygonOperationResult, SIANotification } from "../types";
+import {
+  Point,
+  PolygonOperationResult,
+  SIANotification,
+  Vector2,
+} from "../types";
 import mouse2 from "../utils/mouse2";
 import AnnotationMode from "../models/AnnotationMode";
 import LabelInput from "./LabelInput";
@@ -66,9 +71,6 @@ const Canvas = ({
 }: CanvasProps) => {
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW);
 
-  // factor to convert coordinates from an (untransformed) image into the stage
-  const [imageToStageFactor, setImageToStageFactor] = useState<number>(0);
-
   // vector from the top left of the DOM document to the top left of the stage
   // (events are emitting page coordinates, so we need this to convert them)
   const [pageToStageOffset, setPageToStageOffset] = useState<Point>({
@@ -76,29 +78,79 @@ const Canvas = ({
     y: -1,
   });
 
-  // default image and svg sizes (for canvas calculation)
+  // space to add to the x translation to center the image
+  const [imageCenteringSpace, setImageCenteringSpace] = useState<number>(0);
+
+  // default (unscaled) image and canvas sizes (for stage calculation)
   // invalid default value, so that the image uses its default values at first
-  const [imgSize, setImgSize] = useState<[number, number]>([-1, -1]);
-  const [containerSize, setContainerSize] = useState<[number, number]>([
-    -1, -1,
-  ]);
+  const [imgSize, setImgSize] = useState<Vector2>({ x: -1, y: -1 });
+  const [canvasSize, setCanvasSize] = useState<Vector2>({ x: -1, y: -1 });
 
   // largest possible annotation size fitting the whole image
-  const [canvasSize, setCanvasSize] = useState<[number, number]>([-1, -1]);
+  const [stageSize, setStageSize] = useState<Vector2>({ x: -1, y: -1 });
 
   const [svgScale, setSvgScale] = useState<number>(1.0);
-  const [svgTranslation, setSvgTranslation] = useState<[number, number]>([
-    0, 0,
-  ]);
+  const [svgTranslation, setSvgTranslation] = useState<Vector2>({ x: 0, y: 0 });
 
   // label input will be opened if a position is set here
   const [labelInputPosition, setLabelInputPosition] = useState<Point>();
 
-  // outer container - all possible space for creating a canvas
-  const containerRef = useRef(null);
+  // available canvas area - all possible space for creating a canvas
+  const canvasRef = useRef(null);
 
   // used to get the size of the dynamically loaded image
   const imageRef = useRef(null);
+
+  // returns the aspect ratio of the largest image size fitting onto the canvas without changing the aspect ratio
+  const getFittedImageScale = (imgSize: Vector2, svgSize: Vector2): number => {
+    if (
+      imgSize.x === 0 ||
+      imgSize.y === 0 ||
+      svgSize.x === 0 ||
+      svgSize.y === 0
+    )
+      return 0;
+
+    const scaleX = svgSize.x / imgSize.x;
+    const scaleY = svgSize.y / imgSize.y;
+
+    return Math.min(scaleX, scaleY);
+  };
+
+  // factor to convert coordinates from an (untransformed) image into the stage
+  const imageToStageFactor: number = getFittedImageScale(imgSize, canvasSize);
+
+  // store + update the vector between start of the page and start of the (translated) image to be able to do transformations
+  const calculatePageToStageOffset = () => {
+    if (imageRef?.current === null) return { x: 0, y: 0 };
+
+    // get image starting position in window coordinates
+    const { top, left } = imageRef.current.getBoundingClientRect();
+
+    // if image can and should be centered
+    const resizedImageWidth: number = imgSize.x * imageToStageFactor;
+    if (uiConfig.imageCentered && canvasSize.x > resizedImageWidth) {
+      // image is at (0,0) - get the blanc space at the right side of the image
+      const remainingSpace: number = canvasSize.x - resizedImageWidth;
+
+      // divide remaining space to be equal to the left and right side
+      const spaceToLeft: number = remainingSpace / 2;
+
+      // page to stage offset marks the top left point of the stage
+      // add the space to the translation to center the image
+      setImageCenteringSpace(spaceToLeft);
+    }
+
+    // top and left are in window coordinates
+    // we need to convert them to page coordinates
+    const pageOffset: Point = {
+      x: left + window.scrollX,
+      y: top + window.scrollY,
+    };
+    setPageToStageOffset(pageOffset);
+  };
+
+  // const pageToStageOffset = calculatePageToStageOffset();
 
   const keyMapper = new KeyMapper((keyAction: KeyAction) =>
     handleKeyAction(keyAction),
@@ -138,126 +190,6 @@ const Canvas = ({
       };
       onFinishCreateAnno(newPointAnnotation);
     }
-  };
-
-  const resetCanvas = () => {
-    setEditorMode(EditorModes.VIEW);
-    setImageToStageFactor(0);
-
-    setPageToStageOffset({
-      x: -1,
-      y: -1,
-    });
-
-    setImgSize([-1, -1]);
-
-    // largest possible annotation size fitting the whole image
-    setCanvasSize([-1, -1]);
-
-    setSvgScale(1.0);
-    setSvgTranslation([0, 0]);
-
-    setLabelInputPosition(undefined);
-  };
-
-  // image changed after init -> reset everything
-  useEffect(() => {
-    resetCanvas();
-  }, [image]);
-
-  // store + update the vector between start of the page and start of the (translated) image to be able to to transformations
-  useEffect(() => {
-    // get image starting position in window coordinates
-    const { top, left } = imageRef.current.getBoundingClientRect();
-
-    // top and left are in window coordinates
-    // we need to convert them to page coordinates
-    const pageOffset = {
-      x: left + window.scrollX,
-      y: top + window.scrollY,
-    };
-
-    setPageToStageOffset(pageOffset);
-  }, [imageRef, imageToStageFactor, svgTranslation]);
-
-  // returns the aspect ratio of the largest image size fitting onto the canvas without changing the aspect ratio
-  const getFittedImageScale = (
-    imgSize: [number, number],
-    svgSize: [number, number],
-  ): number => {
-    if (
-      imgSize[0] === 0 ||
-      imgSize[1] === 0 ||
-      svgSize[0] === 0 ||
-      svgSize[1] === 0
-    )
-      return 0;
-
-    const scaleX = svgSize[0] / imgSize[0];
-    const scaleY = svgSize[1] / imgSize[1];
-
-    return Math.min(scaleX, scaleY);
-  };
-
-  const handleAnnoEvent = (
-    annotation: Annotation,
-    canvasAction: CanvasAction,
-  ) => {
-    switch (canvasAction) {
-      case CanvasAction.ANNO_ENTER_CREATE_MODE:
-        // setEditorMode(EditorModes.CREATE);
-        break;
-      case CanvasAction.ANNO_MARK_EXAMPLE:
-        console.log("TODO HANDLE ACTION ANNO_MARK_EXAMPLE");
-        break;
-      case CanvasAction.ANNO_SELECTED:
-        console.log("TODO HANDLE ACTION ANNO_SELECTED");
-        break;
-      case CanvasAction.ANNO_START_CREATING:
-        console.log("TODO HANDLE ACTION ANNO_START_CREATING");
-        break;
-      case CanvasAction.ANNO_CREATED:
-        console.log("TODO HANDLE ACTION ANNO_CREATED");
-        break;
-      case CanvasAction.ANNO_MOVED:
-        console.log("TODO HANDLE ACTION ANNO_MOVED");
-        break;
-      case CanvasAction.ANNO_ENTER_MOVE_MODE:
-        console.log("TODO HANDLE ACTION ANNO_ENTER_MOVE_MODE");
-        break;
-      case CanvasAction.ANNO_ENTER_EDIT_MODE:
-        console.log("TODO HANDLE ACTION ANNO_ENTER_EDIT_MODE");
-        break;
-      case CanvasAction.ANNO_ADDED_NODE:
-        console.log("TODO HANDLE ACTION ANNO_ADDED_NODE");
-        break;
-      case CanvasAction.ANNO_REMOVED_NODE:
-        console.log("TODO HANDLE ACTION ANNO_REMOVED_NODE");
-        break;
-      case CanvasAction.ANNO_EDITED:
-        console.log("TODO HANDLE ACTION ANNO_EDITED");
-        break;
-      case CanvasAction.ANNO_DELETED:
-        console.log("TODO HANDLE ACTION ANNO_DELETED");
-        break;
-      case CanvasAction.ANNO_COMMENT_UPDATE:
-        console.log("TODO HANDLE ACTION ANNO_COMMENT_UPDATE");
-        break;
-      case CanvasAction.ANNO_LABEL_UPDATE:
-        console.log("TODO HANDLE ACTION ANNO_LABEL_UPDATE");
-        break;
-      case CanvasAction.ANNO_CREATED_NODE:
-        console.log("TODO HANDLE ACTION ANNO_CREATED_NODE");
-        break;
-      case CanvasAction.ANNO_CREATED_FINAL_NODE:
-        console.log("TODO HANDLE ACTION ANNO_CREATED_FINAL_NODE");
-        break;
-      default:
-        console.log("Unknown CanvasAction", canvasAction);
-        break;
-    }
-
-    // if (propsOnAnnoEvent) propsOnAnnoEvent(annotation, canvasAction);
   };
 
   const handleKeyAction = (keyAction: KeyAction) => {
@@ -320,14 +252,14 @@ const Canvas = ({
   };
 
   const moveCamera = (movementX: number, movementY: number) => {
-    let newTransX = svgTranslation[0] + movementX / svgScale;
-    let newTransY = svgTranslation[1] + movementY / svgScale;
+    let newTransX = svgTranslation.x + movementX / svgScale;
+    let newTransY = svgTranslation.y + movementY / svgScale;
 
     // at least one quarter of the image should always be visible
-    const minTransX = containerSize[0] * -0.25;
-    const minTransY = containerSize[1] * -0.25;
-    const maxTransX = containerSize[0] * 0.75;
-    const maxTransY = containerSize[1] * 0.75;
+    const minTransX = canvasSize.x * -0.25;
+    const minTransY = canvasSize.y * -0.25;
+    const maxTransX = canvasSize.x * 0.75;
+    const maxTransY = canvasSize.y * 0.75;
 
     // move image a bit back inside the canvas
     if (newTransX < minTransX) newTransX += 25;
@@ -335,7 +267,7 @@ const Canvas = ({
     if (newTransY < minTransY) newTransY += 25;
     if (newTransY > maxTransY) newTransY -= 25;
 
-    setSvgTranslation([newTransX, newTransY]);
+    setSvgTranslation({ x: newTransX, y: newTransY });
   };
 
   const convertPercentagedCoordinatesToImage = (
@@ -344,8 +276,8 @@ const Canvas = ({
     const imageCoordinates: Point[] = percentagedCoordinates.map(
       (point: Point) => {
         return {
-          x: point.x * imgSize[0],
-          y: point.y * imgSize[1],
+          x: point.x * imgSize.x,
+          y: point.y * imgSize.y,
         };
       },
     );
@@ -358,7 +290,7 @@ const Canvas = ({
   ): Point[] => {
     // the image is scaled to match the width of the canvas
     // assume the aspect ratio is kept
-    const imageToCanvasScale = canvasSize[0] / imgSize[0];
+    const imageToCanvasScale = stageSize.x / imgSize.x;
 
     const stageCoordinates = imageCoordinates.map((imagePoint: Point) => ({
       x: imagePoint.x * imageToCanvasScale,
@@ -380,10 +312,10 @@ const Canvas = ({
 
   const calculateScaledAnnotations = (_annotations: Annotation[]) => {
     if (
-      canvasSize[0] <= 0 ||
-      canvasSize[1] <= 0 ||
-      imgSize[0] <= 0 ||
-      imgSize[1] <= 0
+      stageSize.x <= 0 ||
+      stageSize.y <= 0 ||
+      imgSize.x <= 0 ||
+      imgSize.y <= 0
     )
       return [];
 
@@ -397,53 +329,70 @@ const Canvas = ({
 
   const scaledAnnotations = calculateScaledAnnotations(annotations);
 
+  const resetCanvas = () => {
+    setEditorMode(EditorModes.VIEW);
+    // setImageToStageFactor(0);
+
+    // setPageToStageOffset({
+    //   x: -1,
+    //   y: -1,
+    // });
+
+    // setImgSize({ x: -1, y: -1 });
+    if (imageRef.current !== null) {
+      const { width, height } = imageRef.current.getBoundingClientRect();
+      setImgSize({ x: width, y: height });
+    }
+
+    // largest possible annotation size fitting the whole image
+    setStageSize({ x: -1, y: -1 });
+
+    setSvgScale(1.0);
+    setSvgTranslation({ x: 0, y: 0 });
+
+    setLabelInputPosition(undefined);
+  };
+
+  // image changed after init -> reset everything
+  useEffect(() => {
+    resetCanvas();
+  }, [image]);
+
+  useEffect(() => {
+    calculatePageToStageOffset();
+  }, [imageRef, svgTranslation]);
+
   // notify component about available size
   useEffect(() => {
-    if (containerRef.current === null) return;
-    const { width, height } = containerRef.current.getBoundingClientRect();
+    if (canvasRef.current === null) return;
+    const { width, height } = canvasRef.current.getBoundingClientRect();
 
     // for whatever reason the ref adds the toolbars height to the available space, leading to a container size reaching outside the bottom
     // remove its height here manually
     const heightWithoutToolbar: number = height - toolbarHeight;
 
-    setContainerSize([width, heightWithoutToolbar]);
-  }, [containerRef]);
+    setCanvasSize({ x: width, y: heightWithoutToolbar });
+  }, [canvasRef]);
 
   // notify component about default image size
   useEffect(() => {
     if (imageRef.current === null) return;
+
     const { width, height } = imageRef.current.getBoundingClientRect();
-    setImgSize([width, height]);
+
+    setImgSize({ x: width, y: height });
   }, [imageRef]);
-
-  // update the image + svg to the biggest possible size keeping aspect ratio
-  useEffect(() => {
-    if (
-      containerSize[0] <= 0 ||
-      containerSize[1] <= 0 ||
-      imgSize[0] <= 0 ||
-      imgSize[1] <= 0
-    )
-      return;
-
-    const newImageToStageFactor: number = getFittedImageScale(
-      imgSize,
-      containerSize,
-    );
-
-    setImageToStageFactor(newImageToStageFactor);
-  }, [containerSize, imgSize]);
 
   useEffect(() => {
     if (imageToStageFactor === 0) return;
 
-    const newCanvasSize: [number, number] = [
-      imgSize[0] * imageToStageFactor,
-      imgSize[1] * imageToStageFactor,
-    ];
+    const newStageSize: Vector2 = {
+      x: imgSize.x * imageToStageFactor,
+      y: imgSize.y * imageToStageFactor,
+    };
 
-    setCanvasSize(newCanvasSize);
-  }, [imageToStageFactor]);
+    setStageSize(newStageSize);
+  }, [imageToStageFactor, imgSize]);
 
   useEffect(() => {
     if (!isPolygonSelectionMode) return;
@@ -565,7 +514,7 @@ const Canvas = ({
     const scrollDirection = e.deltaY < 0 ? 1 : -1;
 
     // current mouse coordinates according to container
-    const rect = containerRef.current.getBoundingClientRect();
+    const rect = canvasRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
@@ -574,8 +523,8 @@ const Canvas = ({
       scrollDirection > 0 ? svgScale * scaleFactor : svgScale / scaleFactor;
 
     // calculate mouse position in rescaled coordinate system
-    const svgMouseX = (mouseX - svgTranslation[0] * svgScale) / svgScale;
-    const svgMouseY = (mouseY - svgTranslation[1] * svgScale) / svgScale;
+    const svgMouseX = (mouseX - svgTranslation.x * svgScale) / svgScale;
+    const svgMouseY = (mouseY - svgTranslation.y * svgScale) / svgScale;
 
     // new translation, so that svgMouseX/Y is at mouseX/Y after scaling
     const newTransX = mouseX / newScale - svgMouseX;
@@ -583,13 +532,13 @@ const Canvas = ({
 
     if (newScale < 1.0) {
       setSvgScale(1);
-      setSvgTranslation([0, 0]);
+      setSvgTranslation({ x: 0, y: 0 });
     } else if (newScale > 200) {
       setSvgScale(200);
-      setSvgTranslation([newTransX, newTransY]);
+      setSvgTranslation({ x: newTransX, y: newTransY });
     } else {
       setSvgScale(newScale);
-      setSvgTranslation([newTransX, newTransY]);
+      setSvgTranslation({ x: newTransX, y: newTransY });
     }
   };
 
@@ -620,8 +569,8 @@ const Canvas = ({
     const polishedImageCoordinates = imageCoordinates.map((point: Point) => {
       if (point.x < 0) point.x = 0;
       if (point.y < 0) point.y = 0;
-      if (point.x > imgSize[0]) point.x = imgSize[0];
-      if (point.y > imgSize[1]) point.y = imgSize[1];
+      if (point.x > imgSize.x) point.x = imgSize.x;
+      if (point.y > imgSize.y) point.y = imgSize.y;
 
       return point;
     });
@@ -631,8 +580,8 @@ const Canvas = ({
     const percentagedCoordinates = polishedImageCoordinates.map(
       (point: Point) => {
         return {
-          x: point.x / imgSize[0],
-          y: point.y / imgSize[1],
+          x: point.x / imgSize.x,
+          y: point.y / imgSize.y,
         };
       },
     );
@@ -667,73 +616,75 @@ const Canvas = ({
     setLabelInputPosition(pageMarkerPosition);
   };
 
-  const renderAnnotations = () => {
+  const renderAnnotations = (): ReactElement => {
     // hide all annotations when image is moved
-    if (editorMode === EditorModes.CAMERA_MOVE) return "";
+    if (editorMode === EditorModes.CAMERA_MOVE) return <></>;
 
     // draw the annotation using the AnnotationComponent and the scaled coordinates
-    const annos = scaledAnnotations.map((scaledAnnotation: Annotation) => {
-      // only show selected anno in specific editor modes
-      const editorModesOtherAnnosShouldBeHiddenIn = [
-        EditorModes.CREATE,
-        EditorModes.MOVE,
-      ];
+    const annos = scaledAnnotations.map(
+      (scaledAnnotation: Annotation): ReactElement[] => {
+        // only show selected anno in specific editor modes
+        const editorModesOtherAnnosShouldBeHiddenIn = [
+          EditorModes.CREATE,
+          EditorModes.MOVE,
+        ];
 
-      if (
-        editorModesOtherAnnosShouldBeHiddenIn.includes(editorMode) &&
-        scaledAnnotation.internalId !== selectedAnnotation?.internalId
-      )
-        return;
+        if (
+          editorModesOtherAnnosShouldBeHiddenIn.includes(editorMode) &&
+          scaledAnnotation.internalId !== selectedAnnotation?.internalId
+        )
+          return <></>;
 
-      return (
-        <AnnotationComponent
-          key={`annotationComponent_${scaledAnnotation.internalId}`}
-          scaledAnnotation={scaledAnnotation}
-          annotationSettings={annotationSettings}
-          possibleLabels={possibleLabels}
-          svgScale={svgScale}
-          pageToStageOffset={pageToStageOffset}
-          nodeRadius={uiConfig.nodeRadius}
-          strokeWidth={uiConfig.strokeWidth}
-          isSelected={
-            scaledAnnotation.internalId === selectedAnnotation?.internalId
-          }
-          isDisabled={
-            // dont let annotation be selected twice in polygon selection mode
-            isPolygonSelectionMode &&
-            scaledAnnotation.internalId === selectedAnnotation?.internalId
-          }
-          onFinishAnnoCreate={onFinishCreateAnno}
-          onLabelIconClicked={handleOnLabelIconClicked}
-          onAction={onAnnoAction}
-          onAnnoChanged={handleOnAnnoChanged}
-          onAnnotationModeChange={(annotationMode: AnnotationMode) => {
-            if (annotationMode === AnnotationMode.MOVE)
-              setEditorMode(EditorModes.MOVE);
-            if (
-              editorMode === EditorModes.MOVE &&
-              annotationMode === AnnotationMode.VIEW
-            )
-              setEditorMode(EditorModes.VIEW);
-          }}
-          onNotification={onNotification}
-        />
-      );
-    });
+        return (
+          <AnnotationComponent
+            key={`annotationComponent_${scaledAnnotation.internalId}`}
+            scaledAnnotation={scaledAnnotation}
+            annotationSettings={annotationSettings}
+            possibleLabels={possibleLabels}
+            svgScale={svgScale}
+            pageToStageOffset={pageToStageOffset}
+            nodeRadius={uiConfig.nodeRadius}
+            strokeWidth={uiConfig.strokeWidth}
+            isSelected={
+              scaledAnnotation.internalId === selectedAnnotation?.internalId
+            }
+            isDisabled={
+              // dont let annotation be selected twice in polygon selection mode
+              isPolygonSelectionMode &&
+              scaledAnnotation.internalId === selectedAnnotation?.internalId
+            }
+            onFinishAnnoCreate={onFinishCreateAnno}
+            onLabelIconClicked={handleOnLabelIconClicked}
+            onAction={onAnnoAction}
+            onAnnoChanged={handleOnAnnoChanged}
+            onAnnotationModeChange={(annotationMode: AnnotationMode) => {
+              if (annotationMode === AnnotationMode.MOVE)
+                setEditorMode(EditorModes.MOVE);
+              if (
+                editorMode === EditorModes.MOVE &&
+                annotationMode === AnnotationMode.VIEW
+              )
+                setEditorMode(EditorModes.VIEW);
+            }}
+            onNotification={onNotification}
+          />
+        );
+      },
+    );
 
     return <g>{annos}</g>;
   };
 
-  const renderInfiniteSelectionArea = () => {
+  const renderInfiniteSelectionArea = (): ReactElement => {
     // block changing annotations while label selector is open
     // close label selector when clicked onto canvas
     return (
       <circle
-        cx={canvasSize[0] / 2}
-        cy={canvasSize[1] / 2}
+        cx={stageSize.x / 2}
+        cy={stageSize.y / 2}
         r={"100%"}
         style={{ opacity: 0 }}
-        onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={(e: PointerEvent) => e.preventDefault()}
         onClick={() => {
           setLabelInputPosition(undefined);
         }}
@@ -743,7 +694,7 @@ const Canvas = ({
 
   return (
     <div
-      ref={containerRef}
+      ref={canvasRef}
       style={{
         width: "100%",
         height: "100%",
@@ -827,7 +778,7 @@ const Canvas = ({
         // style={{ position: "absolute" }}
       >
         <g
-          transform={`scale(${svgScale}) translate(${svgTranslation[0]}, ${svgTranslation[1]})`}
+          transform={`scale(${svgScale}) translate(${svgTranslation.x}, ${svgTranslation.y})`}
           onMouseOver={onMouseOver}
           onMouseLeave={onMouseLeave}
           // onMouseEnter={() => this.svg.current.focus()}
@@ -844,8 +795,10 @@ const Canvas = ({
             onMouseDown={onMouseDown}
             href={image}
             ref={imageRef}
-            width={canvasSize[0] > 0 ? canvasSize[0] : undefined}
-            height={canvasSize[1] > 0 ? canvasSize[1] : undefined}
+            // undefined -> use default (unscaled) size of image
+            // when stageSize is set, the image is scaled to the stageSize
+            width={stageSize.x > 0 ? stageSize.x : undefined}
+            height={stageSize.y > 0 ? stageSize.y : undefined}
           />
           {renderAnnotations()}
         </g>
@@ -855,8 +808,8 @@ const Canvas = ({
           <rect
             x="0"
             y="0"
-            width={canvasSize[0]}
-            height={canvasSize[1]}
+            width={stageSize.x}
+            height={stageSize.y}
             style={{ opacity: 0.8 }}
             onContextMenu={(e) => e.preventDefault()}
             onClick={() => {

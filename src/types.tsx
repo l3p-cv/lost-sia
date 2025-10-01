@@ -6,6 +6,11 @@ export type Point = {
   y: number;
 };
 
+export type Vector2 = {
+  x: number;
+  y: number;
+};
+
 export type PolygonOperationResult = {
   polygonsToCreate: Point[][];
   annotationsToDelete: Annotation[];
