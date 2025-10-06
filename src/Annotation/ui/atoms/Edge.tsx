@@ -1,5 +1,5 @@
-import { CSSProperties } from "react";
-import { Point } from "../../../types";
+import { CSSProperties, MouseEvent } from "react";
+import { Point, Vector2 } from "../../../types";
 import mouse2 from "../../../utils/mouse2";
 
 type EdgeProps = {
@@ -8,6 +8,7 @@ type EdgeProps = {
   isDisabled?: boolean;
   pageToStageOffset: Point;
   svgScale: number;
+  svgTranslation: Vector2;
   style: CSSProperties;
   onAddNode?: (coordinate: Point) => void;
   onDoubleClick?: (e: MouseEvent) => void;
@@ -22,6 +23,7 @@ const Edge = ({
   pageToStageOffset,
   style,
   svgScale,
+  svgTranslation,
   onAddNode = () => {},
   onDoubleClick = () => {},
   onMouseDown,
@@ -32,6 +34,7 @@ const Edge = ({
       e,
       pageToStageOffset,
       svgScale,
+      svgTranslation,
     );
 
     onAddNode(mouseStageCoords);
@@ -49,7 +52,7 @@ const Edge = ({
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onContextMenu={(e) => e.preventDefault()}
-      stroke-dasharray={isDisabled ? "10,5" : "0"}
+      strokeDasharray={isDisabled ? "10,5" : "0"}
     />
   );
 };

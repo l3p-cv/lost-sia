@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
 
 // rename type to avoid naming conflict
 import { Point } from "../../../types";
@@ -16,11 +16,12 @@ type BBoxProps = {
   startCoords: Point;
   endCoords: Point;
   svgScale: number;
+  svgTranslation: Point;
   isSelected: boolean;
   style: CSSProperties;
   onDeleteNode: (coordinates: Point[]) => void;
   onFinishAnnoCreate: () => void;
-  onIsDraggingStateChanged: (bool) => void;
+  onIsDraggingStateChanged: (newDraggingState: boolean) => void;
   onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
   onMoved: () => void; // moving finished - send annotation changed event
 };
@@ -32,6 +33,7 @@ const BBox = ({
   startCoords,
   endCoords,
   svgScale,
+  svgTranslation,
   isSelected,
   style,
   onDeleteNode,
@@ -119,6 +121,7 @@ const BBox = ({
         e,
         pageToStageOffset,
         svgScale,
+        svgTranslation,
       );
 
       let newCoords: Point[] = [...coordinates];
@@ -193,6 +196,7 @@ const BBox = ({
         coordinates={coordinate}
         pageToStageOffset={pageToStageOffset}
         svgScale={svgScale}
+        svgTranslation={svgTranslation}
         style={style}
         onDeleteNode={() => {
           const newCoordinates = [...coordinates];
@@ -275,6 +279,7 @@ const BBox = ({
           endCoordinate={endCoordinates}
           pageToStageOffset={pageToStageOffset}
           svgScale={svgScale}
+          svgTranslation={svgTranslation}
           style={{ ...style, cursor }}
           onMouseDown={onMouseEdgeDown}
           onMouseMove={(e: MouseEvent) => {

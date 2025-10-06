@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
 
 // rename type to avoid naming conflict
 import { Point, SIANotification } from "../../../types";
@@ -19,11 +19,12 @@ type PolygonProps = {
   setAnnotationMode: (annotationMode: AnnotationMode) => void;
   pageToStageOffset: Point;
   svgScale: number;
+  svgTranslation: Point;
   style: CSSProperties;
   onAddNode: (coordinates: Point[]) => void;
   onDeleteNode: (coordinates: Point[]) => void;
   onFinishAnnoCreate: () => void;
-  onIsDraggingStateChanged: (bool) => void;
+  onIsDraggingStateChanged: (newDraggingState: boolean) => void;
   onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
   onMoved: () => void; // moving finished - send annotation changed event
   onNotification?: (notification: SIANotification) => void;
@@ -37,6 +38,7 @@ const Polygon = ({
   annotationMode,
   pageToStageOffset,
   svgScale,
+  svgTranslation,
   style,
   onAddNode,
   onDeleteNode,
@@ -81,7 +83,12 @@ const Polygon = ({
 
     if (e.button === 2 && annotationMode == AnnotationMode.CREATE) {
       const antiScaledMousePositionInStageCoordinates =
-        mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
+        mouse2.getAntiScaledMouseStagePosition(
+          e,
+          pageToStageOffset,
+          svgScale,
+          svgTranslation,
+        );
 
       let newCoordinates = [...coordinates];
       newCoordinates.push(antiScaledMousePositionInStageCoordinates);
@@ -113,6 +120,7 @@ const Polygon = ({
         e,
         pageToStageOffset,
         svgScale,
+        svgTranslation,
       );
 
       let newCoords: Point[] = [...coordinates];
@@ -153,6 +161,7 @@ const Polygon = ({
         coordinates={coordinate}
         pageToStageOffset={pageToStageOffset}
         svgScale={svgScale}
+        svgTranslation={svgTranslation}
         style={style}
         onDeleteNode={() => {
           const newCoordinates = [...coordinates];
@@ -187,6 +196,7 @@ const Polygon = ({
           isDisabled={isDisabled && isSelected}
           pageToStageOffset={pageToStageOffset}
           svgScale={svgScale}
+          svgTranslation={svgTranslation}
           style={style}
           onAddNode={(coordinate: Point) => {
             const newCoordinates = [...coordinates];

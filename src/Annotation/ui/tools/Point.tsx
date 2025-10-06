@@ -11,6 +11,7 @@ type PointProps = {
   isSelected: boolean;
   pageToStageOffset: TPoint;
   svgScale: number;
+  svgTranslation: TPoint;
   style: CSSProperties;
   onIsDraggingStateChanged: (bool) => void;
   onMoving: (coordinates: TPoint) => void; // during moving - update coordinates in parent
@@ -23,6 +24,7 @@ const Point = ({
   isSelected,
   pageToStageOffset,
   svgScale,
+  svgTranslation,
   style,
   onMoving,
   onMoved,
@@ -35,6 +37,7 @@ const Point = ({
       coordinates={coordinates}
       pageToStageOffset={pageToStageOffset}
       svgScale={svgScale}
+      svgTranslation={svgTranslation}
       style={style}
       onDeleteNode={
         // just do nothing (we cannot delete a node from a point - delete the whole point instead)

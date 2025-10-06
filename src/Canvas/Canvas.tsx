@@ -1,4 +1,11 @@
-import { ReactElement, useEffect, useRef, useState } from "react";
+import {
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+  WheelEvent,
+} from "react";
 import AnnotationTool from "../models/AnnotationTool";
 import EditorModes from "../models/EditorModes";
 import KeyMapper from "../utils/KeyMapper";
@@ -27,6 +34,7 @@ type CanvasProps = {
   annotations?: Annotation[];
   annotationSettings?: AnnotationSettings;
   image: string;
+  isFullscreen?: boolean;
   isImageJunk?: boolean;
   isPolygonSelectionMode?: boolean;
   selectedAnnotation: Annotation | undefined;
@@ -51,6 +59,7 @@ const Canvas = ({
   annotations = [],
   annotationSettings,
   image,
+  isFullscreen = false,
   isImageJunk = false,
   isPolygonSelectionMode = false,
   polygonOperationResult = { annotationsToDelete: [], polygonsToCreate: [] },
@@ -73,13 +82,20 @@ const Canvas = ({
 
   // vector from the top left of the DOM document to the top left of the stage
   // (events are emitting page coordinates, so we need this to convert them)
-  const [pageToStageOffset, setPageToStageOffset] = useState<Point>({
+  const [pageToCanvasOffset, setPageToCanvasOffset] = useState<Point>({
     x: -1,
     y: -1,
   });
 
   // space to add to the x translation to center the image
   const [imageCenteringSpace, setImageCenteringSpace] = useState<number>(0);
+
+  // the stage can be horizontally centered - apply offset on x axis
+  const pageToStageOffset: Vector2 = {
+    // x: pageToCanvasOffset.x + imageCenteringSpace,
+    x: pageToCanvasOffset.x,
+    y: pageToCanvasOffset.y,
+  };
 
   // default (unscaled) image and canvas sizes (for stage calculation)
   // invalid default value, so that the image uses its default values at first
@@ -91,6 +107,10 @@ const Canvas = ({
 
   const [svgScale, setSvgScale] = useState<number>(1.0);
   const [svgTranslation, setSvgTranslation] = useState<Vector2>({ x: 0, y: 0 });
+  const centeredSvgTranslation: Vector2 = {
+    x: svgTranslation.x + imageCenteringSpace,
+    y: svgTranslation.y,
+  };
 
   // label input will be opened if a position is set here
   const [labelInputPosition, setLabelInputPosition] = useState<Point>();
@@ -118,14 +138,11 @@ const Canvas = ({
   };
 
   // factor to convert coordinates from an (untransformed) image into the stage
-  const imageToStageFactor: number = getFittedImageScale(imgSize, canvasSize);
+  const imageToStageFactor = getFittedImageScale(imgSize, canvasSize);
 
   // store + update the vector between start of the page and start of the (translated) image to be able to do transformations
-  const calculatePageToStageOffset = () => {
+  const calculatePageToCanvasOffset = () => {
     if (imageRef?.current === null) return { x: 0, y: 0 };
-
-    // get image starting position in window coordinates
-    const { top, left } = imageRef.current.getBoundingClientRect();
 
     // if image can and should be centered
     const resizedImageWidth: number = imgSize.x * imageToStageFactor;
@@ -143,13 +160,17 @@ const Canvas = ({
       setImageCenteringSpace(0);
     }
 
+    // get image starting position in window coordinates
+    const { top, left } = canvasRef.current.getBoundingClientRect();
+
     // top and left are in window coordinates
     // we need to convert them to page coordinates
     const pageOffset: Point = {
       x: left + window.scrollX,
       y: top + window.scrollY,
     };
-    setPageToStageOffset(pageOffset);
+
+    setPageToCanvasOffset(pageOffset);
   };
 
   // const pageToStageOffset = calculatePageToStageOffset();
@@ -357,12 +378,22 @@ const Canvas = ({
 
   // image changed after init -> reset everything
   useEffect(() => {
+    if (canvasRef?.current !== undefined) {
+      const { width, height } = canvasRef!.current!.getBoundingClientRect();
+
+      // for whatever reason the ref adds the toolbars height to the available space, leading to a container size reaching outside the bottom
+      // remove its height here manually
+      const heightWithoutToolbar: number = height - toolbarHeight;
+
+      setCanvasSize({ x: width, y: heightWithoutToolbar });
+    }
+
     resetCanvas();
-  }, [image]);
+  }, [image, isFullscreen]);
 
   useEffect(() => {
-    calculatePageToStageOffset();
-  }, [imageRef, svgTranslation]);
+    calculatePageToCanvasOffset();
+  }, [imageRef, svgTranslation, canvasSize]);
 
   // notify component about available size
   useEffect(() => {
@@ -460,8 +491,19 @@ const Canvas = ({
 
       // right click -> start new annotation
       // clicks during annotation creation will be handled inside the AnnotationComponent
-      const antiScaledMouseStagePosition: Point =
-        mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
+      const antiScaledMouseStageMovedPosition: Point =
+        mouse2.getAntiScaledMouseStagePosition(
+          e,
+          pageToStageOffset,
+          svgScale,
+          svgTranslation,
+        );
+
+      // remove translation when image was horizontally centered
+      const antiScaledMouseStagePosition: Point = {
+        x: antiScaledMouseStageMovedPosition.x - imageCenteringSpace,
+        y: antiScaledMouseStageMovedPosition.y,
+      };
 
       createNewAnnotation(antiScaledMouseStagePosition);
     }
@@ -470,6 +512,8 @@ const Canvas = ({
   const convertStageCoordinatesToImage = (
     stageCoordinates: Point[],
   ): Point[] => {
+    console.log("IMAGE TO STAGE OFFSET", imageToStageFactor);
+
     const coordinatesInImageSpace: Point[] = stageCoordinates.map(
       (coordinate: Point) => {
         return {
@@ -511,36 +555,44 @@ const Canvas = ({
     }
   };
 
-  const onWheel = (e) => {
+  const onWheel = (e: WheelEvent) => {
     const scaleFactor = 1.25;
     const scrollDirection = e.deltaY < 0 ? 1 : -1;
 
-    // current mouse coordinates according to container
-    const rect = canvasRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
     // calculate scaling based on scroll wheel direction
-    let newScale =
+    const newScale =
       scrollDirection > 0 ? svgScale * scaleFactor : svgScale / scaleFactor;
 
-    // calculate mouse position in rescaled coordinate system
-    const svgMouseX = (mouseX - svgTranslation.x * svgScale) / svgScale;
-    const svgMouseY = (mouseY - svgTranslation.y * svgScale) / svgScale;
+    // zoom in/out without affecting the pixel the mouse is at
+    const mousePositionInStage: Point = mouse2.getAntiScaledMouseStagePosition(
+      e as MouseEvent,
+      pageToStageOffset,
+      svgScale,
+      svgTranslation,
+    );
 
-    // new translation, so that svgMouseX/Y is at mouseX/Y after scaling
-    const newTransX = mouseX / newScale - svgMouseX;
-    const newTransY = mouseY / newScale - svgMouseY;
+    // set translation around mouse pixel
+    const scaleChangeFactor: number = svgScale / newScale;
+    const newTranslation: Vector2 = {
+      x:
+        scaleChangeFactor * (mousePositionInStage.x + svgTranslation.x) -
+        mousePositionInStage.x,
+      y:
+        scaleChangeFactor * (mousePositionInStage.y + svgTranslation.y) -
+        mousePositionInStage.y,
+    };
 
+    // contstrain zoom
     if (newScale < 1.0) {
       setSvgScale(1);
-      setSvgTranslation({ x: 0, y: 0 });
+      if (svgTranslation.x != 0 || svgTranslation.y != 0)
+        setSvgTranslation({ x: 0, y: 0 });
     } else if (newScale > 200) {
       setSvgScale(200);
-      setSvgTranslation({ x: newTransX, y: newTransY });
+      setSvgTranslation(newTranslation);
     } else {
       setSvgScale(newScale);
-      setSvgTranslation({ x: newTransX, y: newTransY });
+      setSvgTranslation(newTranslation);
     }
   };
 
@@ -644,6 +696,7 @@ const Canvas = ({
             annotationSettings={annotationSettings}
             possibleLabels={possibleLabels}
             svgScale={svgScale}
+            svgTranslation={centeredSvgTranslation}
             pageToStageOffset={pageToStageOffset}
             nodeRadius={uiConfig.nodeRadius}
             strokeWidth={uiConfig.strokeWidth}
@@ -694,6 +747,12 @@ const Canvas = ({
     );
   };
 
+  // calculate the center of the canvas in page coordinates
+  const junkTextStart: Vector2 = {
+    x: pageToCanvasOffset.x + canvasSize.x / 2,
+    y: pageToCanvasOffset.y + canvasSize.y / 2,
+  };
+
   return (
     <div
       ref={canvasRef}
@@ -738,8 +797,8 @@ const Canvas = ({
         <div
           style={{
             position: "absolute",
-            top: "50%",
-            left: "50%",
+            left: junkTextStart.x,
+            top: junkTextStart.y,
             transform: "translate(-50%, -50%)",
             textAlign: "center",
             color: "white",
@@ -780,7 +839,7 @@ const Canvas = ({
         // style={{ position: "absolute" }}
       >
         <g
-          transform={`scale(${svgScale}) translate(${svgTranslation.x + imageCenteringSpace}, ${svgTranslation.y})`}
+          transform={`scale(${svgScale}) translate(${centeredSvgTranslation.x}, ${centeredSvgTranslation.y})`}
           onMouseOver={onMouseOver}
           onMouseLeave={onMouseLeave}
           // onMouseEnter={() => this.svg.current.focus()}
@@ -810,8 +869,8 @@ const Canvas = ({
           <rect
             x="0"
             y="0"
-            width={stageSize.x}
-            height={stageSize.y}
+            width={canvasSize.x}
+            height={canvasSize.y}
             style={{ opacity: 0.8 }}
             onContextMenu={(e) => e.preventDefault()}
             onClick={() => {

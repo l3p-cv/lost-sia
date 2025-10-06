@@ -4,11 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import ImageLabel from "./ImageToolItems/ImageLabel";
 import Label from "../../models/Label";
+import { useEffect, useState } from "react";
 
 type ImageToolsProps = {
   canJunk: boolean;
   imageLabelIds?: number[];
   isDisabled?: boolean;
+  isFullscreen?: boolean;
   isImageJunk?: boolean;
   possibleLabels: Label[];
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
@@ -18,20 +20,34 @@ type ImageToolsProps = {
 const ImageTools = ({
   canJunk,
   isDisabled = false,
+  isFullscreen = false,
   isImageJunk = false,
   imageLabelIds = [],
   possibleLabels,
   onImageLabelsChanged = () => {},
   onSetIsImageJunk = () => {},
 }: ImageToolsProps) => {
+  const [isLabelPopupVisible, setIsLabelPopupVisible] =
+    useState<boolean>(false);
+
   const customPopoverStyle = {
     "--cui-popover-max-width": "800px",
+    zIndex: 7000,
   };
+
+  // close modal when the fullscreen state changes
+  useEffect(() => {
+    setIsLabelPopupVisible(false);
+  }, [isFullscreen]);
 
   return (
     <CButtonGroup role="group" aria-label="Image Tools">
       <CPopover
         placement="bottom"
+        visible={isLabelPopupVisible}
+        // make sure the visible var stays updated (otherwise we cannot close it)
+        onShow={() => setIsLabelPopupVisible(true)}
+        onHide={() => setIsLabelPopupVisible(false)}
         content={
           <ImageLabel
             selectedLabelIds={imageLabelIds}

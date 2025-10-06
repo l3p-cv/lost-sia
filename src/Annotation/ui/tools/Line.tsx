@@ -1,9 +1,8 @@
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
 
 // rename type to avoid naming conflict
 import { Point } from "../../../types";
 import Node from "../atoms/Node";
-import Polyline from "../atoms/PolygonArea";
 import AnnotationMode from "../../../models/AnnotationMode";
 import AnnotationSettings from "../../../models/AnnotationSettings";
 import Edge from "../atoms/Edge";
@@ -17,11 +16,12 @@ type LineProps = {
   setAnnotationMode: (annotationMode: AnnotationMode) => void;
   pageToStageOffset: Point;
   svgScale: number;
+  svgTranslation: Point;
   style: CSSProperties;
   onAddNode: (coordinates: Point[]) => void;
   onDeleteNode: (coordinates: Point[]) => void;
   onFinishAnnoCreate: () => void;
-  onIsDraggingStateChanged: (bool) => void;
+  onIsDraggingStateChanged: (newDraggingState: boolean) => void;
   onMoving: (coordinates: Point[]) => void; // during moving - update coordinates in parent
   onMoved: () => void; // moving finished - send annotation changed event
 };
@@ -33,6 +33,7 @@ const Line = ({
   annotationMode,
   pageToStageOffset,
   svgScale,
+  svgTranslation,
   style,
   onAddNode,
   onDeleteNode,
@@ -65,7 +66,12 @@ const Line = ({
 
     if (e.button === 2 && annotationMode == AnnotationMode.CREATE) {
       const antiScaledMousePositionInStageCoordinates =
-        mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
+        mouse2.getAntiScaledMouseStagePosition(
+          e,
+          pageToStageOffset,
+          svgScale,
+          svgTranslation,
+        );
 
       let newCoordinates = [...coordinates];
       newCoordinates.push(antiScaledMousePositionInStageCoordinates);
@@ -97,6 +103,7 @@ const Line = ({
         e,
         pageToStageOffset,
         svgScale,
+        svgTranslation,
       );
 
       let newCoords: Point[] = [...coordinates];
@@ -151,6 +158,7 @@ const Line = ({
         coordinates={coordinate}
         pageToStageOffset={pageToStageOffset}
         svgScale={svgScale}
+        svgTranslation={svgTranslation}
         style={style}
         onDeleteNode={() => {
           const newCoordinates = [...coordinates];
@@ -182,6 +190,7 @@ const Line = ({
           endCoordinate={coordinates[index + 1]}
           pageToStageOffset={pageToStageOffset}
           svgScale={svgScale}
+          svgTranslation={svgTranslation}
           style={style}
           onAddNode={(coordinate: Point) => {
             const newCoordinates = [...coordinates];

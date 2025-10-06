@@ -18,6 +18,7 @@ type AnnotationComponentProps = {
   annotationSettings: AnnotationSettings;
   possibleLabels: Label[];
   svgScale: number;
+  svgTranslation: Point;
   pageToStageOffset: Point;
   strokeWidth: number;
   nodeRadius: number;
@@ -36,6 +37,7 @@ const AnnotationComponent = ({
   annotationSettings,
   possibleLabels,
   svgScale,
+  svgTranslation,
   pageToStageOffset,
   strokeWidth,
   nodeRadius,
@@ -164,6 +166,7 @@ const AnnotationComponent = ({
             coordinates={coordinates[0]}
             pageToStageOffset={pageToStageOffset}
             svgScale={svgScale}
+            svgTranslation={svgTranslation}
             style={annotationStyle}
             onMoving={(newPoint: Point) => {
               setAnnotationMode(AnnotationMode.MOVE);
@@ -183,6 +186,7 @@ const AnnotationComponent = ({
             annotationMode={annotationMode}
             setAnnotationMode={setAnnotationMode}
             svgScale={svgScale}
+            svgTranslation={svgTranslation}
             style={annotationStyle}
             onAddNode={changeAnnoCoords}
             onDeleteNode={changeAnnoCoords}
@@ -203,6 +207,7 @@ const AnnotationComponent = ({
             pageToStageOffset={pageToStageOffset}
             style={annotationStyle}
             svgScale={svgScale}
+            svgTranslation={svgTranslation}
             onDeleteNode={() => {
               console.log("TODO");
             }}
@@ -223,6 +228,7 @@ const AnnotationComponent = ({
             annotationMode={annotationMode}
             setAnnotationMode={setAnnotationMode}
             svgScale={svgScale}
+            svgTranslation={svgTranslation}
             style={annotationStyle}
             onAddNode={changeAnnoCoords}
             onDeleteNode={changeAnnoCoords}

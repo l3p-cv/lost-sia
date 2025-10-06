@@ -95,6 +95,7 @@ const Sia2 = ({
     useState<number[]>(initialImageLabelIds);
 
   const [isImageJunk, setIsImageJunk] = useState<boolean>();
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // keep track which numbers are already used for annotation ids - even if they are deleted
   const [usedInternalIds, setUsedInternalIds] = useState<number[]>([]);
@@ -173,7 +174,8 @@ const Sia2 = ({
   useEffect(() => {
     // update the initial annotations only when the image is not set
     // (the annotations are always loaded before the image)
-    if (image !== undefined) return;
+    // when we dont have any annos, we dont need to call it (prevents render errors on initialization)
+    if (image !== undefined || initialAnnotations.length === 0) return;
 
     createInitialAnnotations();
     setIsImageJunk(initialIsImageJunk);
@@ -246,6 +248,17 @@ const Sia2 = ({
   //   setToolbarHeight(height + marginBetweenToolbarAndContainerPixels);
   // }, [toolbarContainerRef]);
 
+  const fullscreenStyle = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    zIndex: 6000,
+    backgroundColor: "#ffff",
+    width: "100%",
+    height: "100%",
+    padding: 15,
+  };
+
   if (allowedTools === undefined)
     return (
       <div className="d-flex justify-content-center">
@@ -254,7 +267,13 @@ const Sia2 = ({
     );
 
   return (
-    <>
+    <div
+      style={{
+        ...(isFullscreen ? fullscreenStyle : {}),
+        width: "100%",
+        height: "100%",
+      }}
+    >
       <div
         ref={toolbarContainerRef}
         style={{
@@ -266,6 +285,7 @@ const Sia2 = ({
           allowedTools={allowedTools}
           additionalButtons={additionalButtons}
           isDisabled={isLoading}
+          isFullscreen={isFullscreen}
           isImageJunk={isImageJunk}
           imageLabelIds={imageLabelIds}
           possibleLabels={possibleLabels}
@@ -274,11 +294,12 @@ const Sia2 = ({
             setImageLabelIds(newImageLabelIds);
             onImageLabelsChanged(newImageLabelIds);
           }}
-          onSetSelectedTool={setSelectedAnnoTool}
+          onSetIsFullscreen={setIsFullscreen}
           onSetIsImageJunk={(newJunkState: boolean) => {
             setIsImageJunk(newJunkState);
             onIsImageJunk(newJunkState);
           }}
+          onSetSelectedTool={setSelectedAnnoTool}
           onShouldDeleteSelectedAnnotation={deleteSelectedAnnotation}
         />
       </div>
@@ -297,6 +318,7 @@ const Sia2 = ({
             annotations={annotations}
             annotationSettings={annotationSettings}
             image={image}
+            isFullscreen={isFullscreen}
             isImageJunk={isImageJunk}
             isPolygonSelectionMode={isPolygonSelectionMode}
             selectedAnnotation={selectedAnnotation}
@@ -389,7 +411,7 @@ const Sia2 = ({
           />
         )}
       </div>
-    </>
+    </div>
   );
 };
 

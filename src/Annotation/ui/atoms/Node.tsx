@@ -9,6 +9,7 @@ type NodeProps = {
   annotationSettings: AnnotationSettings;
   pageToStageOffset: Point;
   svgScale: number;
+  svgTranslation: Point;
   style: CSSProperties;
   onDeleteNode: () => void;
   onMoving: (index: number, coordinates: Point) => void;
@@ -22,6 +23,7 @@ const Node = ({
   annotationSettings,
   pageToStageOffset,
   svgScale,
+  svgTranslation,
   style,
   onDeleteNode,
   onMoving, // during moving - update coordinates in parent
@@ -44,7 +46,12 @@ const Node = ({
     if (!isDragging) return;
 
     const antiScaledMousePositionInStageCoordinates =
-      mouse2.getAntiScaledMouseStagePosition(e, pageToStageOffset, svgScale);
+      mouse2.getAntiScaledMouseStagePosition(
+        e,
+        pageToStageOffset,
+        svgScale,
+        svgTranslation,
+      );
 
     // only escalate event when mouse actually moved
     if (e.movementX !== 0 || e.movementY !== 0) {

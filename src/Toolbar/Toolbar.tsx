@@ -16,9 +16,11 @@ type ToolbarProps = {
   isImageJunk?: boolean;
   imageLabelIds?: number[];
   isDisabled?: boolean;
+  isFullscreen?: boolean;
   possibleLabels: Label[];
   selectedTool: AnnotationTool;
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
+  onSetIsFullscreen?: (isFullscreen: boolean) => void;
   onSetIsImageJunk?: (isImageJunk: boolean) => void;
   onSetSelectedTool?: (selectedTool: AnnotationTool) => void;
   onShouldDeleteSelectedAnnotation?: () => void;
@@ -31,9 +33,11 @@ const Toolbar = ({
   isImageJunk = false,
   imageLabelIds = [],
   isDisabled = false,
+  isFullscreen = false,
   possibleLabels,
   selectedTool,
   onImageLabelsChanged = () => {},
+  onSetIsFullscreen = () => {},
   onSetIsImageJunk = () => {},
   onSetSelectedTool = () => {},
   onShouldDeleteSelectedAnnotation = () => {},
@@ -46,6 +50,7 @@ const Toolbar = ({
           isImageJunk={isImageJunk}
           imageLabelIds={imageLabelIds}
           isDisabled={isDisabled}
+          isFullscreen={isFullscreen}
           possibleLabels={possibleLabels}
           onImageLabelsChanged={onImageLabelsChanged}
           onSetIsImageJunk={onSetIsImageJunk}
@@ -53,7 +58,11 @@ const Toolbar = ({
       </CCol>
 
       <CCol xs={2} sm={1}>
-        <AccessibilityTools isDisabled={isDisabled} />
+        <AccessibilityTools
+          isDisabled={isDisabled}
+          isFullscreen={isFullscreen}
+          onSetIsFullscreen={onSetIsFullscreen}
+        />
       </CCol>
 
       {annotationSettings.canCreate && (

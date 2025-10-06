@@ -12,10 +12,14 @@ import InstructionsModal from "./InstructionsModal";
 
 type AccessibilityToolsProps = {
   isDisabled?: boolean;
+  isFullscreen?: boolean;
+  onSetIsFullscreen?: (isFullscreen: boolean) => void;
 };
 
 const AccessibilityTools = ({
   isDisabled = false,
+  isFullscreen = false,
+  onSetIsFullscreen = () => {},
 }: AccessibilityToolsProps) => {
   const [isInstructionsModalVisible, setIsInstructionsModalVisible] =
     useState<boolean>(false);
@@ -31,15 +35,16 @@ const AccessibilityTools = ({
         <FontAwesomeIcon icon={faFilter as IconProp} size="lg" />
       </CButton> */}
 
-      {/* <CButton
+      <CButton
         color="primary"
         disabled={isDisabled}
-        variant="outline"
-        onClick={() => {}}
+        variant={isFullscreen ? undefined : "outline"}
+        onClick={() => onSetIsFullscreen(!isFullscreen)}
       >
         <FontAwesomeIcon icon={faMaximize as IconProp} size="lg" />
       </CButton>
 
+      {/* 
       <CButton
         color="primary"
         disabled={isDisabled}
