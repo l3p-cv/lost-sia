@@ -118,6 +118,7 @@ const Canvas = ({
 
   // label input will be opened if a position is set here
   const [labelInputPosition, setLabelInputPosition] = useState<Point>();
+  const [isLabelInputVisible, setIsLabelInputVisible] = useState<boolean>();
 
   // available canvas area - all possible space for creating a canvas
   const canvasRef = useRef(null);
@@ -189,9 +190,12 @@ const Canvas = ({
 
     // we get the mouse position in the stage coordinate system
     // to use it as annotation coordinates, convert it into a list in the percentage coordinates
-    const percentagedInitialCoords = convertStageCoordinatesToPercentaged([
-      antiScaledMouseStagePosition,
-    ]);
+    const percentagedInitialCoords =
+      transform2.convertStageCoordinatesToPercentaged(
+        [antiScaledMouseStagePosition],
+        imageToStageFactor,
+        imgSize,
+      );
 
     // bbox always require 2 points - add first coordinate again
     if (selectedAnnoTool === AnnotationTool.BBox)
@@ -226,7 +230,7 @@ const Canvas = ({
   const handleKeyAction = (keyAction: KeyAction) => {
     switch (keyAction) {
       case KeyAction.EDIT_LABEL:
-        console.log("KeyAction TODO: EDIT_LABEL");
+        if (selectedAnnotation !== undefined) setIsLabelInputVisible(true);
         break;
       case KeyAction.DELETE_ANNO:
         console.log("KeyAction TODO: DELETE_ANNO");
@@ -301,46 +305,6 @@ const Canvas = ({
     setSvgTranslation({ x: newTransX, y: newTransY });
   };
 
-  const convertPercentagedCoordinatesToImage = (
-    percentagedCoordinates: Point[],
-  ): Point[] => {
-    const imageCoordinates: Point[] = percentagedCoordinates.map(
-      (point: Point) => {
-        return {
-          x: point.x * imgSize.x,
-          y: point.y * imgSize.y,
-        };
-      },
-    );
-
-    return imageCoordinates;
-  };
-
-  const convertImageCoordinatesToStage = (
-    imageCoordinates: Point[],
-  ): Point[] => {
-    // the image is scaled to match the width of the canvas
-    // assume the aspect ratio is kept
-    const imageToCanvasScale = stageSize.x / imgSize.x;
-
-    const stageCoordinates = imageCoordinates.map((imagePoint: Point) => ({
-      x: imagePoint.x * imageToCanvasScale,
-      y: imagePoint.y * imageToCanvasScale,
-    }));
-
-    return stageCoordinates;
-  };
-
-  const convertPercentagedCoordinatesToStage = (
-    percentagedCoordinates: Point[],
-  ): Point[] => {
-    const imageCoordinates = convertPercentagedCoordinatesToImage(
-      percentagedCoordinates,
-    );
-    const stageCoordinates = convertImageCoordinatesToStage(imageCoordinates);
-    return stageCoordinates;
-  };
-
   const calculateScaledAnnotations = (_annotations: Annotation[]) => {
     if (
       stageSize.x <= 0 ||
@@ -352,7 +316,11 @@ const Canvas = ({
 
     const newScaledAnnotations = annotations.map((annotation: Annotation) => ({
       ...annotation,
-      coordinates: convertPercentagedCoordinatesToStage(annotation.coordinates),
+      coordinates: transform2.convertPercentagedCoordinatesToStage(
+        annotation.coordinates,
+        imgSize,
+        stageSize,
+      ),
     }));
 
     return newScaledAnnotations;
@@ -375,6 +343,7 @@ const Canvas = ({
     setSvgTranslation({ x: 0, y: 0 });
 
     setLabelInputPosition(undefined);
+    setIsLabelInputVisible(false);
   };
 
   // image changed after init -> reset everything
@@ -479,9 +448,12 @@ const Canvas = ({
     fullyCreatedAnnotation.mode = AnnotationMode.VIEW;
 
     // convert the coordinates from our local scaled sytem into the percentaged one
-    const percentagedCoordinates = convertStageCoordinatesToPercentaged(
-      fullyCreatedAnnotation.coordinates,
-    );
+    const percentagedCoordinates =
+      transform2.convertStageCoordinatesToPercentaged(
+        fullyCreatedAnnotation.coordinates,
+        imageToStageFactor,
+        imgSize,
+      );
     fullyCreatedAnnotation.coordinates = percentagedCoordinates;
 
     onAnnoChanged(fullyCreatedAnnotation);
@@ -530,20 +502,6 @@ const Canvas = ({
 
       createNewAnnotation(antiScaledMouseStagePosition);
     }
-  };
-
-  const convertStageCoordinatesToImage = (
-    stageCoordinates: Point[],
-  ): Point[] => {
-    const coordinatesInImageSpace: Point[] = stageCoordinates.map(
-      (coordinate: Point) => {
-        return {
-          x: coordinate.x / imageToStageFactor,
-          y: coordinate.y / imageToStageFactor,
-        };
-      },
-    );
-    return coordinatesInImageSpace;
   };
 
   const onMouseOver = () => {
@@ -622,52 +580,42 @@ const Canvas = ({
       case CanvasAction.ANNO_SELECTED:
         const percentagedAnnotation = {
           ...annotation,
-          coordinates: convertStageCoordinatesToPercentaged([
-            ...annotation.coordinates,
-          ]),
+          coordinates: transform2.convertStageCoordinatesToPercentaged(
+            [...annotation.coordinates],
+            imageToStageFactor,
+            imgSize,
+          ),
         };
 
         onSelectAnnotation(percentagedAnnotation);
+
+        // get top left point of annotation
+        const leftPoints: Point[] = transform2.getMostLeftPoints(
+          annotation.coordinates,
+        );
+        const topLeftPoint: Point = transform2.getTopPoint(leftPoints)[0];
+        const pageTopLeftPoint: Point = transform2.convertStageToPage(
+          topLeftPoint,
+          pageToStageOffset,
+          svgScale,
+          svgTranslation,
+        );
+
+        setLabelInputPosition(pageTopLeftPoint);
+
         break;
       default:
         console.log("Unknown Canvas Action:", canvasAction);
     }
   };
 
-  const convertStageCoordinatesToPercentaged = (
-    scaledCoordinates: Point[],
-  ): Point[] => {
-    const imageCoordinates: Point[] =
-      convertStageCoordinatesToImage(scaledCoordinates);
-
-    // make sure the coordinates are inside the image bounds
-    const polishedImageCoordinates = imageCoordinates.map((point: Point) => {
-      if (point.x < 0) point.x = 0;
-      if (point.y < 0) point.y = 0;
-      if (point.x > imgSize.x) point.x = imgSize.x;
-      if (point.y > imgSize.y) point.y = imgSize.y;
-
-      return point;
-    });
-
-    // someone decided to use percentages as the image coordinates
-    // convert them from pixel coordinates back to percentages here
-    const percentagedCoordinates = polishedImageCoordinates.map(
-      (point: Point) => {
-        return {
-          x: point.x / imgSize.x,
-          y: point.y / imgSize.y,
-        };
-      },
-    );
-
-    return percentagedCoordinates;
-  };
-
   const handleOnAnnoChanged = (annotation: Annotation) => {
-    const percentagedCoordinates = convertStageCoordinatesToPercentaged(
-      annotation.coordinates,
-    );
+    const percentagedCoordinates =
+      transform2.convertStageCoordinatesToPercentaged(
+        annotation.coordinates,
+        imageToStageFactor,
+        imgSize,
+      );
 
     const newAnnotation = {
       ...annotation,
@@ -676,20 +624,6 @@ const Canvas = ({
 
     // send event to parent component
     onAnnoChanged(newAnnotation);
-  };
-
-  const handleOnLabelIconClicked = (markerPosition: Point) => {
-    // marker position is in stage coordinates relative to the top left corner of the image
-    // the dom needs values in page coordinates
-    // convert the coordinates here
-    const pageMarkerPosition = transform2.convertStageToPage(
-      markerPosition,
-      pageToStageOffset,
-      svgScale,
-      svgTranslation,
-    );
-
-    setLabelInputPosition(pageMarkerPosition);
   };
 
   const renderAnnotations = (): ReactElement => {
@@ -731,7 +665,7 @@ const Canvas = ({
               scaledAnnotation.internalId === selectedAnnotation?.internalId
             }
             onFinishAnnoCreate={onFinishCreateAnno}
-            onLabelIconClicked={handleOnLabelIconClicked}
+            onLabelIconClicked={() => setIsLabelInputVisible(true)}
             onAction={onAnnoAction}
             onAnnoChanged={handleOnAnnoChanged}
             onAnnotationModeChange={(annotationMode: AnnotationMode) => {
@@ -763,7 +697,7 @@ const Canvas = ({
         style={{ opacity: 0 }}
         onContextMenu={(e: PointerEvent) => e.preventDefault()}
         onClick={() => {
-          setLabelInputPosition(undefined);
+          setIsLabelInputVisible(false);
         }}
       />
     );
@@ -793,13 +727,13 @@ const Canvas = ({
         }}
       >
         <LabelInput
-          isVisible={labelInputPosition != undefined}
+          isVisible={isLabelInputVisible}
           selectedLabelsIds={selectedAnnotation?.labelIds!}
           possibleLabels={possibleLabels}
           isMultilabel={annotationSettings!.canHaveMultipleLabels}
           onLabelSelect={(selectedLabelIds: number[]) => {
             // close the input popup
-            setLabelInputPosition(undefined);
+            setIsLabelInputVisible(false);
 
             // inform parent which label was chosen
             if (selectedLabelIds.length > 0) {
@@ -818,8 +752,10 @@ const Canvas = ({
             // also update the new labels
             const updatedAnno: Annotation = {
               ...selectedAnnotation,
-              coordinates: convertPercentagedCoordinatesToStage(
+              coordinates: transform2.convertPercentagedCoordinatesToStage(
                 selectedAnnotation!.coordinates,
+                imgSize,
+                stageSize,
               ),
               labelIds: [...selectedLabelIds],
             };
@@ -898,7 +834,7 @@ const Canvas = ({
           />
           {renderAnnotations()}
         </g>
-        {labelInputPosition && renderInfiniteSelectionArea()}
+        {isLabelInputVisible && renderInfiniteSelectionArea()}
 
         {isImageJunk && (
           <rect
