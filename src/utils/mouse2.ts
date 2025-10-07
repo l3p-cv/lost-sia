@@ -7,6 +7,7 @@ import { Point, Vector2 } from "../types";
  * @param e the mouse event
  * @param pageToStageOffset vector2 from the start of the page to the start of the stage
  * @param svgScale the scaling factor of the canvas svg element (can be zoomed in by user)
+ * @param svgTranslation the translation factor of the canvas svg element ("image" can be moved by user)
  * @returns
  */
 const getAntiScaledMouseStagePosition = (

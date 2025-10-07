@@ -44,7 +44,7 @@ const Toolbar = ({
 }: ToolbarProps) => {
   return (
     <CRow xs={{ gutterY: 2 }}>
-      <CCol xs={4} sm={2} xxl={1}>
+      <CCol xs={4} sm={2} xxl={2}>
         <ImageTools
           canJunk={allowedTools.junk}
           isImageJunk={isImageJunk}
@@ -57,7 +57,7 @@ const Toolbar = ({
         />
       </CCol>
 
-      <CCol xs={2} sm={1}>
+      <CCol xs={2} lg={2}>
         <AccessibilityTools
           isDisabled={isDisabled}
           isFullscreen={isFullscreen}

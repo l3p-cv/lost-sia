@@ -30,7 +30,11 @@ const AnnoBar = ({
   style,
   onLabelIconClicked,
 }: AnnoBarProps) => {
-  const [barPosition, setBarPosition] = useState<Point>({ x: 0, y: 0 });
+  const [topLeftPoint, setTopLeftPoint] = useState<Point>({ x: 0, y: 0 });
+  const barPosition: Point = {
+    x: topLeftPoint.x + 7 / svgScale,
+    y: topLeftPoint.y - 10 / svgScale,
+  };
   const [barWidth, setBarWidth] = useState<number>(0);
   const [barHeight, setBarHeight] = useState<number>(0);
   const [fontSize, setFontSize] = useState<number>(0);
@@ -45,14 +49,9 @@ const AnnoBar = ({
   useEffect(() => {
     // get the most top left point from the annotation
     const topPoints: Point[] = transform.getTopPoint(annotationCoordinates);
-    const topLeftPoint: Point = transform.getMostLeftPoints(topPoints)[0];
+    const newTopLeftPoint: Point = transform.getMostLeftPoints(topPoints)[0];
 
-    const newBarPosition: Point = {
-      x: topLeftPoint.x + 7 / svgScale,
-      y: topLeftPoint.y - 10 / svgScale,
-    };
-
-    setBarPosition(newBarPosition);
+    setTopLeftPoint(newTopLeftPoint);
 
     // calculate scaled font size
     const newFontSize = Math.ceil(DEFAULT_FONT_SIZE / svgScale);
@@ -90,7 +89,7 @@ const AnnoBar = ({
           y={barPosition.y - 30 / svgScale}
           color={color}
           size={60 / svgScale}
-          onClick={() => onLabelIconClicked(barPosition)}
+          onClick={() => onLabelIconClicked(topLeftPoint)}
         />
       )}
 

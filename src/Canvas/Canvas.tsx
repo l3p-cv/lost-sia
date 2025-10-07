@@ -29,6 +29,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBan } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import AnnotationStatus from "../models/AnnotationStatus";
+import transform2 from "../utils/transform2";
 
 type CanvasProps = {
   annotations?: Annotation[];
@@ -354,21 +355,14 @@ const Canvas = ({
 
   const resetCanvas = () => {
     setEditorMode(EditorModes.VIEW);
-    // setImageToStageFactor(0);
 
-    // setPageToStageOffset({
-    //   x: -1,
-    //   y: -1,
-    // });
+    // largest possible annotation size fitting the whole image
+    setStageSize({ x: -1, y: -1 });
 
-    // setImgSize({ x: -1, y: -1 });
     if (imageRef.current !== null) {
       const { width, height } = imageRef.current.getBoundingClientRect();
       setImgSize({ x: width, y: height });
     }
-
-    // largest possible annotation size fitting the whole image
-    setStageSize({ x: -1, y: -1 });
 
     setSvgScale(1.0);
     setSvgTranslation({ x: 0, y: 0 });
@@ -386,6 +380,18 @@ const Canvas = ({
       const heightWithoutToolbar: number = height - toolbarHeight;
 
       setCanvasSize({ x: width, y: heightWithoutToolbar });
+
+      // listen for size changes on div element
+      const resizeObserver = new ResizeObserver(() => {
+        const { width, height } = canvasRef!.current!.getBoundingClientRect();
+        const heightWithoutToolbar: number = height - toolbarHeight;
+
+        setCanvasSize({ x: width, y: heightWithoutToolbar });
+      });
+      resizeObserver.observe(canvasRef!.current!);
+
+      // cleanup
+      return () => resizeObserver.disconnect();
     }
 
     resetCanvas();
@@ -414,6 +420,16 @@ const Canvas = ({
     const { width, height } = imageRef.current.getBoundingClientRect();
 
     setImgSize({ x: width, y: height });
+
+    // listen for size changes on div element
+    const imgResizeObserver = new ResizeObserver(() => {
+      const { width, height } = imageRef!.current!.getBoundingClientRect();
+
+      setImgSize({ x: width, y: height });
+    });
+    imgResizeObserver.observe(imageRef!.current!);
+
+    return () => imgResizeObserver.disconnect();
   }, [imageRef]);
 
   useEffect(() => {
@@ -659,11 +675,12 @@ const Canvas = ({
     // marker position is in stage coordinates relative to the top left corner of the image
     // the dom needs values in page coordinates
     // convert the coordinates here
-    // also counter the coordinate changes when the stage is zoomed in
-    const pageMarkerPosition: Point = {
-      x: markerPosition.x * svgScale + pageToStageOffset.x,
-      y: markerPosition.y * svgScale + pageToStageOffset.y,
-    };
+    const pageMarkerPosition = transform2.convertStageToPage(
+      markerPosition,
+      pageToStageOffset,
+      svgScale,
+      svgTranslation,
+    );
 
     setLabelInputPosition(pageMarkerPosition);
   };

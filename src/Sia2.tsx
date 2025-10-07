@@ -37,9 +37,12 @@ type SiaProps = {
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
   onIsImageJunk?: (isJunk: boolean) => void;
   onNotification?: (notification: SIANotification) => void;
-  onSelectAnnotation: (annotation?: Annotation) => void;
+  onSelectAnnotation?: (annotation?: Annotation) => void;
 };
 
+/**
+ * Main SIA component
+ */
 const Sia2 = ({
   additionalButtons,
   allowedTools: propAllowedTools,
@@ -61,7 +64,7 @@ const Sia2 = ({
   onImageLabelsChanged = () => {},
   onIsImageJunk = () => {},
   onNotification = (_) => {},
-  onSelectAnnotation = () => {},
+  onSelectAnnotation = (_) => {},
 }: SiaProps) => {
   const marginBetweenToolbarAndContainerPixels: number = 10;
 
@@ -172,6 +175,14 @@ const Sia2 = ({
   };
 
   useEffect(() => {
+    // remove current annotations when the image changes
+    if (image === undefined) {
+      setAnnotations([]);
+      setSelectedAnnotation(undefined);
+    }
+  }, [image]);
+
+  useEffect(() => {
     setIsImageJunk(initialIsImageJunk);
 
     // update the initial annotations only when the image is not set
@@ -205,7 +216,7 @@ const Sia2 = ({
     const defaultUiConfig: UiConfig = {
       nodeRadius: 4,
       strokeWidth: 4,
-      imageCentered: true,
+      imageCentered: false,
     };
 
     // use default values if a key is not set
