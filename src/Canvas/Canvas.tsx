@@ -33,7 +33,7 @@ import transform2 from "../utils/transform2";
 
 type CanvasProps = {
   annotations?: Annotation[];
-  annotationSettings?: AnnotationSettings;
+  annotationSettings: AnnotationSettings;
   image: string;
   isFullscreen?: boolean;
   isImageJunk?: boolean;
@@ -80,6 +80,9 @@ const Canvas = ({
   onSelectAnnotation,
 }: CanvasProps) => {
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW);
+
+  // remember which label was added last
+  const [currentLabelId, setCurrentLabelId] = useState<number>();
 
   // vector from the top left of the DOM document to the top left of the stage
   // (events are emitting page coordinates, so we need this to convert them)
@@ -200,6 +203,10 @@ const Canvas = ({
       selectedAnnoTool,
       percentagedInitialCoords,
     );
+
+    // automatically select the last used label
+    if (currentLabelId !== undefined) newAnnotation.labelIds = [currentLabelId];
+
     onAnnoCreated(newAnnotation);
 
     // points are created in only one frame
@@ -794,10 +801,22 @@ const Canvas = ({
             // close the input popup
             setLabelInputPosition(undefined);
 
+            // inform parent which label was chosen
+            if (selectedLabelIds.length > 0) {
+              const newLabelIds: number[] = selectedLabelIds.filter(
+                (labelId: number) =>
+                  !selectedAnnotation!.labelIds!.includes(labelId),
+              );
+
+              if (newLabelIds.length > 0) {
+                setCurrentLabelId(newLabelIds[0]);
+              }
+            }
+
             // selectedAnnotation comes from SIA and is therefore in the percentaged system
             // convert it first
             // also update the new labels
-            const updatedAnno = {
+            const updatedAnno: Annotation = {
               ...selectedAnnotation,
               coordinates: convertPercentagedCoordinatesToStage(
                 selectedAnnotation!.coordinates,
