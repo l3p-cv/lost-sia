@@ -22,7 +22,7 @@ const meta = {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
     layout: "fullscreen",
   },
-  tags: ["autodocs"],
+  tags: ["!autodocs"],
   excludeStories: /.*Data$/,
   args: {
     ...ActionsData,

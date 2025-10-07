@@ -1,15 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import Sia2 from "../../Sia2";
-import UiConfig from "../../models/UiConfig";
-
-import { imgBlob, possibleLabels } from "../siaDummyData";
-import Label from "../../models/Label";
+import Sia2 from "../Sia2";
+import { imgBlob } from "./siaDummyData";
+import Label from "../models/Label";
 
 export const ActionsData = {};
 
 const meta = {
-  title: "Components/Sia2",
+  title: "Minimal SIA",
   component: Sia2,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
@@ -22,7 +20,14 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "50vw", height: "65vh" }}>
+      <div
+        style={{
+          width: "50vw",
+          height: "65vh",
+          padding: 10,
+          overflow: "hidden",
+        }}
+      >
         <Story />
       </div>
     ),
@@ -31,24 +36,6 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
-const uiConfig: UiConfig = {
-  nodeRadius: 4,
-  strokeWidth: 4,
-  imageCentered: false,
-};
-
-/**
- * SIA with dummy data
- */
-export const Default: Story = {
-  args: {
-    ...ActionsData,
-    uiConfig,
-    image: imgBlob,
-    possibleLabels,
-  },
-};
 
 const minimalExampleLabels: Label[] = [
   {
@@ -98,25 +85,5 @@ export const Minimal: Story = {
         />`,
       },
     },
-  },
-};
-
-export const Loading: Story = {
-  args: {
-    ...ActionsData,
-    isLoading: true,
-    uiConfig,
-    image: imgBlob,
-    possibleLabels: [],
-  },
-};
-
-export const Junk: Story = {
-  args: {
-    ...ActionsData,
-    initialIsImageJunk: true,
-    uiConfig,
-    image: imgBlob,
-    possibleLabels: [],
   },
 };

@@ -1,0 +1,27 @@
+import { Canvas, Meta, Source, Story } from "@storybook/addon-docs/blocks";
+import * as SiaStories from "./AnnotationTools.stories.tsx";
+
+<Meta of={SiaStories} />
+
+# Annotation Tools
+
+The `allowedTools` parameter allows configuring which annotation tools are permitted.  
+For example, you could let the user only annotate bounding boxes with the following:
+
+<Source of={SiaStories.BBoxOnly} language="tsx" />
+
+This will get you the following:
+
+<Canvas>
+  <Story of={SiaStories.BBoxOnly} />
+</Canvas>
+
+## Control Junk
+
+You can also restrict the user from using the junk functionality:
+
+<Source of={SiaStories.NoJunk} language="tsx" />
+
+<Canvas>
+  <Story of={SiaStories.NoJunk} />
+</Canvas>
