@@ -512,8 +512,6 @@ const Canvas = ({
   const convertStageCoordinatesToImage = (
     stageCoordinates: Point[],
   ): Point[] => {
-    console.log("IMAGE TO STAGE OFFSET", imageToStageFactor);
-
     const coordinatesInImageSpace: Point[] = stageCoordinates.map(
       (coordinate: Point) => {
         return {
@@ -761,37 +759,38 @@ const Canvas = ({
         height: "100%",
       }}
     >
-      {labelInputPosition && (
-        <div
-          style={{
-            position: "absolute",
-            left: labelInputPosition.x,
-            top: labelInputPosition.y,
-          }}
-        >
-          <LabelInput
-            selectedLabelsIds={selectedAnnotation!.labelIds!}
-            possibleLabels={possibleLabels}
-            isMultilabel={annotationSettings!.canHaveMultipleLabels}
-            onLabelSelect={(selectedLabelIds: number[]) => {
-              // close the input popup
-              setLabelInputPosition(undefined);
+      <div
+        style={{
+          position: "absolute",
+          left: labelInputPosition?.x !== undefined ? labelInputPosition.x : 0,
+          top: labelInputPosition?.y !== undefined ? labelInputPosition.y : 0,
+          display: labelInputPosition?.y !== undefined ? "inherit" : "none",
+          zIndex: 7000,
+        }}
+      >
+        <LabelInput
+          isVisible={labelInputPosition != undefined}
+          selectedLabelsIds={selectedAnnotation?.labelIds!}
+          possibleLabels={possibleLabels}
+          isMultilabel={annotationSettings!.canHaveMultipleLabels}
+          onLabelSelect={(selectedLabelIds: number[]) => {
+            // close the input popup
+            setLabelInputPosition(undefined);
 
-              // selectedAnnotation comes from SIA and is therefore in the percentaged system
-              // convert it first
-              // also update the new labels
-              const updatedAnno = {
-                ...selectedAnnotation,
-                coordinates: convertPercentagedCoordinatesToStage(
-                  selectedAnnotation!.coordinates,
-                ),
-                labelIds: [...selectedLabelIds],
-              };
-              handleOnAnnoChanged(updatedAnno);
-            }}
-          />
-        </div>
-      )}
+            // selectedAnnotation comes from SIA and is therefore in the percentaged system
+            // convert it first
+            // also update the new labels
+            const updatedAnno = {
+              ...selectedAnnotation,
+              coordinates: convertPercentagedCoordinatesToStage(
+                selectedAnnotation!.coordinates,
+              ),
+              labelIds: [...selectedLabelIds],
+            };
+            handleOnAnnoChanged(updatedAnno);
+          }}
+        />
+      </div>
 
       {isImageJunk && (
         <div

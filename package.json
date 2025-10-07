@@ -72,7 +72,7 @@
     "semantic-ui-react": "^2.0.3"
   },
   "peerDependencies": {
-    "@coreui/react": "^5.7.0",
+    "@coreui/react": "^5.9.1",
     "prop-types": "^15.5.4",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
@@ -83,6 +83,7 @@
     "@storybook/react": "^9.0.12",
     "@storybook/react-vite": "^9.0.12",
     "@storybook/test": "9.0.0-alpha.2",
+    "@types/react": "^19.1.16",
     "@vitejs/plugin-react": "^4.3.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.0.1",

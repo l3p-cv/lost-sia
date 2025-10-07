@@ -4,10 +4,13 @@ import {
   CDropdownMenu,
   CDropdownItem,
   CFormInput,
+  CDropdownDivider,
+  CDropdownToggle,
 } from "@coreui/react";
 import Label from "../models/Label";
 
 type LabelInputProps = {
+  isVisible: boolean;
   selectedLabelsIds: number[];
   possibleLabels: Label[];
   isMultilabel?: boolean;
@@ -15,6 +18,7 @@ type LabelInputProps = {
 };
 
 const LabelInput = ({
+  isVisible,
   selectedLabelsIds,
   possibleLabels,
   isMultilabel = false,
@@ -44,8 +48,10 @@ const LabelInput = ({
   };
 
   return (
-    <CDropdown visible={true}>
-      <CDropdownMenu style={{ minWidth: "250px" }}>
+    <CDropdown visible={isVisible} autoClose={false}>
+      {/* this invisible toggle has to be here, othervise the menu is not showing as intended */}
+      <CDropdownToggle style={{ display: "none" }} />
+      <CDropdownMenu>
         <div className="px-3 py-2">
           <CFormInput
             placeholder="Filter label..."
@@ -54,6 +60,7 @@ const LabelInput = ({
             autoFocus
           />
         </div>
+        <CDropdownDivider />
         {filteredLabels.length > 0 ? (
           filteredLabels.map((label: Label) => (
             <CDropdownItem
