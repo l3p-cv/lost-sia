@@ -172,13 +172,14 @@ const Sia2 = ({
   };
 
   useEffect(() => {
+    setIsImageJunk(initialIsImageJunk);
+
     // update the initial annotations only when the image is not set
     // (the annotations are always loaded before the image)
     // when we dont have any annos, we dont need to call it (prevents render errors on initialization)
     if (image !== undefined || initialAnnotations.length === 0) return;
 
     createInitialAnnotations();
-    setIsImageJunk(initialIsImageJunk);
   }, [initialAnnotations]);
 
   // update annotation settings if changed in the parent
