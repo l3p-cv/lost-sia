@@ -419,6 +419,7 @@ const Sia2 = ({
               setSelectedAnnotation(annotation);
               onSelectAnnotation(annotation);
             }}
+            onShouldDeleteAnno={deleteAnnotationByInternalId}
             // eventDeleteSelectedAnnotation={deleteSelectedAnnotation}
           />
         )}

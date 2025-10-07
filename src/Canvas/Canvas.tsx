@@ -54,6 +54,7 @@ type CanvasProps = {
   onNotification?: (notification: SIANotification) => void;
   onRequestNewAnnoId: () => number;
   onSelectAnnotation: (annotation?: Annotation) => void;
+  onShouldDeleteAnno: (internalAnnoId: number) => void;
 };
 
 const Canvas = ({
@@ -78,6 +79,7 @@ const Canvas = ({
   onNotification = (_) => {},
   onRequestNewAnnoId,
   onSelectAnnotation,
+  onShouldDeleteAnno,
 }: CanvasProps) => {
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW);
 
@@ -230,10 +232,12 @@ const Canvas = ({
   const handleKeyAction = (keyAction: KeyAction) => {
     switch (keyAction) {
       case KeyAction.EDIT_LABEL:
-        if (selectedAnnotation !== undefined) setIsLabelInputVisible(true);
+        if (selectedAnnotation) setIsLabelInputVisible(true);
         break;
       case KeyAction.DELETE_ANNO:
         console.log("KeyAction TODO: DELETE_ANNO");
+        if (selectedAnnotation)
+          onShouldDeleteAnno(selectedAnnotation.internalId);
         break;
       case KeyAction.TOGGLE_ANNO_COMMENT_INPUT:
         console.log("KeyAction TODO: TOGGLE_ANNO_COMMENT_INPUT");
