@@ -19,6 +19,7 @@ type SiaProps = {
   polygonOperationResult?: PolygonOperationResult;
   annotationSettings?: AnnotationSettings;
   defaultAnnotationTool?: AnnotationTool;
+  defaultLabelId?: number;
   image?: string;
   isLoading?: boolean;
   isPolygonSelectionMode?: boolean;
@@ -50,6 +51,7 @@ const Sia2 = ({
   annotationSettings: propAnnotationSettings,
   uiConfig: propUiConfig,
   defaultAnnotationTool,
+  defaultLabelId,
   image,
   isLoading = false,
   isPolygonSelectionMode = false,
@@ -329,6 +331,7 @@ const Sia2 = ({
           <Canvas
             annotations={annotations}
             annotationSettings={annotationSettings}
+            defaultLabelId={defaultLabelId}
             image={image}
             isFullscreen={isFullscreen}
             isImageJunk={isImageJunk}

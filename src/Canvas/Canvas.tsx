@@ -34,6 +34,7 @@ import transform2 from "../utils/transform2";
 type CanvasProps = {
   annotations?: Annotation[];
   annotationSettings: AnnotationSettings;
+  defaultLabelId?: number;
   image: string;
   isFullscreen?: boolean;
   isImageJunk?: boolean;
@@ -60,6 +61,7 @@ type CanvasProps = {
 const Canvas = ({
   annotations = [],
   annotationSettings,
+  defaultLabelId,
   image,
   isFullscreen = false,
   isImageJunk = false,
@@ -84,7 +86,9 @@ const Canvas = ({
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW);
 
   // remember which label was added last
-  const [currentLabelId, setCurrentLabelId] = useState<number>();
+  const [currentLabelId, setCurrentLabelId] = useState<number | undefined>(
+    defaultLabelId,
+  );
 
   // vector from the top left of the DOM document to the top left of the stage
   // (events are emitting page coordinates, so we need this to convert them)
@@ -120,7 +124,8 @@ const Canvas = ({
 
   // label input will be opened if a position is set here
   const [labelInputPosition, setLabelInputPosition] = useState<Point>();
-  const [isLabelInputVisible, setIsLabelInputVisible] = useState<boolean>();
+  const [isLabelInputVisible, setIsLabelInputVisible] =
+    useState<boolean>(false);
 
   // available canvas area - all possible space for creating a canvas
   const canvasRef = useRef(null);
@@ -731,6 +736,7 @@ const Canvas = ({
         }}
       >
         <LabelInput
+          defaultLabelId={defaultLabelId}
           isVisible={isLabelInputVisible}
           selectedLabelsIds={selectedAnnotation?.labelIds!}
           possibleLabels={possibleLabels}

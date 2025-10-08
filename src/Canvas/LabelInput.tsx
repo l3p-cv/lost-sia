@@ -6,10 +6,12 @@ import {
   CFormInput,
   CDropdownDivider,
   CDropdownToggle,
+  CPopover,
 } from "@coreui/react";
 import Label from "../models/Label";
 
 type LabelInputProps = {
+  defaultLabelId?: number;
   isVisible: boolean;
   selectedLabelsIds: number[];
   possibleLabels: Label[];
@@ -18,6 +20,7 @@ type LabelInputProps = {
 };
 
 const LabelInput = ({
+  defaultLabelId,
   isVisible,
   selectedLabelsIds,
   possibleLabels,
@@ -47,34 +50,51 @@ const LabelInput = ({
     onLabelSelect(newLabelIds);
   };
 
+  const defaultLabel: Label | undefined = defaultLabelId
+    ? possibleLabels.find((label: Label) => label.id === defaultLabelId)
+    : undefined;
+
   return (
-    <CDropdown visible={isVisible} autoClose={false}>
-      {/* this invisible toggle has to be here, othervise the menu is not showing as intended */}
-      <CDropdownToggle style={{ display: "none" }} />
-      <CDropdownMenu>
-        <div className="px-3 py-2">
-          <CFormInput
-            placeholder="Filter label..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            autoFocus
-          />
-        </div>
-        <CDropdownDivider />
-        {filteredLabels.length > 0 ? (
-          filteredLabels.map((label: Label) => (
-            <CDropdownItem
-              key={label.id}
-              onClick={() => updateSelectedLabels(label)}
-            >
-              {label.name}
-            </CDropdownItem>
-          ))
-        ) : (
-          <CDropdownItem disabled>No results</CDropdownItem>
-        )}
-      </CDropdownMenu>
-    </CDropdown>
+    <>
+      <CPopover
+        content={`Default Label: ${defaultLabel?.name}`}
+        visible={isVisible && defaultLabel !== undefined}
+      >
+        <div style={{ marginLeft: 80 }} />
+      </CPopover>
+
+      <CDropdown
+        visible={isVisible}
+        autoClose={false}
+        style={{ marginTop: -25 }}
+      >
+        {/* this invisible toggle has to be here, othervise the menu is not showing as intended */}
+        <CDropdownToggle style={{ display: "none" }} />
+        <CDropdownMenu>
+          <div className="px-3 py-2">
+            <CFormInput
+              placeholder="Filter label..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <CDropdownDivider />
+          {filteredLabels.length > 0 ? (
+            filteredLabels.map((label: Label) => (
+              <CDropdownItem
+                key={label.id}
+                onClick={() => updateSelectedLabels(label)}
+              >
+                {label.name}
+              </CDropdownItem>
+            ))
+          ) : (
+            <CDropdownItem disabled>No results</CDropdownItem>
+          )}
+        </CDropdownMenu>
+      </CDropdown>
+    </>
   );
 };
 
