@@ -1,4 +1,5 @@
 import {
+  KeyboardEvent,
   MouseEvent,
   ReactElement,
   useEffect,
@@ -234,21 +235,59 @@ const Canvas = ({
     }
   };
 
+  const traverseAnnos = () => {
+    const currentId = selectedAnnotation ? selectedAnnotation.internalId : 0;
+
+    // get the first annotation with an higher internal id
+    const nextAnno: Annotation | undefined = annotations.find(
+      (annotation: Annotation) => annotation.internalId > currentId,
+    );
+
+    if (nextAnno) return onSelectAnnotation(nextAnno);
+
+    // fallback: there was no anno with an higher id -> just use first anno
+    if (annotations.length > 0) return onSelectAnnotation(annotations[0]);
+  };
+
+  const traverseAnnosBackwards = () => {
+    const currentId = selectedAnnotation ? selectedAnnotation.internalId : 0;
+
+    // copy list (dont mutate original annotations)
+    const newAnnotations: Annotation[] = [...annotations];
+
+    // sort by internalId descending
+    newAnnotations.sort((a, b) => b.internalId - a.internalId);
+
+    // get the first annotation with an lower internal id than current
+    const nextAnno: Annotation | undefined = newAnnotations.find(
+      (annotation: Annotation) => annotation.internalId < currentId,
+    );
+
+    if (nextAnno) return onSelectAnnotation(nextAnno);
+
+    // fallback: there was no anno with an higher id -> just use first anno
+    if (annotations.length > 0)
+      return onSelectAnnotation(annotations[annotations.length - 1]);
+  };
+
   const handleKeyAction = (keyAction: KeyAction) => {
     switch (keyAction) {
       case KeyAction.EDIT_LABEL:
         if (selectedAnnotation) setIsLabelInputVisible(true);
         break;
       case KeyAction.DELETE_ANNO:
-        console.log("KeyAction TODO: DELETE_ANNO");
         if (selectedAnnotation)
           onShouldDeleteAnno(selectedAnnotation.internalId);
         break;
-      case KeyAction.TOGGLE_ANNO_COMMENT_INPUT:
-        console.log("KeyAction TODO: TOGGLE_ANNO_COMMENT_INPUT");
-        break;
+      // case KeyAction.TOGGLE_ANNO_COMMENT_INPUT:
+      //   console.log("KeyAction TODO: TOGGLE_ANNO_COMMENT_INPUT");
+      //   break;
       case KeyAction.DELETE_ANNO_IN_CREATION:
-        console.log("KeyAction TODO: DELETE_ANNO_IN_CREATION");
+        // remove an unfinished annotation
+        if (editorMode === EditorModes.CREATE) {
+          onShouldDeleteAnno(selectedAnnotation!.internalId);
+          setEditorMode(EditorModes.VIEW);
+        }
         break;
       case KeyAction.ENTER_ANNO_ADD_MODE:
         console.log("KeyAction TODO: ENTER_ANNO_ADD_MODE");
@@ -263,7 +302,10 @@ const Canvas = ({
         console.log("KeyAction TODO: REDO");
         break;
       case KeyAction.TRAVERSE_ANNOS:
-        console.log("KeyAction TODO: TRAVERSE_ANNOS");
+        traverseAnnos();
+        break;
+      case KeyAction.TRAVERSE_ANNOS_BACKWARDS:
+        traverseAnnosBackwards();
         break;
       case KeyAction.CAM_MOVE_LEFT:
         moveCamera(20 * svgScale, 0);
@@ -469,14 +511,13 @@ const Canvas = ({
     onAnnoCreationFinished(fullyCreatedAnnotation);
   };
 
-  const onKeyDown = (e) => {
+  const onKeyDown = (e: KeyboardEvent) => {
     e.preventDefault();
 
-    keyMapper.keyDown(e.key);
-    // if (propOnKeyDown) propOnKeyDown(e);
+    keyMapper.keyDown(e.key, e.shiftKey);
   };
 
-  const onKeyUp = (e) => {
+  const onKeyUp = (e: KeyboardEvent) => {
     e.preventDefault();
     // @TODO implement keyMapper
     // this.keyMapper.keyUp(e.key);

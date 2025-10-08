@@ -9,7 +9,7 @@ class KeyMapper {
     this.keyActionHandler = keyActionHandler;
   }
 
-  keyDown(key: string) {
+  keyDown(key: string, isShiftKeyPressed: boolean = false) {
     switch (key) {
       case "Enter":
         this.triggerKeyAction(KeyAction.EDIT_LABEL);
@@ -20,6 +20,8 @@ class KeyMapper {
       case "Backspace":
         this.triggerKeyAction(KeyAction.DELETE_ANNO);
         break;
+
+      // @TODO still needed?
       case "Control":
         this.isControlDown = true;
         this.triggerKeyAction(KeyAction.ENTER_ANNO_ADD_MODE);
@@ -29,13 +31,15 @@ class KeyMapper {
           this.triggerKeyAction(KeyAction.UNDO);
         }
         break;
-      case "r":
+      case "y":
         if (this.isControlDown) {
           this.triggerKeyAction(KeyAction.REDO);
         }
         break;
       case "Tab":
-        this.triggerKeyAction(KeyAction.TRAVERSE_ANNOS);
+        if (isShiftKeyPressed)
+          this.triggerKeyAction(KeyAction.TRAVERSE_ANNOS_BACKWARDS);
+        else this.triggerKeyAction(KeyAction.TRAVERSE_ANNOS);
         break;
       case "w":
         this.triggerKeyAction(KeyAction.CAM_MOVE_UP);
@@ -72,16 +76,16 @@ class KeyMapper {
     }
   }
 
-  keyUp(key) {
-    switch (key) {
-      case "Control":
-        this.isControlDown = false;
-        this.triggerKeyAction(KeyAction.LEAVE_ANNO_ADD_MODE);
-        break;
-      default:
-        break;
-    }
-  }
+  // keyUp(key: string) {
+  //   switch (key) {
+  //     case "Control":
+  //       this.isControlDown = false;
+  //       this.triggerKeyAction(KeyAction.LEAVE_ANNO_ADD_MODE);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
 
   triggerKeyAction(keyAction: KeyAction) {
     if (this.keyActionHandler) {
