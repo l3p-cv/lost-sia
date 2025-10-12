@@ -360,7 +360,10 @@ const Sia2 = ({
               // inform the outside world about our change
               onAnnoChanged(changedAnno, _annotations);
             }}
-            onAnnoCreationFinished={(changedAnno: Annotation) => {
+            onAnnoCreationFinished={(
+              changedAnno: Annotation,
+              hasAnnotationExisted: boolean,
+            ) => {
               // update annotation list
               const _annotations: Annotation[] = [...annotations];
 
@@ -398,8 +401,10 @@ const Sia2 = ({
 
               // point annotations are created in one frame
               // they dont exist in the annotations list yet, so just append them
-              if (changedAnno.type === AnnotationTool.Point)
-                _annotations.push(changedAnno);
+              // if (changedAnno.type === AnnotationTool.Point)
+
+              // are we just marking an existing annotation as finished or did we created it in the same frame
+              if (hasAnnotationExisted) _annotations.push(changedAnno);
               else {
                 // all other annotation types
                 const annoListIndex: number = annotations.findIndex(

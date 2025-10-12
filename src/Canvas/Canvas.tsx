@@ -20,6 +20,7 @@ import {
   Point,
   PolygonOperationResult,
   SIANotification,
+  ToolCoordinates,
   Vector2,
 } from "../types";
 import mouse2 from "../utils/mouse2";
@@ -31,6 +32,7 @@ import { faBan } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import AnnotationStatus from "../models/AnnotationStatus";
 import transform2 from "../utils/transform2";
+import NotificationType from "../models/NotificationType";
 
 type CanvasProps = {
   annotations?: Annotation[];
@@ -50,12 +52,17 @@ type CanvasProps = {
   // onKeyDown?: (e) => void | undefined;
   // onKeyUp?: (e) => void | undefined;
   onAnnoCreated: (createdAnno: Annotation) => void;
-  onAnnoCreationFinished: (createdAnno: Annotation) => void;
+  onAnnoCreationFinished: (
+    createdAnno: Annotation,
+    hasAnnotationExisted: boolean,
+  ) => void;
   onAnnoChanged: (changedAnno: Annotation) => void;
+  onAnnoEditing: (annoToEdit: Annotation) => void;
   // onAnnoDeleted: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
   onNotification?: (notification: SIANotification) => void;
   onRequestNewAnnoId: () => number;
   onSelectAnnotation: (annotation?: Annotation) => void;
+  onSetSelectedTool: (tool: AnnotationTool) => void;
   onShouldDeleteAnno: (internalAnnoId: number) => void;
 };
 
@@ -79,9 +86,11 @@ const Canvas = ({
   onAnnoCreated,
   onAnnoCreationFinished,
   onAnnoChanged,
+  onAnnoEditing = (_) => {},
   onNotification = (_) => {},
   onRequestNewAnnoId,
   onSelectAnnotation,
+  onSetSelectedTool = (_) => {},
   onShouldDeleteAnno,
 }: CanvasProps) => {
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW);
@@ -270,6 +279,40 @@ const Canvas = ({
       return onSelectAnnotation(annotations[annotations.length - 1]);
   };
 
+  const copyCurrentAnnotation = () => {
+    // set a copy of the annotation object to the clipboard in localstorage
+    // if (selectedAnnotation) setAnnotationClipboard({ ...selectedAnnotation });
+    if (selectedAnnotation) {
+      const serializedAnnotation: string = JSON.stringify(selectedAnnotation);
+      localStorage.setItem("lostAnnotationClipboard", serializedAnnotation);
+
+      const copySuccessNotification: SIANotification = {
+        title: "Success",
+        message: "Annotation copied",
+        type: NotificationType.SUCCESS,
+      };
+
+      onNotification(copySuccessNotification);
+    }
+  };
+
+  const pasteAnnotation = () => {
+    const clipboardAnnotation: string | null = localStorage.getItem(
+      "lostAnnotationClipboard",
+    );
+    if (clipboardAnnotation == undefined) return;
+
+    const annotationToPaste: Annotation = JSON.parse(clipboardAnnotation);
+
+    // get a new temporary id
+    annotationToPaste.internalId = onRequestNewAnnoId();
+    annotationToPaste.externalId = "";
+
+    onAnnoCreationFinished(annotationToPaste, true);
+
+    onSelectAnnotation(annotationToPaste);
+  };
+
   const handleKeyAction = (keyAction: KeyAction) => {
     switch (keyAction) {
       case KeyAction.EDIT_LABEL:
@@ -323,10 +366,10 @@ const Canvas = ({
         console.log("KeyAction TODO: CAM_MOVE_STOP");
         break;
       case KeyAction.COPY_ANNOTATION:
-        console.log("KeyAction TODO: COPY_ANNOTATION");
+        copyCurrentAnnotation();
         break;
       case KeyAction.PASTE_ANNOTATION:
-        console.log("KeyAction TODO: PASTE_ANNOTATION");
+        pasteAnnotation();
         break;
       case KeyAction.RECREATE_ANNO:
         console.log("KeyAction TODO: RECREATE_ANNO");
@@ -508,13 +551,18 @@ const Canvas = ({
     fullyCreatedAnnotation.coordinates = percentagedCoordinates;
 
     onAnnoChanged(fullyCreatedAnnotation);
-    onAnnoCreationFinished(fullyCreatedAnnotation);
+
+    // if point: inform annotation that we just created it
+    onAnnoCreationFinished(
+      fullyCreatedAnnotation,
+      selectedAnnoTool === AnnotationTool.Point,
+    );
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
     e.preventDefault();
 
-    keyMapper.keyDown(e.key, e.shiftKey);
+    keyMapper.keyDown(e.key, e.shiftKey, e.ctrlKey);
   };
 
   const onKeyUp = (e: KeyboardEvent) => {

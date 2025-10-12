@@ -9,7 +9,11 @@ class KeyMapper {
     this.keyActionHandler = keyActionHandler;
   }
 
-  keyDown(key: string, isShiftKeyPressed: boolean = false) {
+  keyDown(
+    key: string,
+    isShiftKeyPressed: boolean = false,
+    isCtrlKeyPressed: boolean,
+  ) {
     switch (key) {
       case "Enter":
         this.triggerKeyAction(KeyAction.EDIT_LABEL);
@@ -20,21 +24,13 @@ class KeyMapper {
       case "Backspace":
         this.triggerKeyAction(KeyAction.DELETE_ANNO);
         break;
-
-      // @TODO still needed?
-      case "Control":
-        this.isControlDown = true;
-        this.triggerKeyAction(KeyAction.ENTER_ANNO_ADD_MODE);
-        break;
       case "z":
-        if (this.isControlDown) {
+        if (isCtrlKeyPressed) {
           this.triggerKeyAction(KeyAction.UNDO);
         }
         break;
       case "y":
-        if (this.isControlDown) {
-          this.triggerKeyAction(KeyAction.REDO);
-        }
+        if (isCtrlKeyPressed) this.triggerKeyAction(KeyAction.REDO);
         break;
       case "Tab":
         if (isShiftKeyPressed)
@@ -57,16 +53,13 @@ class KeyMapper {
         this.triggerKeyAction(KeyAction.RECREATE_ANNO);
         break;
       case "c":
-        if (this.isControlDown) {
-          this.triggerKeyAction(KeyAction.COPY_ANNOTATION);
-        } else {
-          this.triggerKeyAction(KeyAction.TOGGLE_ANNO_COMMENT_INPUT);
-        }
+        if (isCtrlKeyPressed) this.triggerKeyAction(KeyAction.COPY_ANNOTATION);
+        else this.triggerKeyAction(KeyAction.TOGGLE_ANNO_COMMENT_INPUT);
+
         break;
       case "v":
-        if (this.isControlDown) {
-          this.triggerKeyAction(KeyAction.PASTE_ANNOTATION);
-        }
+        if (isCtrlKeyPressed) this.triggerKeyAction(KeyAction.PASTE_ANNOTATION);
+
         break;
       case "Escape":
         this.triggerKeyAction(KeyAction.DELETE_ANNO_IN_CREATION);
