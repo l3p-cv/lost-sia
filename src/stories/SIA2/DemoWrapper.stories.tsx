@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import DemoWrapper from "./DemoWrapper";
-import Annotation from "../../Annotation/logic/Annotation";
-import ExternalAnnotation from "../../models/ExternalAnnotation";
 import AnnotationTool from "../../models/AnnotationTool";
-import AnnotationSettings from "../../models/AnnotationSettings";
+
+import { AnnotationSettings, ExternalAnnotation } from "../../types";
+import { AnnotationStatus } from "../../models";
 
 export const ActionsData = {};
 
@@ -43,6 +43,7 @@ const polygonAnnotations: ExternalAnnotation[] = [
       { x: 250, y: 200 },
     ],
     labelIds: [5],
+    status: AnnotationStatus.LOADED,
     type: AnnotationTool.Polygon,
   },
   {
@@ -54,6 +55,7 @@ const polygonAnnotations: ExternalAnnotation[] = [
       { x: 270, y: 250 },
     ],
     labelIds: [8, 11],
+    status: AnnotationStatus.LOADED,
     type: AnnotationTool.Polygon,
   },
 ];

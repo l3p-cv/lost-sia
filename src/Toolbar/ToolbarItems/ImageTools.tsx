@@ -1,10 +1,10 @@
 import { CButton, CButtonGroup, CPopover } from "@coreui/react";
-import { faBan, faTag, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faBan, faTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import ImageLabel from "./ImageToolItems/ImageLabel";
-import Label from "../../models/Label";
 import { useEffect, useState } from "react";
+import { Label } from "../../types";
 
 type ImageToolsProps = {
   canJunk: boolean;

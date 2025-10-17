@@ -56,7 +56,7 @@ const PolygonArea = ({
       points={svgLineCoords}
       style={polyLineStyle}
       onMouseDown={(e) => {
-        isSelected && setCursorStyle("grabbing");
+        if (isSelected) setCursorStyle("grabbing");
         onMouseDown(e);
       }}
       onMouseUp={(e) => {

@@ -15,7 +15,7 @@ function _fixBackendAnnoElement(element) {
 }
 
 export function fixBackendAnnos(backendAnnos) {
-  let annos = {
+  const annos = {
     bBoxes: [
       ...backendAnnos.bBoxes.map((element) => {
         return _fixBackendAnnoElement(element);
@@ -92,7 +92,7 @@ export function canvasToBackendSingleAnno(
   removeFrontedId = false,
   imgOffset = { x: 0, y: 0 },
 ) {
-  var annoId;
+  let annoId;
   if (removeFrontedId) {
     // If an annotation will be send to backend,
     // ids of new created annoations need to be set to
@@ -115,7 +115,7 @@ export function canvasToBackendAnnos(
   forBackendPost = false,
   imgOffset = { x: 0, y: 0 },
 ) {
-  let myAnnos = annos;
+  const myAnnos = annos;
   const bAnnos = myAnnos.map((el) => {
     return canvasToBackendSingleAnno(el, imgSize, forBackendPost, imgOffset);
   });

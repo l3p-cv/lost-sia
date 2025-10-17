@@ -124,7 +124,7 @@ const BBox = ({
         svgTranslation,
       );
 
-      let newCoords: Point[] = [...coordinates];
+      const newCoords: Point[] = [...coordinates];
 
       // we always get 4 coordinates (the rectangle corners)
       // only the top left (start) is important - the end will be our mouse position and the others are redundant
@@ -284,7 +284,7 @@ const BBox = ({
           onMouseDown={onMouseEdgeDown}
           onMouseMove={(e: MouseEvent) => {
             setDragSelectedEdgeIndex(index);
-            isEdgeDragging && moveEdge(index, e);
+            if (isEdgeDragging) moveEdge(index, e);
           }}
         />
       );
@@ -301,8 +301,8 @@ const BBox = ({
         style={{ opacity: 0 }}
         onMouseDown={onMouseDown}
         onMouseMove={(e: MouseEvent) => {
-          isForEdge && isEdgeDragging && moveEdge(dragSelectedEdgeIndex, e);
-          !isForEdge && onMouseMove(e);
+          if (isForEdge && isEdgeDragging) moveEdge(dragSelectedEdgeIndex, e);
+          if (!isForEdge) onMouseMove(e);
         }}
         onContextMenu={(e) => e.preventDefault()}
       />

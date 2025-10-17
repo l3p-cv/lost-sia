@@ -1,10 +1,10 @@
-import React from "react";
+import type { CSSProperties } from "react";
 
 type TagLabelProps = {
   name: string;
   color?: string;
   size?: number;
-  style?: any;
+  style?: CSSProperties;
   triangleSize?: number;
   onClick?: () => void;
 };
@@ -17,7 +17,7 @@ const TagLabel = ({
   triangleSize = 22,
   onClick,
 }: TagLabelProps) => {
-  const containerStyle = {
+  const containerStyle: CSSProperties = {
     display: "inline-flex",
     alignItems: "center",
     backgroundColor: color,
@@ -34,7 +34,7 @@ const TagLabel = ({
   };
 
   // A rotated square to simulate a triangle
-  const triangleStyle = {
+  const triangleStyle: CSSProperties = {
     position: "absolute",
     left: `-${triangleSize / 2}px`,
     width: `${triangleSize}px`,

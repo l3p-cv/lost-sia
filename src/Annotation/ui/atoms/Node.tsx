@@ -90,7 +90,7 @@ const Node = ({
         cx={coordinates.x}
         cy={coordinates.y}
         r={12 / svgScale}
-        onMouseLeave={(e) => annotationSettings.canEdit && setHasHalo(false)}
+        onMouseLeave={(_) => annotationSettings.canEdit && setHasHalo(false)}
         onMouseDown={onMouseDown}
         onContextMenu={(e) => e.preventDefault()}
       />
@@ -120,7 +120,7 @@ const Node = ({
         r={10 / svgScale}
         style={style}
         onMouseOver={() => {
-          annotationSettings.canEdit && setHasHalo(true);
+          if (annotationSettings.canEdit) setHasHalo(true);
         }}
         onMouseDown={onMouseDown}
         onMouseMove={(e) => onMouseMove(e)}

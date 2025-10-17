@@ -73,7 +73,7 @@ const Line = ({
           svgTranslation,
         );
 
-      let newCoordinates = [...coordinates];
+      const newCoordinates = [...coordinates];
       newCoordinates.push(antiScaledMousePositionInStageCoordinates);
 
       onAddNode(newCoordinates);
@@ -179,7 +179,7 @@ const Line = ({
   };
 
   const renderEdges = () => {
-    let svgEdges = coordinates.map((coordinate: Point, index: number) => {
+    const svgEdges = coordinates.map((coordinate: Point, index: number) => {
       // last coordinate has no end - dont draw it
       if (index + 1 >= coordinates.length) return;
 

@@ -1,8 +1,9 @@
 import Annotation from "../../Annotation/logic/Annotation";
-import AnnotationSettings from "../../models/AnnotationSettings";
 import AnnotationTool from "../../models/AnnotationTool";
-import UiConfig from "../../models/UiConfig";
+
 import Sia2 from "../../Sia2";
+
+import type { AnnotationSettings, UiConfig } from "../../types";
 
 import { imgBlob } from "../siaDummyData";
 import { possibleLabels } from "../siaDummyData2";
@@ -32,13 +33,13 @@ const DemoWrapper = ({
       uiConfig={uiConfig}
       image={imgBlob}
       defaultAnnotationTool={AnnotationTool.Polygon}
-      onAnnoCreated={(anno: Annotation, annos: Annotation[]) => {
+      onAnnoCreated={(anno: Annotation, _: Annotation[]) => {
         console.log("CREATED", anno);
       }}
-      onAnnoCreationFinished={(anno: Annotation, annos: Annotation[]) => {
+      onAnnoCreationFinished={(anno: Annotation, _: Annotation[]) => {
         console.log("FINISHED CREATION", anno);
       }}
-      onAnnoChanged={(anno: Annotation, annos: Annotation[]) => {
+      onAnnoChanged={(anno: Annotation, _: Annotation[]) => {
         console.log("CHANGED", anno);
       }}
       onAnnoDeleted={(anno: Annotation, annos: Annotation[]) => {

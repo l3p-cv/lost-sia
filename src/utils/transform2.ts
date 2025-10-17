@@ -1,4 +1,4 @@
-import { Point, Vector2 } from "../types";
+import type { Point, Vector2 } from "../types";
 
 const convertImageCoordinatesToStage = (
   imageCoordinates: Point[],

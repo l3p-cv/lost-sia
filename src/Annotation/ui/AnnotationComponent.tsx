@@ -129,7 +129,10 @@ const AnnotationComponent = ({
   };
 
   const onMoving = (newCoords: Point[]) => {
-    if (annotationMode !== AnnotationMode.CREATE)
+    if (
+      annotationMode !== AnnotationMode.CREATE &&
+      annotationMode !== AnnotationMode.ADD
+    )
       setAnnotationMode(AnnotationMode.MOVE);
 
     setCoordinates(newCoords);
@@ -152,7 +155,11 @@ const AnnotationComponent = ({
   // apply coordinate changes from sia (e.g. out of image fixes)
   // ignore outside changes while creating annotation
   useEffect(() => {
-    if (annotationMode === AnnotationMode.CREATE) return;
+    if (
+      annotationMode === AnnotationMode.CREATE ||
+      annotationMode === AnnotationMode.ADD
+    )
+      return;
     setCoordinates(scaledAnnotation.coordinates);
   }, [scaledAnnotation]);
 

@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { fn } from "@storybook/test";
 import ImageLabel from "../../../Toolbar/ToolbarItems/ImageToolItems/ImageLabel";
 import { possibleLabels } from "../../siaDummyData2";
 

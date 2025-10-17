@@ -1,6 +1,9 @@
 import "semantic-ui-css/semantic.min.css";
 import "./SIA.scss";
 
+// export all type definitions
+export * from "./types";
+
 export { default as Canvas } from "./Canvas.jsx";
 export { default as Sia } from "./Sia";
 export { default as Sia2 } from "./Sia2";

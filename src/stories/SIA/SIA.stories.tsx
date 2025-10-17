@@ -6,7 +6,6 @@ import {
   selectedTool,
   imgMeta,
   toolbarEnabled,
-  annos,
   possibleLabels,
   imgBlob,
   noAnnos,

@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { CCol, CContainer, CRow } from "@coreui/react";
 import TagLabel from "./TagLabel";
 import LabelInput from "../../../Canvas/LabelInput";
-import Label from "../../../models/Label";
+import { Label } from "../../../types";
 
 type ImageLabelProps = {
   possibleLabels: Label[];
@@ -26,7 +25,7 @@ const ImageLabel = ({
   const renderLabels = () => {
     const selectedLabels = getSelectedLabels();
     return selectedLabels.map((label: Label) => (
-      <CCol>
+      <CCol key={label.name}>
         <TagLabel name={label.name} color={label.color} />
       </CCol>
     ));
@@ -47,6 +46,7 @@ const ImageLabel = ({
           </CRow>
           <CRow style={{ minWidth: 250, minHeight: 100 }}>
             <LabelInput
+              isVisible={true}
               isMultilabel={true}
               selectedLabelsIds={selectedLabelIds}
               possibleLabels={possibleLabels}

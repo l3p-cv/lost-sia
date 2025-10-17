@@ -77,11 +77,15 @@ const Polygon = ({
     if (
       isSelected &&
       annotationMode !== AnnotationMode.CREATE &&
+      annotationMode !== AnnotationMode.ADD &&
       e.button === 0
     )
       setIsAnnoDragging(true);
 
-    if (e.button === 2 && annotationMode == AnnotationMode.CREATE) {
+    if (
+      e.button === 2 &&
+      [AnnotationMode.CREATE, AnnotationMode.ADD].includes(annotationMode)
+    ) {
       const antiScaledMousePositionInStageCoordinates =
         mouse2.getAntiScaledMouseStagePosition(
           e,
@@ -90,7 +94,7 @@ const Polygon = ({
           svgTranslation,
         );
 
-      let newCoordinates = [...coordinates];
+      const newCoordinates = [...coordinates];
       newCoordinates.push(antiScaledMousePositionInStageCoordinates);
 
       onAddNode(newCoordinates);
@@ -164,6 +168,14 @@ const Polygon = ({
         svgTranslation={svgTranslation}
         style={style}
         onDeleteNode={() => {
+          // 4 is the lowest node count where we can delete one
+          if (coordinates.length < 4)
+            return onNotification({
+              message: "Polygons must have at least 3 nodes",
+              title: "Polygon Error",
+              type: NotificationType.ERROR,
+            });
+
           const newCoordinates = [...coordinates];
           newCoordinates.splice(index, 1);
           onDeleteNode(newCoordinates);
@@ -232,7 +244,9 @@ const Polygon = ({
   // nodes need to be drawn after the polyline to make them clickable
   return (
     <g>
-      {(isAnnoDragging || annotationMode === AnnotationMode.CREATE) &&
+      {(isAnnoDragging ||
+        annotationMode === AnnotationMode.CREATE ||
+        annotationMode === AnnotationMode.ADD) &&
         renderInfiniteSelectionArea()}
       <PolygonArea
         annotationSettings={annotationSettings}

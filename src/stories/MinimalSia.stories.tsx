@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import Sia2 from "../Sia2";
+import type { Label } from "../types";
 import { imgBlob } from "./siaDummyData";
-import Label from "../models/Label";
 
 export const ActionsData = {};
 

@@ -1,13 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { fn } from "@storybook/test";
 import Toolbar from "../../Toolbar/Toolbar";
 // import '../../scss/main.scss'
 import "../main.scss";
 import AnnotationTool from "../../models/AnnotationTool";
-import AllowedTools from "../../models/AllowedTools";
-import AnnotationSettings from "../../models/AnnotationSettings";
 import { possibleLabels } from "../siaDummyData2";
+
+import { AllowedTools, AnnotationSettings } from "../../types";
 
 const meta = {
   title: "Components/Toolbar",

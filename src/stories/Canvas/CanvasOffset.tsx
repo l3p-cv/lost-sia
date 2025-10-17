@@ -27,9 +27,6 @@ const CanvasWithOffset = ({
   possibleLabels,
   preventScrolling,
   uiConfig,
-  onAnnoEvent: propsOnAnnoEvent,
-  onKeyDown: propOnKeyDown,
-  onKeyUp: propsOnKeyUp,
 }: CanvasProps) => {
   return (
     <>

@@ -1,12 +1,11 @@
 import { CButton, CButtonGroup } from "@coreui/react";
 import * as siaIcons from "../../utils/siaIcons";
-import { useState } from "react";
 
 import AnnotationTool from "../../models/AnnotationTool";
-import AllowedTools from "../../models/AllowedTools";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { AllowedTools } from "../../types";
 
 type AnnoToolSelectorProps = {
   allowedTools: AllowedTools;
@@ -23,8 +22,6 @@ const AnnoToolSelector = ({
   onSetSelectedTool,
   onShouldDeleteSelectedAnnotation = () => {},
 }: AnnoToolSelectorProps) => {
-  // const [selectedTool, setSelectedTool] = useState<AnnotationTool>(defaultTool);
-
   return (
     <CButtonGroup role="group" aria-label="Basic example">
       {allowedTools.point && (

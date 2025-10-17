@@ -1,4 +1,4 @@
-import Label from "../models/Label";
+import { Label } from "../types";
 
 const canvasConfig = {
   tools: {
