@@ -4,10 +4,10 @@
   "description": "Single Image Annotation Tool",
   "license": "MIT",
   "repository": "l3p-cv/lost-sia",
-  "main": "src/index.js",
-  "module": "src/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "type": "module",
-  "types": "src/index.d.ts",
+  "types": "./dist/index.d.ts",
   "keywords": [
     "lost",
     "annotation",
@@ -20,10 +20,6 @@
   },
   "exports": {
     ".": {
-      "development": {
-        "types": "./src/types.ts",
-        "import": "./src/index.ts"
-      },
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.js"
@@ -85,6 +81,8 @@
     "@storybook/react-vite": "^9.0.12",
     "@storybook/test": "9.0.0-alpha.2",
     "@types/react": "^19.1.16",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
     "@vitejs/plugin-react": "^4.3.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.0.1",
@@ -95,6 +93,7 @@
     "eslint-plugin-promise": "^6.6.0",
     "eslint-plugin-react": "^7.34.2",
     "eslint-plugin-standard": "^5.0.0",
+    "eslint-plugin-storybook": "^9.1.12",
     "glob": "^10.4.5",
     "lodash-es": "^4.17.21",
     "prettier": "^3.3.3",

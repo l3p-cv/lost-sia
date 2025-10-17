@@ -50,14 +50,7 @@ export default defineConfig({
           entryFileNames: "[name].js",
           preserveModules: true,
           preserveModulesRoot: "src",
-        },
-        {
-          format: "cjs",
-          dir: "dist",
-          entryFileNames: "[name].cjs",
-          preserveModules: true,
-          preserveModulesRoot: "src",
-        },
+        }
       ],
     },
   },
