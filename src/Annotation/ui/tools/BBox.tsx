@@ -1,9 +1,8 @@
 import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
 
 // rename type to avoid naming conflict
-import { Point } from "../../../types";
+import { AnnotationSettings, Point } from "../../../types";
 import Node from "../atoms/Node";
-import AnnotationSettings from "../../../models/AnnotationSettings";
 import AnnotationMode from "../../../models/AnnotationMode";
 import mouse2 from "../../../utils/mouse2";
 import PolygonArea from "../atoms/PolygonArea";
@@ -137,7 +136,7 @@ const BBox = ({
   useEffect(() => {
     if (!isAnnoCreating) return;
 
-    const handleMouseUp = (e: MouseEvent) => {
+    const handleMouseUp = (e: globalThis.MouseEvent) => {
       if (e.button === 2) {
         onFinishAnnoCreate();
         setIsAnnoCreating(false);

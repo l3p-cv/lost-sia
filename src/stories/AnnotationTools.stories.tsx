@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import Sia2 from "../Sia2";
 import { imgBlob } from "./siaDummyData";
-import AllowedTools from "../models/AllowedTools";
+import { AllowedTools } from "../types";
 
 export const ActionsData = {};
 

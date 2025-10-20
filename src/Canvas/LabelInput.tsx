@@ -8,7 +8,7 @@ import {
   CDropdownToggle,
   CPopover,
 } from "@coreui/react";
-import Label from "../models/Label";
+import { Label } from "../types";
 
 type LabelInputProps = {
   defaultLabelId?: number;

@@ -12,9 +12,14 @@ const meta = {
   title: "Components/Toolbar",
   component: Toolbar,
   argTypes: {
-    defaultTool: {
+    selectedTool: {
       control: "select",
-      options: AnnotationTool,
+      options: [
+        AnnotationTool.BBox,
+        AnnotationTool.Line,
+        AnnotationTool.Point,
+        AnnotationTool.Polygon,
+      ],
     },
   },
   parameters: {
@@ -67,10 +72,10 @@ const annotationSettings: AnnotationSettings = {
 };
 
 const defaultArgs = {
-  defaultTool: AnnotationTool.Line,
   annotationSettings,
   allowedTools,
   possibleLabels,
+  selectedTool: AnnotationTool.BBox,
 };
 
 export const Default: Story = {
@@ -80,14 +85,14 @@ export const Default: Story = {
 export const DifferentDefaultTool: Story = {
   args: {
     ...defaultArgs,
-    defaultTool: AnnotationTool.Polygon,
+    selectedTool: AnnotationTool.Polygon,
   },
 };
 
 export const LimitedAllowedTools: Story = {
   args: {
     ...defaultArgs,
-    defaultTool: AnnotationTool.BBox,
+    selectedTool: AnnotationTool.BBox,
     allowedTools: limitedAllowedTools,
   },
 };

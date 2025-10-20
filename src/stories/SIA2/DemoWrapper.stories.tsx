@@ -63,6 +63,7 @@ const polygonAnnotations: ExternalAnnotation[] = [
 const annotationSettings: AnnotationSettings = {
   canCreate: true,
   canHaveMultipleLabels: true,
+  canLabel: true,
 };
 
 export const WithPolygonAnnotations: Story = {
@@ -81,6 +82,7 @@ const bboxAnnotations: ExternalAnnotation[] = [
     ],
     labelIds: [5],
     type: AnnotationTool.BBox,
+    status: AnnotationStatus.LOADED,
   },
   {
     coordinates: [
@@ -89,6 +91,7 @@ const bboxAnnotations: ExternalAnnotation[] = [
     ],
     labelIds: [8, 11],
     type: AnnotationTool.BBox,
+    status: AnnotationStatus.LOADED,
   },
 ];
 
@@ -110,6 +113,7 @@ const lineAnnotations: ExternalAnnotation[] = [
     ],
     labelIds: [5],
     type: AnnotationTool.Line,
+    status: AnnotationStatus.LOADED,
   },
   {
     coordinates: [
@@ -121,6 +125,7 @@ const lineAnnotations: ExternalAnnotation[] = [
     ],
     labelIds: [8, 11],
     type: AnnotationTool.Line,
+    status: AnnotationStatus.LOADED,
   },
 ];
 
@@ -137,26 +142,31 @@ const pointAnnotations: ExternalAnnotation[] = [
     coordinates: [{ x: 50, y: 50 }],
     labelIds: [5],
     type: AnnotationTool.Point,
+    status: AnnotationStatus.LOADED,
   },
   {
     coordinates: [{ x: 100, y: 100 }],
     labelIds: [8],
     type: AnnotationTool.Point,
+    status: AnnotationStatus.LOADED,
   },
   {
     coordinates: [{ x: 150, y: 150 }],
     labelIds: [9],
     type: AnnotationTool.Point,
+    status: AnnotationStatus.LOADED,
   },
   {
     coordinates: [{ x: 100, y: 200 }],
     labelIds: [10],
     type: AnnotationTool.Point,
+    status: AnnotationStatus.LOADED,
   },
   {
     coordinates: [{ x: 270, y: 250 }],
     labelIds: [8, 11],
     type: AnnotationTool.Point,
+    status: AnnotationStatus.LOADED,
   },
 ];
 

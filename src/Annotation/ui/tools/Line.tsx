@@ -1,10 +1,9 @@
 import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
 
 // rename type to avoid naming conflict
-import { Point } from "../../../types";
+import { AnnotationSettings, Point } from "../../../types";
 import Node from "../atoms/Node";
 import AnnotationMode from "../../../models/AnnotationMode";
-import AnnotationSettings from "../../../models/AnnotationSettings";
 import Edge from "../atoms/Edge";
 import mouse2 from "../../../utils/mouse2";
 

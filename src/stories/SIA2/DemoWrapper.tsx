@@ -3,13 +3,17 @@ import AnnotationTool from "../../models/AnnotationTool";
 
 import Sia2 from "../../Sia2";
 
-import type { AnnotationSettings, UiConfig } from "../../types";
+import type {
+  AnnotationSettings,
+  ExternalAnnotation,
+  UiConfig,
+} from "../../types";
 
 import { imgBlob } from "../siaDummyData";
 import { possibleLabels } from "../siaDummyData2";
 
 type DemoWrapperProps = {
-  annotations?: Annotation[];
+  annotations?: ExternalAnnotation[];
   annotationSettings?: AnnotationSettings;
   isLoading?: boolean;
 };
@@ -22,6 +26,7 @@ const DemoWrapper = ({
   const uiConfig: UiConfig = {
     nodeRadius: 4,
     strokeWidth: 4,
+    imageCentered: false,
   };
 
   return (

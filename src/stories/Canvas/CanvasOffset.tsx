@@ -2,8 +2,7 @@ import Annotation from "../../Annotation/logic/Annotation";
 import Canvas from "../../Canvas/Canvas";
 import AnnotationTool from "../../models/AnnotationTool";
 import CanvasAction from "../../models/CanvasAction";
-import Label from "../../models/Label";
-import UiConfig from "../../models/UiConfig";
+import type { AnnotationSettings, Label, UiConfig } from "../../types";
 
 type CanvasProps = {
   annotations?: Annotation[];
@@ -18,6 +17,12 @@ type CanvasProps = {
   ) => void | undefined;
   onKeyDown?: (e) => void | undefined;
   onKeyUp?: (e) => void | undefined;
+};
+
+const annotationSettings: AnnotationSettings = {
+  canHaveMultipleLabels: true,
+  canCreate: true,
+  canLabel: true,
 };
 
 const CanvasWithOffset = ({
@@ -41,11 +46,21 @@ const CanvasWithOffset = ({
       >
         <Canvas
           annotations={annotations}
+          annotationSettings={annotationSettings}
           image={image}
+          selectedAnnotation={undefined}
           selectedAnnoTool={selectedAnnoTool}
           possibleLabels={possibleLabels}
           preventScrolling={preventScrolling}
           uiConfig={uiConfig}
+          onAnnoCreated={() => {}}
+          onAnnoChanged={() => {}}
+          onAnnoCreationFinished={() => {}}
+          onAnnoEditing={() => {}}
+          onRequestNewAnnoId={() => 1}
+          onSelectAnnotation={() => {}}
+          onSetSelectedTool={() => {}}
+          onShouldDeleteAnno={() => {}}
         />
       </div>
     </>

@@ -1,7 +1,7 @@
 import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
 import { Point } from "../../../types";
 import mouse2 from "../../../utils/mouse2";
-import AnnotationSettings from "../../../models/AnnotationSettings";
+import { AnnotationSettings } from "../../../types";
 
 type NodeProps = {
   index: number;

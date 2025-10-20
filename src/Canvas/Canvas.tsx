@@ -1,6 +1,5 @@
-import {
+import React, {
   KeyboardEvent,
-  MouseEvent,
   ReactElement,
   useEffect,
   useRef,
@@ -14,8 +13,7 @@ import KeyAction from "../models/KeyAction";
 import Annotation from "../Annotation/logic/Annotation";
 import CanvasAction from "../models/CanvasAction";
 import AnnotationComponent from "../Annotation/ui/AnnotationComponent";
-import Label from "../models/Label";
-import UiConfig from "../models/UiConfig";
+import { AnnotationSettings, Label, UiConfig } from "../types";
 import {
   Point,
   PolygonOperationResult,
@@ -26,7 +24,6 @@ import {
 import mouse2 from "../utils/mouse2";
 import AnnotationMode from "../models/AnnotationMode";
 import LabelInput from "./LabelInput";
-import AnnotationSettings from "../models/AnnotationSettings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBan } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -244,6 +241,40 @@ const Canvas = ({
     }
   };
 
+  // @TODO
+  const editSelectedAnnotation = () => {
+    if (
+      selectedAnnotation &&
+      ![AnnotationTool.Line, AnnotationTool.Polygon].includes(
+        selectedAnnotation!.type,
+      )
+    )
+      return;
+
+    // selectedAnnotation!.mode = AnnotationMode.CREATE;
+
+    const newSelectedAnnotation: Annotation | undefined = annotations.find(
+      (annotation: Annotation) =>
+        annotation.internalId === selectedAnnotation?.internalId,
+    );
+
+    if (newSelectedAnnotation === undefined) return;
+
+    newSelectedAnnotation.mode = AnnotationMode.CREATE;
+    newSelectedAnnotation.status = AnnotationStatus.CREATING;
+    newSelectedAnnotation.selectedNode =
+      newSelectedAnnotation.coordinates.length - 1;
+    setEditorMode(EditorModes.ADD);
+    onSetSelectedTool(newSelectedAnnotation.type);
+
+    // replace annotation in list
+    // const selectedAnnotationId: number = annotations.findIndex((annotation: Annotation) => annotation.internalId === selectedAnnotation?.internalId)
+    // const newAnnotations = [...annotations]
+    // newAnnotations[selectedAnnotationId] = newSelectedAnnotation
+    onAnnoEditing(newSelectedAnnotation);
+    // onShouldDeleteAnno(selectedAnnotation!.internalId);
+  };
+
   const traverseAnnos = () => {
     const currentId = selectedAnnotation ? selectedAnnotation.internalId : 0;
 
@@ -373,6 +404,7 @@ const Canvas = ({
         break;
       case KeyAction.RECREATE_ANNO:
         console.log("KeyAction TODO: RECREATE_ANNO");
+        editSelectedAnnotation();
         break;
       default:
         console.log("Unknown KeyAction", keyAction);
@@ -522,11 +554,15 @@ const Canvas = ({
 
     // create all polygons calculated from the outside world
     polygonOperationResult.polygonsToCreate.forEach(
-      (polygonToCreate: Point[]) => {
+      (polygonToCreate: ToolCoordinates) => {
         const newAnnotation: Annotation = new Annotation(
           newAnnotationInternalId,
-          AnnotationTool.Polygon,
-          convertPercentagedCoordinatesToStage(polygonToCreate),
+          polygonToCreate.type,
+          transform2.convertPercentagedCoordinatesToStage(
+            polygonToCreate.coordinates,
+            imgSize,
+            stageSize,
+          ),
           AnnotationMode.VIEW,
           AnnotationStatus.CREATED,
         );
@@ -572,7 +608,7 @@ const Canvas = ({
     // if (propsOnKeyUp) propsOnKeyUp(e);
   };
 
-  const onMouseDown = (e: MouseEvent) => {
+  const onMouseDown = (e: React.MouseEvent<SVGPolygonElement, MouseEvent>) => {
     if (e.button === 0) {
       // left click
     } else if (e.button === 1) {
@@ -581,6 +617,8 @@ const Canvas = ({
     } else if (e.button === 2) {
       // check if annotation creation allowed in settings
       if (!annotationSettings!.canCreate) return;
+
+      if (editorMode === EditorModes.ADD) return;
 
       // right click -> start new annotation
       // clicks during annotation creation will be handled inside the AnnotationComponent
@@ -620,9 +658,9 @@ const Canvas = ({
     }
   };
 
-  const onMouseMove = (e: MouseEvent) => {
+  const onMouseMove = (movementX: number, movementY: number) => {
     if (editorMode === EditorModes.CAMERA_MOVE) {
-      moveCamera(e.movementX, e.movementY);
+      moveCamera(movementX, movementY);
     }
   };
 
@@ -642,7 +680,7 @@ const Canvas = ({
 
     // zoom in/out without affecting the pixel the mouse is at
     const mousePositionInStage: Point = mouse2.getAntiScaledMouseStagePosition(
-      e as MouseEvent,
+      e,
       pageToStageOffset,
       svgScale,
       svgTranslation,
@@ -674,37 +712,35 @@ const Canvas = ({
   };
 
   const onAnnoAction = (annotation: Annotation, canvasAction: CanvasAction) => {
-    switch (canvasAction) {
-      case CanvasAction.ANNO_SELECTED:
-        const percentagedAnnotation = {
-          ...annotation,
-          coordinates: transform2.convertStageCoordinatesToPercentaged(
-            [...annotation.coordinates],
-            imageToStageFactor,
-            imgSize,
-          ),
-        };
-
-        onSelectAnnotation(percentagedAnnotation);
-
-        // get top left point of annotation
-        const leftPoints: Point[] = transform2.getMostLeftPoints(
-          annotation.coordinates,
-        );
-        const topLeftPoint: Point = transform2.getTopPoint(leftPoints)[0];
-        const pageTopLeftPoint: Point = transform2.convertStageToPage(
-          topLeftPoint,
-          pageToStageOffset,
-          svgScale,
-          svgTranslation,
-        );
-
-        setLabelInputPosition(pageTopLeftPoint);
-
-        break;
-      default:
-        console.log("Unknown Canvas Action:", canvasAction);
+    if (canvasAction !== CanvasAction.ANNO_SELECTED) {
+      console.log("Unknown Canvas Action:", canvasAction);
+      return;
     }
+
+    const percentagedAnnotation = {
+      ...annotation,
+      coordinates: transform2.convertStageCoordinatesToPercentaged(
+        [...annotation.coordinates],
+        imageToStageFactor,
+        imgSize,
+      ),
+    };
+
+    onSelectAnnotation(percentagedAnnotation);
+
+    // get top left point of annotation
+    const leftPoints: Point[] = transform2.getMostLeftPoints(
+      annotation.coordinates,
+    );
+    const topLeftPoint: Point = transform2.getTopPoint(leftPoints)[0];
+    const pageTopLeftPoint: Point = transform2.convertStageToPage(
+      topLeftPoint,
+      pageToStageOffset,
+      svgScale,
+      svgTranslation,
+    );
+
+    setLabelInputPosition(pageTopLeftPoint);
   };
 
   const handleOnAnnoChanged = (annotation: Annotation) => {
@@ -729,11 +765,12 @@ const Canvas = ({
     if (editorMode === EditorModes.CAMERA_MOVE) return <></>;
 
     // draw the annotation using the AnnotationComponent and the scaled coordinates
-    const annos = scaledAnnotations.map(
-      (scaledAnnotation: Annotation): ReactElement[] => {
+    const annos: ReactElement[] = scaledAnnotations.map(
+      (scaledAnnotation: Annotation): ReactElement => {
         // only show selected anno in specific editor modes
         const editorModesOtherAnnosShouldBeHiddenIn = [
           EditorModes.CREATE,
+          EditorModes.ADD,
           EditorModes.MOVE,
         ];
 
@@ -793,7 +830,7 @@ const Canvas = ({
         cy={stageSize.y / 2}
         r={"100%"}
         style={{ opacity: 0 }}
-        onContextMenu={(e: PointerEvent) => e.preventDefault()}
+        onContextMenu={(e) => e.preventDefault()}
         onClick={() => {
           setIsLabelInputVisible(false);
         }}
@@ -827,7 +864,7 @@ const Canvas = ({
         <LabelInput
           defaultLabelId={defaultLabelId}
           isVisible={isLabelInputVisible}
-          selectedLabelsIds={selectedAnnotation?.labelIds!}
+          selectedLabelsIds={selectedAnnotation?.labelIds}
           possibleLabels={possibleLabels}
           isMultilabel={annotationSettings!.canHaveMultipleLabels}
           onLabelSelect={(selectedLabelIds: number[]) => {
@@ -901,7 +938,7 @@ const Canvas = ({
         //   }
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
-        onMouseMove={onMouseMove}
+        onMouseMove={(e) => onMouseMove(e.movementX, e.movementY)}
         // onMouseMove={(e) => this.handleSvgMouseMove(e)}
         tabIndex={0}
         // width="100%"
@@ -915,7 +952,7 @@ const Canvas = ({
           // onMouseEnter={() => this.svg.current.focus()}
           onMouseUp={onMouseUp}
           onWheel={onWheel}
-          onMouseMove={onMouseMove}
+          onMouseMove={(e) => onMouseMove(e.movementX, e.movementY)}
           onClick={() => {
             // clicked onto canvas => clear selected anno
             onSelectAnnotation(undefined);
@@ -923,7 +960,7 @@ const Canvas = ({
         >
           <image
             onContextMenu={(e) => e.preventDefault()}
-            onMouseDown={onMouseDown}
+            onMouseDown={(e) => onMouseMove(e.movementX, e.movementY)}
             href={image}
             ref={imageRef}
             // undefined -> use default (unscaled) size of image

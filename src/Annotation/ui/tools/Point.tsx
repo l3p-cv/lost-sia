@@ -1,8 +1,7 @@
 import { CSSProperties } from "react";
 
 // rename type to avoid naming conflict
-import { Point as TPoint } from "../../../types";
-import AnnotationSettings from "../../../models/AnnotationSettings";
+import { AnnotationSettings, Point as TPoint } from "../../../types";
 import Node from "../atoms/Node";
 
 type PointProps = {

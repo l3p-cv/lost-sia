@@ -3,16 +3,14 @@ import { CCol, CRow } from "@coreui/react";
 import AnnoToolSelector from "./ToolbarItems/AnnoToolSelector";
 import ImageTools from "./ToolbarItems/ImageTools";
 import AnnotationTool from "../models/AnnotationTool";
-import AllowedTools from "../models/AllowedTools";
 import AccessibilityTools from "./ToolbarItems/AccessibilityTools";
 import { ReactElement } from "react";
-import AnnotationSettings from "../models/AnnotationSettings";
-import Label from "../models/Label";
+import { AllowedTools, AnnotationSettings, Label } from "../types";
 
 type ToolbarProps = {
   annotationSettings: AnnotationSettings;
   allowedTools: AllowedTools;
-  additionalButtons: ReactElement | undefined;
+  additionalButtons?: ReactElement | undefined;
   isImageJunk?: boolean;
   imageLabelIds?: number[];
   isDisabled?: boolean;

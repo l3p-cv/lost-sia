@@ -1,17 +1,26 @@
-import { useEffect, useState, ReactElement, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  ReactElement,
+  useRef,
+  CSSProperties,
+} from "react";
 import { CSpinner } from "@coreui/react";
 import Canvas from "./Canvas/Canvas";
-import AllowedTools from "./models/AllowedTools";
 import AnnotationTool from "./models/AnnotationTool";
 import Toolbar from "./Toolbar/Toolbar";
-import UiConfig from "./models/UiConfig";
-import Label from "./models/Label";
 import Annotation from "./Annotation/logic/Annotation";
-import ExternalAnnotation from "./models/ExternalAnnotation";
 import AnnotationMode from "./models/AnnotationMode";
-import AnnotationSettings from "./models/AnnotationSettings";
 import AnnotationStatus from "./models/AnnotationStatus";
-import { PolygonOperationResult, SIANotification } from "./types";
+import {
+  AllowedTools,
+  AnnotationSettings,
+  ExternalAnnotation,
+  Label,
+  PolygonOperationResult,
+  SIANotification,
+  UiConfig,
+} from "./types";
 
 type SiaProps = {
   additionalButtons?: ReactElement | undefined;
@@ -38,7 +47,7 @@ type SiaProps = {
   onImageLabelsChanged?: (selectedImageIds: number[]) => void;
   onIsImageJunk?: (isJunk: boolean) => void;
   onNotification?: (notification: SIANotification) => void;
-  onSelectAnnotation?: (annotation?: Annotation) => void;
+  onSelectAnnotation?: (annotation: Annotation) => void;
 };
 
 /**
@@ -90,11 +99,13 @@ const Sia2 = ({
   );
 
   // for adjusting the container/canvas size
-  const [toolbarHeight, setToolbarHeight] = useState<number>(-1);
+  // const [toolbarHeight, setToolbarHeight] = useState<number>(-1);
 
-  const [outerContainerStyle, setOuterContainerStyle] = useState({
-    height: `100%`,
-  });
+  const [outerContainerStyle, setOuterContainerStyle] = useState<CSSProperties>(
+    {
+      height: `100%`,
+    },
+  );
 
   const [imageLabelIds, setImageLabelIds] =
     useState<number[]>(initialImageLabelIds);
@@ -262,7 +273,7 @@ const Sia2 = ({
   //   setToolbarHeight(height + marginBetweenToolbarAndContainerPixels);
   // }, [toolbarContainerRef]);
 
-  const fullscreenStyle = {
+  const fullscreenStyle: CSSProperties = {
     position: "fixed",
     top: 0,
     left: 0,
@@ -421,12 +432,28 @@ const Sia2 = ({
               // inform the outer world about our changes
               onAnnoCreationFinished(changedAnno, _annotations);
             }}
+            onAnnoEditing={(annotation: Annotation) => {
+              const _annotations: Annotation[] = [...annotations];
+
+              const selectedAnnotationId: number = _annotations.findIndex(
+                (annotation: Annotation) =>
+                  annotation.internalId === selectedAnnotation?.internalId,
+              );
+
+              _annotations[selectedAnnotationId] = annotation;
+
+              // _annotations.push(annotation);
+              setAnnotations(_annotations);
+              // setSelectedAnnotation(annotation);
+              // onAnnoCreated(annotation, _annotations);
+            }}
             onNotification={onNotification}
             onRequestNewAnnoId={createNewInternalAnnotationId}
             onSelectAnnotation={(annotation) => {
               setSelectedAnnotation(annotation);
               onSelectAnnotation(annotation);
             }}
+            onSetSelectedTool={setSelectedAnnoTool}
             onShouldDeleteAnno={deleteAnnotationByInternalId}
             // eventDeleteSelectedAnnotation={deleteSelectedAnnotation}
           />

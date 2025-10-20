@@ -11,7 +11,10 @@ export { default as dummyData } from "./siaDummyData";
 export { default as transform } from "./utils/transform";
 export { default as annoConversion } from "./utils/annoConversion";
 export { default as canvasActions } from "./types/canvasActions";
-export { default as toolbarEvents } from "./types/toolbarEvents";
+export { default as TagLabel } from "./Toolbar/ToolbarItems/ImageToolItems/TagLabel";
 export { default as tools } from "./types/tools";
 export { default as filterTools } from "./filterTools.js";
+
+// @TODO remove
+export { default as toolbarEvents } from "./types/toolbarEvents";
 export { default as notificationType } from "./types/notificationType";

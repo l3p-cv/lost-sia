@@ -1,5 +1,4 @@
 import AnnotationTool from "../../models/AnnotationTool";
-import Label from "../../models/Label";
 import Annotation from "../logic/Annotation";
 import * as colorUtils from "../../utils/color";
 import PointTool from "./tools/Point";
@@ -9,9 +8,8 @@ import CanvasAction from "../../models/CanvasAction";
 import BBox from "./tools/BBox";
 import Polygon from "./tools/Polygon";
 import { useEffect, useRef, useState } from "react";
-import { Point, SIANotification } from "../../types";
+import { AnnotationSettings, Label, Point, SIANotification } from "../../types";
 import AnnotationMode from "../../models/AnnotationMode";
-import AnnotationSettings from "../../models/AnnotationSettings";
 
 type AnnotationComponentProps = {
   scaledAnnotation: Annotation;

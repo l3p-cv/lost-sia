@@ -18,6 +18,8 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     possibleLabels,
+    isVisible: true,
+    selectedLabelsIds: [],
     onLabelSelect: fn(),
   },
 };

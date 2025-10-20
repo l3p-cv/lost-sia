@@ -5,10 +5,10 @@ import { Point, SIANotification } from "../../../types";
 import Node from "../atoms/Node";
 import PolygonArea from "../atoms/PolygonArea";
 import AnnotationMode from "../../../models/AnnotationMode";
-import AnnotationSettings from "../../../models/AnnotationSettings";
 import Edge from "../atoms/Edge";
 import mouse2 from "../../../utils/mouse2";
 import { NotificationType } from "../../../models";
+import { AnnotationSettings } from "../../../types";
 
 type PolygonProps = {
   annotationSettings: AnnotationSettings;
