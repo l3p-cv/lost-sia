@@ -608,7 +608,7 @@ const Canvas = ({
     // if (propsOnKeyUp) propsOnKeyUp(e);
   };
 
-  const onMouseDown = (e: React.MouseEvent<SVGPolygonElement, MouseEvent>) => {
+  const onMouseDown = (e: React.MouseEvent<SVGImageElement, MouseEvent>) => {
     if (e.button === 0) {
       // left click
     } else if (e.button === 1) {
@@ -883,6 +883,12 @@ const Canvas = ({
               }
             }
 
+            // change the status to CHANGED when the annotation was loaded (initialAnnotations)
+            const newAnnotationStatus: AnnotationStatus =
+              selectedAnnotation.status === AnnotationStatus.LOADED
+                ? AnnotationStatus.CHANGED
+                : selectedAnnotation.status;
+
             // selectedAnnotation comes from SIA and is therefore in the percentaged system
             // convert it first
             // also update the new labels
@@ -894,6 +900,7 @@ const Canvas = ({
                 stageSize,
               ),
               labelIds: [...selectedLabelIds],
+              status: newAnnotationStatus,
             };
             handleOnAnnoChanged(updatedAnno);
           }}
@@ -960,7 +967,7 @@ const Canvas = ({
         >
           <image
             onContextMenu={(e) => e.preventDefault()}
-            onMouseDown={(e) => onMouseMove(e.movementX, e.movementY)}
+            onMouseDown={(e) => onMouseDown(e)}
             href={image}
             ref={imageRef}
             // undefined -> use default (unscaled) size of image
