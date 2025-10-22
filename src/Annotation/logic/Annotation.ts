@@ -1,4 +1,4 @@
-import AnnotationMode from "../../models/AnnotationMode";
+import { AnnotationMode } from "../../models";
 import AnnotationStatus from "../../models/AnnotationStatus";
 import AnnotationTool from "../../models/AnnotationTool";
 import { Point } from "../../types";
