@@ -1,10 +1,10 @@
-import { CButton, CButtonGroup, CPopover } from "@coreui/react";
-import { faBan, faTag } from "@fortawesome/free-solid-svg-icons";
+import { CButton, CButtonGroup } from "@coreui/react";
+import { faBan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import ImageLabel from "./ImageToolItems/ImageLabel";
 import { useEffect, useState } from "react";
 import { Label } from "../../types";
+import ImageLabelInput from "./ImageToolItems/ImageLabelInput";
 
 type ImageToolsProps = {
   canJunk: boolean;
@@ -30,11 +30,6 @@ const ImageTools = ({
   const [isLabelPopupVisible, setIsLabelPopupVisible] =
     useState<boolean>(false);
 
-  const customPopoverStyle = {
-    "--cui-popover-max-width": "800px",
-    zIndex: 7000,
-  };
-
   // close modal when the fullscreen state changes
   useEffect(() => {
     setIsLabelPopupVisible(false);
@@ -42,25 +37,19 @@ const ImageTools = ({
 
   return (
     <CButtonGroup role="group" aria-label="Image Tools">
-      <CPopover
-        placement="bottom"
-        visible={isLabelPopupVisible}
-        // make sure the visible var stays updated (otherwise we cannot close it)
-        onShow={() => setIsLabelPopupVisible(true)}
-        onHide={() => setIsLabelPopupVisible(false)}
-        content={
-          <ImageLabel
-            selectedLabelIds={imageLabelIds}
-            possibleLabels={possibleLabels}
-            onImageLabelsChanged={onImageLabelsChanged}
-          />
-        }
-        style={customPopoverStyle}
-      >
-        <CButton color="primary" variant="outline" disabled={isDisabled}>
-          <FontAwesomeIcon icon={faTag as IconProp} size="lg" />
-        </CButton>
-      </CPopover>
+      {possibleLabels && (
+        <ImageLabelInput
+          isDisabled={isDisabled}
+          isMultilabel={true}
+          isVisible={isLabelPopupVisible}
+          selectedLabelsIds={imageLabelIds}
+          possibleLabels={possibleLabels}
+          onLabelSelect={(selectedLabelIds: number[]) => {
+            setIsLabelPopupVisible(false);
+            onImageLabelsChanged(selectedLabelIds);
+          }}
+        />
+      )}
 
       {canJunk && (
         <CButton
