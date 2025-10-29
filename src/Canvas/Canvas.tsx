@@ -756,6 +756,10 @@ const Canvas = ({
       coordinates: percentagedCoordinates,
     };
 
+    // mark loaded annotations as changed (they wont be saved otherwise)
+    if (newAnnotation.status === AnnotationStatus.LOADED)
+      newAnnotation.status = AnnotationStatus.CHANGED;
+
     // send event to parent component
     onAnnoChanged(newAnnotation);
   };
