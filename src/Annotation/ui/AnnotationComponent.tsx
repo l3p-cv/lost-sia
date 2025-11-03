@@ -10,6 +10,7 @@ import Polygon from "./tools/Polygon";
 import { useEffect, useRef, useState } from "react";
 import { AnnotationSettings, Label, Point, SIANotification } from "../../types";
 import AnnotationMode from "../../models/AnnotationMode";
+import TimeUtils from "../logic/TimeUtils";
 
 type AnnotationComponentProps = {
   scaledAnnotation: Annotation;
@@ -56,6 +57,13 @@ const AnnotationComponent = ({
     scaledAnnotation.mode,
   );
   const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  const annoTimestampRef = useRef<number | undefined>(undefined);
+  const [annoTimestamp, setAnnoTimestamp] = useState<number | undefined>();
+
+  useEffect(() => {
+    annoTimestampRef.current = annoTimestamp;
+  }, [annoTimestamp]);
 
   /**
    * during user editing of the annotation, multiple events are fired by the children
@@ -128,10 +136,16 @@ const AnnotationComponent = ({
 
   const onMoving = (newCoords: Point[]) => {
     if (
-      annotationMode !== AnnotationMode.CREATE &&
-      annotationMode !== AnnotationMode.ADD
-    )
+      ![
+        AnnotationMode.ADD,
+        AnnotationMode.CREATE,
+        AnnotationMode.MOVE,
+      ].includes(annotationMode)
+    ) {
       setAnnotationMode(AnnotationMode.MOVE);
+
+      setAnnoTimestamp(performance.now());
+    }
 
     setCoordinates(newCoords);
   };
@@ -139,10 +153,23 @@ const AnnotationComponent = ({
   const onMoved = () => {
     setAnnotationMode(AnnotationMode.VIEW);
 
+    const annoEditDuration: number = TimeUtils.getRoundedDuration(
+      annoTimestampRef.current,
+      performance.now(),
+    );
+
+    // add annotation time (or set it if there was no time before)
+    // null seems to be a number in the JS world
+    const newAnnoTime: number =
+      isNaN(scaledAnnotation.annoTime) || scaledAnnotation.annoTime === null
+        ? annoEditDuration
+        : scaledAnnotation.annoTime + annoEditDuration;
+
     // moving finished - send event to canvas
     onAnnoChanged({
       ...scaledAnnotation,
       coordinates: coordinatesRef.current,
+      annoTime: newAnnoTime,
     });
   };
 
@@ -173,10 +200,7 @@ const AnnotationComponent = ({
             svgScale={svgScale}
             svgTranslation={svgTranslation}
             style={annotationStyle}
-            onMoving={(newPoint: Point) => {
-              setAnnotationMode(AnnotationMode.MOVE);
-              setCoordinates([newPoint]);
-            }}
+            onMoving={(point: Point) => onMoving([point])}
             onMoved={onMoved}
             onIsDraggingStateChanged={setIsDragging}
           />

@@ -30,6 +30,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import AnnotationStatus from "../models/AnnotationStatus";
 import transform2 from "../utils/transform2";
 import NotificationType from "../models/NotificationType";
+import TimeUtils from "../Annotation/logic/TimeUtils";
 
 type CanvasProps = {
   annotations?: Annotation[];
@@ -91,6 +92,7 @@ const Canvas = ({
   onShouldDeleteAnno,
 }: CanvasProps) => {
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW);
+  const [annoTimestamp, setAnnoTimestamp] = useState<number | undefined>();
 
   // remember which label was added last
   const [currentLabelId, setCurrentLabelId] = useState<number | undefined>(
@@ -222,6 +224,8 @@ const Canvas = ({
       percentagedInitialCoords,
     );
 
+    setAnnoTimestamp(performance.now());
+
     // automatically select the last used label
     if (currentLabelId !== undefined) newAnnotation.labelIds = [currentLabelId];
 
@@ -233,9 +237,10 @@ const Canvas = ({
     if (selectedAnnoTool === AnnotationTool.Point) {
       // onFinishCreateAnno assumes coordinates are in stage
       // quickly convert them before calling it
-      const newPointAnnotation = {
+      const newPointAnnotation: Annotation = {
         ...newAnnotation,
         coordinates: [antiScaledMouseStagePosition],
+        annoTime: 0, // its literally one frame
       };
       onFinishCreateAnno(newPointAnnotation);
     }
@@ -576,6 +581,15 @@ const Canvas = ({
     setEditorMode(EditorModes.VIEW);
 
     fullyCreatedAnnotation.mode = AnnotationMode.VIEW;
+
+    // handle annoTime (not for points though - they are created in only one frame)
+    if (fullyCreatedAnnotation.type !== AnnotationTool.Point) {
+      const annoEditDuration: number = TimeUtils.getRoundedDuration(
+        annoTimestamp,
+        performance.now(),
+      );
+      fullyCreatedAnnotation.annoTime = annoEditDuration;
+    }
 
     // convert the coordinates from our local scaled sytem into the percentaged one
     const percentagedCoordinates =

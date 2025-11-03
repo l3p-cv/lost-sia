@@ -25,7 +25,6 @@ export type ExternalAnnotation = {
   status: AnnotationStatus;
   labelIds: number[];
   type: AnnotationTool;
-  timestamp?: DOMHighResTimeStamp;
 };
 
 export type Label = {

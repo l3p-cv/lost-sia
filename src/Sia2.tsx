@@ -158,10 +158,6 @@ const Sia2 = ({
           status: externalAnno.status,
           annoTime:
             externalAnno.annoTime !== undefined ? externalAnno.annoTime : 0.0,
-          timestamp:
-            externalAnno.timestamp !== undefined
-              ? externalAnno.timestamp
-              : performance.now(),
         };
 
         return _anno;
