@@ -30,7 +30,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import AnnotationStatus from "../models/AnnotationStatus";
 import transform2 from "../utils/transform2";
 import NotificationType from "../models/NotificationType";
-import TimeUtils from "../Annotation/logic/TimeUtils";
+import TimeUtils from "../utils/TimeUtils";
 
 type CanvasProps = {
   annotations?: Annotation[];

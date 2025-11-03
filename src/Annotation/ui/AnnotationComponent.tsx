@@ -10,7 +10,7 @@ import Polygon from "./tools/Polygon";
 import { useEffect, useRef, useState } from "react";
 import { AnnotationSettings, Label, Point, SIANotification } from "../../types";
 import AnnotationMode from "../../models/AnnotationMode";
-import TimeUtils from "../logic/TimeUtils";
+import TimeUtils from "../../utils/TimeUtils";
 
 type AnnotationComponentProps = {
   scaledAnnotation: Annotation;
