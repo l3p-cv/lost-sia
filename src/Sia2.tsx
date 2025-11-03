@@ -204,8 +204,11 @@ const Sia2 = ({
     if (image !== undefined || initialAnnotations.length === 0) return;
 
     createInitialAnnotations();
-    setImageLabelIds(initialImageLabelIds);
   }, [initialAnnotations]);
+
+  useEffect(() => {
+    setImageLabelIds(initialImageLabelIds);
+  }, [initialImageLabelIds]);
 
   // update annotation settings if changed in the parent
   useEffect(() => {
