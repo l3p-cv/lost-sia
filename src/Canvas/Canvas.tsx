@@ -552,14 +552,12 @@ const Canvas = ({
 
   useEffect(() => {
     if (!isPolygonSelectionMode) return;
-
-    const newAnnotationInternalId: number = onRequestNewAnnoId();
-
     if (polygonOperationResult.polygonsToCreate === undefined) return;
 
     // create all polygons calculated from the outside world
     polygonOperationResult.polygonsToCreate.forEach(
       (polygonToCreate: ToolCoordinates) => {
+        const newAnnotationInternalId: number = onRequestNewAnnoId();
         const newAnnotation: Annotation = new Annotation(
           newAnnotationInternalId,
           polygonToCreate.type,
@@ -580,7 +578,10 @@ const Canvas = ({
   const onFinishCreateAnno = (fullyCreatedAnnotation: Annotation) => {
     setEditorMode(EditorModes.VIEW);
 
-    fullyCreatedAnnotation.mode = AnnotationMode.VIEW;
+    const newAnnotation: Annotation = {
+      ...fullyCreatedAnnotation,
+      mode: AnnotationMode.VIEW,
+    };
 
     // handle annoTime (not for points though - they are created in only one frame)
     if (fullyCreatedAnnotation.type !== AnnotationTool.Point) {
@@ -588,7 +589,7 @@ const Canvas = ({
         annoTimestamp,
         performance.now(),
       );
-      fullyCreatedAnnotation.annoTime = annoEditDuration;
+      newAnnotation.annoTime = annoEditDuration;
     }
 
     // convert the coordinates from our local scaled sytem into the percentaged one
@@ -598,15 +599,15 @@ const Canvas = ({
         imageToStageFactor,
         imgSize,
       );
-    fullyCreatedAnnotation.coordinates = percentagedCoordinates;
+    newAnnotation.coordinates = percentagedCoordinates;
 
-    onAnnoChanged(fullyCreatedAnnotation);
+    onAnnoChanged(newAnnotation);
 
-    // if point: inform annotation that we just created it
-    onAnnoCreationFinished(
-      fullyCreatedAnnotation,
-      selectedAnnoTool === AnnotationTool.Point,
-    );
+    // inform annotation that we just created it
+    const hasAnnoJustBeenCreated: boolean =
+      selectedAnnoTool === AnnotationTool.Point || isPolygonSelectionMode;
+
+    onAnnoCreationFinished(newAnnotation, hasAnnoJustBeenCreated);
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
@@ -782,21 +783,29 @@ const Canvas = ({
     // hide all annotations when image is moved
     if (editorMode === EditorModes.CAMERA_MOVE) return <></>;
 
+    const editorModesOtherAnnosShouldBeHiddenIn = [
+      EditorModes.CREATE,
+      EditorModes.ADD,
+      EditorModes.MOVE,
+    ];
+
+    const shouldHideOtherAnnos: boolean =
+      editorModesOtherAnnosShouldBeHiddenIn.includes(editorMode);
+
     // draw the annotation using the AnnotationComponent and the scaled coordinates
     const annos: ReactElement[] = scaledAnnotations.map(
       (scaledAnnotation: Annotation): ReactElement => {
         // only show selected anno in specific editor modes
-        const editorModesOtherAnnosShouldBeHiddenIn = [
-          EditorModes.CREATE,
-          EditorModes.ADD,
-          EditorModes.MOVE,
-        ];
+        const isAnnoSelected: boolean =
+          scaledAnnotation.internalId === selectedAnnotation?.internalId;
 
-        if (
-          editorModesOtherAnnosShouldBeHiddenIn.includes(editorMode) &&
-          scaledAnnotation.internalId !== selectedAnnotation?.internalId
-        )
-          return <></>;
+        if (shouldHideOtherAnnos && !isAnnoSelected)
+          return (
+            // yes, this is for returning nothing
+            // we still need to provide a key, otherwise we got 10 nothings and react cannot differ between them (it wants to)
+            // use an empty svg g element because <></> cannot have a key
+            <g key={`annotationComponent_${scaledAnnotation.internalId}`} />
+          );
 
         return (
           <AnnotationComponent
@@ -809,13 +818,10 @@ const Canvas = ({
             pageToStageOffset={pageToStageOffset}
             nodeRadius={uiConfig.nodeRadius}
             strokeWidth={uiConfig.strokeWidth}
-            isSelected={
-              scaledAnnotation.internalId === selectedAnnotation?.internalId
-            }
+            isSelected={isAnnoSelected}
             isDisabled={
               // dont let annotation be selected twice in polygon selection mode
-              isPolygonSelectionMode &&
-              scaledAnnotation.internalId === selectedAnnotation?.internalId
+              isPolygonSelectionMode && isAnnoSelected
             }
             onFinishAnnoCreate={onFinishCreateAnno}
             onLabelIconClicked={() => setIsLabelInputVisible(true)}

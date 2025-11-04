@@ -364,6 +364,10 @@ const Sia2 = ({
               const annoListIndex: number = annotations.findIndex(
                 (anno) => anno.internalId === changedAnno.internalId,
               );
+
+              // only fire event if item found
+              if (annoListIndex === -1) return;
+
               const _annotations: Annotation[] = [...annotations];
               _annotations[annoListIndex] = changedAnno;
               setAnnotations(_annotations);
@@ -373,7 +377,7 @@ const Sia2 = ({
             }}
             onAnnoCreationFinished={(
               changedAnno: Annotation,
-              hasAnnotationExisted: boolean,
+              hasAnnoJustBeenCreated: boolean,
             ) => {
               // update annotation list
               const _annotations: Annotation[] = [...annotations];
@@ -404,18 +408,10 @@ const Sia2 = ({
                     },
                   );
                 }
-
-                // the polygon selection mode hands annotations to SIA in one single frame
-                // add the new annotation here
-                _annotations.push(changedAnno);
               }
 
-              // point annotations are created in one frame
-              // they dont exist in the annotations list yet, so just append them
-              // if (changedAnno.type === AnnotationTool.Point)
-
               // are we just marking an existing annotation as finished or did we created it in the same frame
-              if (hasAnnotationExisted) _annotations.push(changedAnno);
+              if (hasAnnoJustBeenCreated) _annotations.push(changedAnno);
               else {
                 // all other annotation types
                 const annoListIndex: number = annotations.findIndex(
@@ -442,10 +438,7 @@ const Sia2 = ({
 
               _annotations[selectedAnnotationId] = annotation;
 
-              // _annotations.push(annotation);
               setAnnotations(_annotations);
-              // setSelectedAnnotation(annotation);
-              // onAnnoCreated(annotation, _annotations);
             }}
             onNotification={onNotification}
             onRequestNewAnnoId={createNewInternalAnnotationId}
