@@ -882,7 +882,7 @@ const Canvas = ({
           left: labelInputPosition?.x !== undefined ? labelInputPosition.x : 0,
           top: labelInputPosition?.y !== undefined ? labelInputPosition.y : 0,
           display: labelInputPosition?.y !== undefined ? "inherit" : "none",
-          zIndex: 7000,
+          zIndex: isLabelInputVisible ? 7000 : -1,
         }}
       >
         <LabelInput
