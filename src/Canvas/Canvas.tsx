@@ -31,6 +31,7 @@ import AnnotationStatus from "../models/AnnotationStatus";
 import transform2 from "../utils/transform2";
 import NotificationType from "../models/NotificationType";
 import TimeUtils from "../utils/TimeUtils";
+import windowViewport from "../utils/windowViewport";
 
 type CanvasProps = {
   annotations?: Annotation[];
@@ -421,17 +422,29 @@ const Canvas = ({
     let newTransX = svgTranslation.x + movementX / svgScale;
     let newTransY = svgTranslation.y + movementY / svgScale;
 
-    // at least one quarter of the image should always be visible
-    const minTransX = canvasSize.x * -0.25;
-    const minTransY = canvasSize.y * -0.25;
-    const maxTransX = canvasSize.x * 0.75;
-    const maxTransY = canvasSize.y * 0.75;
+    const vXMin = canvasSize.x * 0.45;
+    const vXMax = canvasSize.x * 0.55;
+    const yXMin = canvasSize.y * 0.45;
+    const yXMax = canvasSize.y * 0.55;
 
-    // move image a bit back inside the canvas
-    if (newTransX < minTransX) newTransX += 25;
-    if (newTransX > maxTransX) newTransX -= 25;
-    if (newTransY < minTransY) newTransY += 25;
-    if (newTransY > maxTransY) newTransY -= 25;
+    const topLeftPoint: Point = { x: 0, y: 0 };
+    const vLeft = windowViewport.getViewportCoordinates(
+      svgTranslation,
+      canvasSize,
+      svgScale,
+      topLeftPoint,
+    );
+    const vRight = windowViewport.getViewportCoordinates(
+      svgTranslation,
+      canvasSize,
+      svgScale,
+      canvasSize,
+    );
+
+    if (vLeft.vX >= vXMin) newTransX = svgTranslation.x - 5;
+    else if (vRight.vX <= vXMax) newTransX = svgTranslation.x + 5;
+    else if (vLeft.vY >= yXMin) newTransY = svgTranslation.y - 5;
+    else if (vRight.vY <= yXMax) newTransY = svgTranslation.y + 5;
 
     setSvgTranslation({ x: newTransX, y: newTransY });
   };
