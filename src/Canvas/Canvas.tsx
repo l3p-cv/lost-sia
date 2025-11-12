@@ -636,7 +636,7 @@ const Canvas = ({
     // if (propsOnKeyUp) propsOnKeyUp(e);
   };
 
-  const onMouseDown = (e: React.MouseEvent<SVGImageElement, MouseEvent>) => {
+  const onMouseDown = (e: React.MouseEvent<SVGElement, MouseEvent>) => {
     if (e.button === 0) {
       // left click
     } else if (e.button === 1) {
@@ -965,29 +965,13 @@ const Canvas = ({
       )}
 
       <svg
-        // ref={svgRef}
-        // width={svgSize[0] > 0 ? svgSize[0] : "100%"}
-        // height={svgSize[1] > 0 ? svgSize[1] : "100%"}
         width="100%"
         height="100%"
-        //   width={
-        //     this.props.fixedImageSize
-        //       ? this.props.fixedImageSize
-        //       : this.state.svg.width
-        //   }
-        //   height={
-        //     this.props.fixedImageSize
-        //       ? this.props.fixedImageSize
-        //       : this.state.svg.height
-        //   }
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
         onMouseMove={(e) => onMouseMove(e.movementX, e.movementY)}
-        // onMouseMove={(e) => this.handleSvgMouseMove(e)}
         tabIndex={0}
-        // width="100%"
-        // height="100%"
-        // style={{ position: "absolute" }}
+        onMouseDown={(e) => onMouseDown(e)}
       >
         <g
           transform={`scale(${svgScale}) translate(${centeredSvgTranslation.x}, ${centeredSvgTranslation.y})`}
@@ -1004,7 +988,6 @@ const Canvas = ({
         >
           <image
             onContextMenu={(e) => e.preventDefault()}
-            onMouseDown={(e) => onMouseDown(e)}
             href={image}
             ref={imageRef}
             // undefined -> use default (unscaled) size of image
