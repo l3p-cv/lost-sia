@@ -52,6 +52,9 @@ class KeyMapper {
       case "e":
         this.triggerKeyAction(KeyAction.RECREATE_ANNO);
         break;
+      case "j":
+        this.triggerKeyAction(KeyAction.TOGGLE_IMAGE_JUNK);
+        break;
       case "c":
         if (isCtrlKeyPressed) this.triggerKeyAction(KeyAction.COPY_ANNOTATION);
         else this.triggerKeyAction(KeyAction.TOGGLE_ANNO_COMMENT_INPUT);

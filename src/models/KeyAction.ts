@@ -17,6 +17,7 @@ enum KeyAction {
   RECREATE_ANNO,
   DELETE_ANNO_IN_CREATION,
   TOGGLE_ANNO_COMMENT_INPUT,
+  TOGGLE_IMAGE_JUNK,
 }
 
 export default KeyAction;

@@ -183,6 +183,11 @@ const Sia2 = ({
     return newInternalId;
   };
 
+  const handleImageJunk = (newJunkState: boolean) => {
+    setIsImageJunk(newJunkState);
+    onIsImageJunk(newJunkState);
+  };
+
   useEffect(() => {
     // remove current annotations when the image changes
     if (image === undefined) {
@@ -320,10 +325,7 @@ const Sia2 = ({
             onImageLabelsChanged(newImageLabelIds);
           }}
           onSetIsFullscreen={setIsFullscreen}
-          onSetIsImageJunk={(newJunkState: boolean) => {
-            setIsImageJunk(newJunkState);
-            onIsImageJunk(newJunkState);
-          }}
+          onSetIsImageJunk={handleImageJunk}
           onSetSelectedTool={setSelectedAnnoTool}
           onShouldDeleteSelectedAnnotation={deleteSelectedAnnotation}
         />
@@ -440,6 +442,7 @@ const Sia2 = ({
 
               setAnnotations(_annotations);
             }}
+            onSetIsImageJunk={handleImageJunk}
             onNotification={onNotification}
             onRequestNewAnnoId={createNewInternalAnnotationId}
             onSelectAnnotation={(annotation) => {

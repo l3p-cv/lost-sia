@@ -61,6 +61,7 @@ type CanvasProps = {
   onNotification?: (notification: SIANotification) => void;
   onRequestNewAnnoId: () => number;
   onSelectAnnotation: (annotation?: Annotation) => void;
+  onSetIsImageJunk: (newJunkState: boolean) => void;
   onSetSelectedTool: (tool: AnnotationTool) => void;
   onShouldDeleteAnno: (internalAnnoId: number) => void;
 };
@@ -89,6 +90,7 @@ const Canvas = ({
   onNotification = (_) => {},
   onRequestNewAnnoId,
   onSelectAnnotation,
+  onSetIsImageJunk,
   onSetSelectedTool = (_) => {},
   onShouldDeleteAnno,
 }: CanvasProps) => {
@@ -411,6 +413,9 @@ const Canvas = ({
       case KeyAction.RECREATE_ANNO:
         console.log("KeyAction TODO: RECREATE_ANNO");
         editSelectedAnnotation();
+        break;
+      case KeyAction.TOGGLE_IMAGE_JUNK:
+        onSetIsImageJunk(!isImageJunk);
         break;
       default:
         console.log("Unknown KeyAction", keyAction);
