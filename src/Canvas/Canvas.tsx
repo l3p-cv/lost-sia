@@ -415,6 +415,9 @@ const Canvas = ({
         editSelectedAnnotation();
         break;
       case KeyAction.TOGGLE_IMAGE_JUNK:
+        // dont junk image while creating annotation
+        if (editorMode === EditorModes.ADD || editorMode === EditorModes.CREATE)
+          return;
         onSetIsImageJunk(!isImageJunk);
         break;
       default:
@@ -651,7 +654,8 @@ const Canvas = ({
       // check if annotation creation allowed in settings
       if (!annotationSettings!.canCreate) return;
 
-      if (editorMode === EditorModes.ADD) return;
+      if (editorMode === EditorModes.ADD || editorMode === EditorModes.CREATE)
+        return;
 
       // right click -> start new annotation
       // clicks during annotation creation will be handled inside the AnnotationComponent
