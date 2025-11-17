@@ -133,6 +133,9 @@ const Canvas = ({
   const [labelInputPosition, setLabelInputPosition] = useState<Point>()
   const [isLabelInputVisible, setIsLabelInputVisible] = useState<boolean>(false)
 
+  // svg element - used to trap focus
+  const svgRef = useRef(null)
+
   // available canvas area - all possible space for creating a canvas
   const canvasRef = useRef(null)
 
@@ -472,6 +475,11 @@ const Canvas = ({
     setLabelInputPosition(undefined)
     setIsLabelInputVisible(false)
   }
+
+  useEffect(() => {
+    // set initial focus to make keybinds work
+    svgRef.current?.focus()
+  }, [])
 
   // image changed after init -> reset everything
   useEffect(() => {
@@ -941,6 +949,7 @@ const Canvas = ({
       )}
 
       <svg
+        ref={svgRef}
         width="100%"
         height="100%"
         onKeyDown={onKeyDown}
