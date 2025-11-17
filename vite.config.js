@@ -5,7 +5,7 @@ import { globSync } from "glob";
 import dts from "unplugin-dts/vite";
 
 const tsFiles = globSync("src/**/*.ts?(x)", {
-  ignore: ["src/**/*.stories.tsx"],
+  ignore: ["src/**/*.stories.tsx", "src/stories/**"],
 });
 
 const inputs = Object.fromEntries(

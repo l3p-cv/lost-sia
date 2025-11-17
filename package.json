@@ -25,13 +25,12 @@
       "require": "./dist/index.js"
     },
     "./utils": {
-      "development": "./src/utils/index.js",
       "types": "./dist/utils/index.d.ts",
       "import": "./dist/utils/index.js",
       "require": "./dist/utils/index.js"
     },
     "./models": {
-      "development": "./src/models/index.js",
+      "bun": "./src/models/index.js",
       "types": "./dist/models/index.d.ts",
       "import": "./dist/models/index.js",
       "require": "./dist/models/index.js"
@@ -74,6 +73,8 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.39.1",
     "@microsoft/api-extractor": "^7.52.13",
     "@storybook/addon-docs": "^9.1.10",
     "@storybook/addon-links": "^9.0.12",
@@ -85,16 +86,16 @@
     "@typescript-eslint/parser": "^8.46.1",
     "@vitejs/plugin-react": "^4.3.0",
     "cross-env": "^7.0.3",
-    "eslint": "^8.0.1",
+    "eslint": "^9.39.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-config-standard-react": "^13.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.6.0",
-    "eslint-plugin-react": "^7.34.2",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-standard": "^5.0.0",
-    "eslint-plugin-storybook": "^9.1.12",
-    "glob": "^10.4.5",
+    "eslint-plugin-storybook": "^10.0.7",
+    "glob": "^11.0.3",
     "lodash-es": "^4.17.21",
     "prettier": "^3.3.3",
     "react-redux": "^9.1.2",
