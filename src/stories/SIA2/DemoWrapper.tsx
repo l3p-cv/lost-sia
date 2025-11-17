@@ -1,22 +1,18 @@
-import Annotation from "../../Annotation/logic/Annotation";
-import AnnotationTool from "../../models/AnnotationTool";
+import Annotation from '../../Annotation/logic/Annotation'
+import AnnotationTool from '../../models/AnnotationTool'
 
-import Sia2 from "../../Sia2";
+import Sia from '../../Sia'
 
-import type {
-  AnnotationSettings,
-  ExternalAnnotation,
-  UiConfig,
-} from "../../types";
+import type { AnnotationSettings, ExternalAnnotation, UiConfig } from '../../types'
 
-import { imgBlob } from "../siaDummyData";
-import { possibleLabels } from "../siaDummyData2";
+import { imgBlob } from '../siaDummyData'
+import { possibleLabels } from '../siaDummyData2'
 
 type DemoWrapperProps = {
-  annotations?: ExternalAnnotation[];
-  annotationSettings?: AnnotationSettings;
-  isLoading?: boolean;
-};
+  annotations?: ExternalAnnotation[]
+  annotationSettings?: AnnotationSettings
+  isLoading?: boolean
+}
 
 const DemoWrapper = ({
   annotations = [],
@@ -27,10 +23,10 @@ const DemoWrapper = ({
     nodeRadius: 4,
     strokeWidth: 4,
     imageCentered: false,
-  };
+  }
 
   return (
-    <Sia2
+    <Sia
       annotationSettings={annotationSettings}
       initialAnnotations={annotations}
       isLoading={isLoading}
@@ -39,22 +35,22 @@ const DemoWrapper = ({
       image={imgBlob}
       defaultAnnotationTool={AnnotationTool.Polygon}
       onAnnoCreated={(anno: Annotation, _: Annotation[]) => {
-        console.log("CREATED", anno);
+        console.log('CREATED', anno)
       }}
       onAnnoCreationFinished={(anno: Annotation, _: Annotation[]) => {
-        console.log("FINISHED CREATION", anno);
+        console.log('FINISHED CREATION', anno)
       }}
       onAnnoChanged={(anno: Annotation, _: Annotation[]) => {
-        console.log("CHANGED", anno);
+        console.log('CHANGED', anno)
       }}
       onAnnoDeleted={(anno: Annotation, annos: Annotation[]) => {
-        console.log("DELETED", anno, annos);
+        console.log('DELETED', anno, annos)
       }}
       onImageLabelsChanged={(imageLabelIds: number[]) => {
-        console.log("IMAGE LABEL IDS CHANGED", imageLabelIds);
+        console.log('IMAGE LABEL IDS CHANGED', imageLabelIds)
       }}
     />
-  );
-};
+  )
+}
 
-export default DemoWrapper;
+export default DemoWrapper

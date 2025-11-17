@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react'
 
-import Sia2 from "../Sia2";
-import { imgBlob } from "./siaDummyData";
-import { AllowedTools } from "../types";
+import Sia from '../Sia'
+import { imgBlob } from './siaDummyData'
+import { AllowedTools } from '../types'
 
-export const ActionsData = {};
+export const ActionsData = {}
 
 const meta = {
-  title: "Annotation Tools",
-  component: Sia2,
+  title: 'Annotation Tools',
+  component: Sia,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: "padding",
+    layout: 'padding',
   },
-  tags: ["!autodocs"],
+  tags: ['!autodocs'],
   excludeStories: /.*Data$/,
   args: {
     ...ActionsData,
@@ -22,20 +22,20 @@ const meta = {
     (Story) => (
       <div
         style={{
-          width: "50vw",
-          height: "65vh",
+          width: '50vw',
+          height: '65vh',
           padding: 10,
-          overflow: "hidden",
+          overflow: 'hidden',
         }}
       >
         <Story />
       </div>
     ),
   ],
-} satisfies Meta<typeof Sia2>;
+} satisfies Meta<typeof Sia>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 const allowedTools: AllowedTools = {
   bbox: true,
@@ -43,7 +43,7 @@ const allowedTools: AllowedTools = {
   point: false,
   polygon: false,
   junk: true,
-};
+}
 
 export const BBoxOnly: Story = {
   args: {
@@ -67,7 +67,7 @@ export const BBoxOnly: Story = {
 
         ...
 
-        <Sia2
+        <Sia
           allowedTools={allowedTools}
           image={imageBlob}
           possibleLabels={[]}
@@ -75,7 +75,7 @@ export const BBoxOnly: Story = {
       },
     },
   },
-};
+}
 
 const noJunkTools = {
   bbox: true,
@@ -83,7 +83,7 @@ const noJunkTools = {
   point: true,
   polygon: true,
   junk: false,
-};
+}
 
 export const NoJunk: Story = {
   args: {
@@ -107,7 +107,7 @@ export const NoJunk: Story = {
 
         ...
 
-        <Sia2
+        <Sia
           allowedTools={allowedTools}
           image={imageBlob}
           possibleLabels={[]}
@@ -115,4 +115,4 @@ export const NoJunk: Story = {
       },
     },
   },
-};
+}

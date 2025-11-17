@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { List, Label } from "semantic-ui-react";
 import InfoBox from "./InfoBox";
-import * as colorlut from "../utils/colorlut";
+import * as colorlut from "../utils/color";
 // import actions from '../../../../actions'
 // import * as transform from '../utils/transform'
 // const { siaShowImgBar } = actions

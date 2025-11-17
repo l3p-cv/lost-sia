@@ -1,5 +1,3 @@
-import React from "react";
-
 export function textIcon() {
   return (
     <svg
@@ -32,7 +30,7 @@ export function textIcon() {
                 C948.049,214.236,926.687,199.643,925.876,172.939z"
       />
     </svg>
-  );
+  )
 }
 
 export function lineIcon() {
@@ -58,7 +56,7 @@ export function lineIcon() {
                 c31.188,24.081,91.974-3.708,123.127-39.312C782.35,323.912,979.191,120.251,986.331,109.582z"
       />
     </svg>
-  );
+  )
 }
 
 export function bBoxIcon() {
@@ -84,7 +82,7 @@ export function bBoxIcon() {
                 h608.264c23.386,0,42.52,19.134,42.52,42.52V710.655z"
       />
     </svg>
-  );
+  )
 }
 
 export function polygonIcon() {
@@ -111,7 +109,7 @@ export function polygonIcon() {
                 c18.31,14.549,14.16,26.901-9.219,27.449L342.327,769.938z"
       />
     </svg>
-  );
+  )
 }
 
 export function pointIcon() {
@@ -130,5 +128,5 @@ export function pointIcon() {
                 c0-151.356,122.7-274.057,274.057-274.057C625.497,134.229,748.197,256.929,748.197,408.286z"
       />
     </svg>
-  );
+  )
 }

@@ -1,20 +1,20 @@
-import { CSSProperties, MouseEvent } from "react";
-import { Point, Vector2 } from "../../../types";
-import mouse2 from "../../../utils/mouse2";
+import { CSSProperties, MouseEvent } from 'react'
+import { Point, Vector2 } from '../../../types'
+import mouse from '../../../utils/mouse'
 
 type EdgeProps = {
-  startCoordinate: Point;
-  endCoordinate: Point;
-  isDisabled?: boolean;
-  pageToStageOffset: Point;
-  svgScale: number;
-  svgTranslation: Vector2;
-  style: CSSProperties;
-  onAddNode?: (coordinate: Point) => void;
-  onDoubleClick?: (e: MouseEvent) => void;
-  onMouseDown: (e: MouseEvent) => void;
-  onMouseMove: (e: MouseEvent) => void;
-};
+  startCoordinate: Point
+  endCoordinate: Point
+  isDisabled?: boolean
+  pageToStageOffset: Point
+  svgScale: number
+  svgTranslation: Vector2
+  style: CSSProperties
+  onAddNode?: (coordinate: Point) => void
+  onDoubleClick?: (e: MouseEvent) => void
+  onMouseDown: (e: MouseEvent) => void
+  onMouseMove: (e: MouseEvent) => void
+}
 
 const Edge = ({
   startCoordinate,
@@ -30,15 +30,15 @@ const Edge = ({
   onMouseMove,
 }: EdgeProps) => {
   const addNode = (e: MouseEvent) => {
-    const mouseStageCoords: Point = mouse2.getAntiScaledMouseStagePosition(
+    const mouseStageCoords: Point = mouse.getAntiScaledMouseStagePosition(
       e,
       pageToStageOffset,
       svgScale,
       svgTranslation,
-    );
+    )
 
-    onAddNode(mouseStageCoords);
-  };
+    onAddNode(mouseStageCoords)
+  }
 
   return (
     <line
@@ -52,9 +52,9 @@ const Edge = ({
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onContextMenu={(e) => e.preventDefault()}
-      strokeDasharray={isDisabled ? "10,5" : "0"}
+      strokeDasharray={isDisabled ? '10,5' : '0'}
     />
-  );
-};
+  )
+}
 
-export default Edge;
+export default Edge

@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react'
 
-import Sia2 from "../Sia2";
-import type { Label } from "../types";
-import { imgBlob } from "./siaDummyData";
+import Sia from '../Sia'
+import type { Label } from '../types'
+import { imgBlob } from './siaDummyData'
 
-export const ActionsData = {};
+export const ActionsData = {}
 
 const meta = {
-  title: "Minimal SIA",
-  component: Sia2,
+  title: 'Minimal SIA',
+  component: Sia,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: "padding",
+    layout: 'padding',
   },
-  tags: ["!autodocs"],
+  tags: ['!autodocs'],
   excludeStories: /.*Data$/,
   args: {
     ...ActionsData,
@@ -22,33 +22,33 @@ const meta = {
     (Story) => (
       <div
         style={{
-          width: "50vw",
-          height: "65vh",
+          width: '50vw',
+          height: '65vh',
           padding: 10,
-          overflow: "hidden",
+          overflow: 'hidden',
         }}
       >
         <Story />
       </div>
     ),
   ],
-} satisfies Meta<typeof Sia2>;
+} satisfies Meta<typeof Sia>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 const minimalExampleLabels: Label[] = [
   {
     id: 1,
-    name: "Cat",
-    description: "Includes all cats",
+    name: 'Cat',
+    description: 'Includes all cats',
   },
   {
     id: 2,
-    name: "Dog",
-    description: "Includes all dogs",
+    name: 'Dog',
+    description: 'Includes all dogs',
   },
-];
+]
 
 /**
  * Minimal SIA example
@@ -79,11 +79,11 @@ export const Minimal: Story = {
 
         ...
 
-        <Sia2
+        <Sia
           image={imageBlob}
           possibleLabels={possibleLabels}
         />`,
       },
     },
   },
-};
+}
