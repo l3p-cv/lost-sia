@@ -1,19 +1,19 @@
-import { CButton, CButtonGroup } from "@coreui/react";
-import * as siaIcons from "../../utils/siaIcons";
+import { CButton, CButtonGroup } from '@coreui/react'
+import * as siaIcons from '../../utils/siaIcons'
 
-import AnnotationTool from "../../models/AnnotationTool";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { AllowedTools } from "../../types";
+import AnnotationTool from '../../models/AnnotationTool'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import { AllowedTools } from '../../types'
 
 type AnnoToolSelectorProps = {
-  allowedTools: AllowedTools;
-  isDisabled?: boolean;
-  selectedTool: AnnotationTool;
-  onSetSelectedTool: (selectedTool: AnnotationTool) => void;
-  onShouldDeleteSelectedAnnotation?: () => void;
-};
+  allowedTools: AllowedTools
+  isDisabled?: boolean
+  selectedTool: AnnotationTool
+  onSetSelectedTool: (selectedTool: AnnotationTool) => void
+  onShouldDeleteSelectedAnnotation?: () => void
+}
 
 const AnnoToolSelector = ({
   allowedTools,
@@ -28,7 +28,7 @@ const AnnoToolSelector = ({
         <CButton
           color="primary"
           disabled={isDisabled}
-          variant={selectedTool == AnnotationTool.Point ? undefined : "outline"}
+          variant={selectedTool == AnnotationTool.Point ? undefined : 'outline'}
           onClick={() => onSetSelectedTool(AnnotationTool.Point)}
         >
           {siaIcons.pointIcon()}
@@ -39,7 +39,7 @@ const AnnoToolSelector = ({
         <CButton
           color="primary"
           disabled={isDisabled}
-          variant={selectedTool == AnnotationTool.Line ? undefined : "outline"}
+          variant={selectedTool == AnnotationTool.Line ? undefined : 'outline'}
           onClick={() => onSetSelectedTool(AnnotationTool.Line)}
         >
           {siaIcons.lineIcon()}
@@ -50,7 +50,7 @@ const AnnoToolSelector = ({
         <CButton
           color="primary"
           disabled={isDisabled}
-          variant={selectedTool == AnnotationTool.BBox ? undefined : "outline"}
+          variant={selectedTool == AnnotationTool.BBox ? undefined : 'outline'}
           onClick={() => onSetSelectedTool(AnnotationTool.BBox)}
         >
           {siaIcons.bBoxIcon()}
@@ -61,9 +61,7 @@ const AnnoToolSelector = ({
         <CButton
           color="primary"
           disabled={isDisabled}
-          variant={
-            selectedTool == AnnotationTool.Polygon ? undefined : "outline"
-          }
+          variant={selectedTool == AnnotationTool.Polygon ? undefined : 'outline'}
           onClick={() => onSetSelectedTool(AnnotationTool.Polygon)}
         >
           {siaIcons.polygonIcon()}
@@ -79,7 +77,7 @@ const AnnoToolSelector = ({
         <FontAwesomeIcon icon={faTrash as IconProp} size="lg" />
       </CButton>
     </CButtonGroup>
-  );
-};
+  )
+}
 
-export default AnnoToolSelector;
+export default AnnoToolSelector

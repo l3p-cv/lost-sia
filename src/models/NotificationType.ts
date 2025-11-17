@@ -5,4 +5,4 @@ enum NotificationType {
   ERROR,
 }
 
-export default NotificationType;
+export default NotificationType

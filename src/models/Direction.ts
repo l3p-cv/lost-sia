@@ -5,4 +5,4 @@ enum Direction {
   RIGHT,
 }
 
-export default Direction;
+export default Direction

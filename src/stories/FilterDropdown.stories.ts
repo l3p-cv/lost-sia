@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { possibleLabels } from "./siaDummyData2";
-import { fn } from "@storybook/test";
-import LabelInput from "../Canvas/LabelInput";
+import type { Meta, StoryObj } from '@storybook/react'
+import { possibleLabels } from './siaDummyData2'
+import { fn } from '@storybook/test'
+import LabelInput from '../Canvas/LabelInput'
 
 const meta = {
-  title: "Components/LabelFilter",
+  title: 'Components/LabelFilter',
   component: LabelInput,
   argTypes: {},
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-} satisfies Meta<typeof LabelInput>;
+} satisfies Meta<typeof LabelInput>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
@@ -22,4 +22,4 @@ export const Default: Story = {
     selectedLabelsIds: [],
     onLabelSelect: fn(),
   },
-};
+}

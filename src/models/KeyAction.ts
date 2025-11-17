@@ -20,4 +20,4 @@ enum KeyAction {
   TOGGLE_IMAGE_JUNK,
 }
 
-export default KeyAction;
+export default KeyAction

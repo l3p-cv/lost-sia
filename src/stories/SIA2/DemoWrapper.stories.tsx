@@ -1,29 +1,29 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react'
 
-import DemoWrapper from "./DemoWrapper";
-import AnnotationTool from "../../models/AnnotationTool";
+import DemoWrapper from './DemoWrapper'
+import AnnotationTool from '../../models/AnnotationTool'
 
-import { AnnotationSettings, ExternalAnnotation } from "../../types";
-import { AnnotationStatus } from "../../models";
+import { AnnotationSettings, ExternalAnnotation } from '../../types'
+import { AnnotationStatus } from '../../models'
 
-export const ActionsData = {};
+export const ActionsData = {}
 
 const meta = {
-  title: "Components/DemoWrapper",
+  title: 'Components/DemoWrapper',
   component: DemoWrapper,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: "padded",
+    layout: 'padded',
   },
-  tags: ["!autodocs"],
+  tags: ['!autodocs'],
   excludeStories: /.*Data$/,
   args: {
     ...ActionsData,
   },
-} satisfies Meta<typeof DemoWrapper>;
+} satisfies Meta<typeof DemoWrapper>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 /**
  * SIA with dummy data
@@ -32,7 +32,7 @@ export const Default: Story = {
   args: {
     ...ActionsData,
   },
-};
+}
 
 const polygonAnnotations: ExternalAnnotation[] = [
   {
@@ -58,13 +58,13 @@ const polygonAnnotations: ExternalAnnotation[] = [
     status: AnnotationStatus.LOADED,
     type: AnnotationTool.Polygon,
   },
-];
+]
 
 const annotationSettings: AnnotationSettings = {
   canCreate: true,
   canHaveMultipleLabels: true,
   canLabel: true,
-};
+}
 
 export const WithPolygonAnnotations: Story = {
   args: {
@@ -72,7 +72,7 @@ export const WithPolygonAnnotations: Story = {
     annotations: polygonAnnotations,
     annotationSettings,
   },
-};
+}
 
 const bboxAnnotations: ExternalAnnotation[] = [
   {
@@ -93,7 +93,7 @@ const bboxAnnotations: ExternalAnnotation[] = [
     type: AnnotationTool.BBox,
     status: AnnotationStatus.LOADED,
   },
-];
+]
 
 export const WithBBoxAnnotations: Story = {
   args: {
@@ -101,7 +101,7 @@ export const WithBBoxAnnotations: Story = {
     annotations: bboxAnnotations,
     annotationSettings,
   },
-};
+}
 
 const lineAnnotations: ExternalAnnotation[] = [
   {
@@ -127,7 +127,7 @@ const lineAnnotations: ExternalAnnotation[] = [
     type: AnnotationTool.Line,
     status: AnnotationStatus.LOADED,
   },
-];
+]
 
 export const WithLineAnnotations: Story = {
   args: {
@@ -135,7 +135,7 @@ export const WithLineAnnotations: Story = {
     annotations: lineAnnotations,
     annotationSettings,
   },
-};
+}
 
 const pointAnnotations: ExternalAnnotation[] = [
   {
@@ -168,7 +168,7 @@ const pointAnnotations: ExternalAnnotation[] = [
     type: AnnotationTool.Point,
     status: AnnotationStatus.LOADED,
   },
-];
+]
 
 export const WithPointAnnotations: Story = {
   args: {
@@ -176,4 +176,4 @@ export const WithPointAnnotations: Story = {
     annotations: pointAnnotations,
     annotationSettings,
   },
-};
+}

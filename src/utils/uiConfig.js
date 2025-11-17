@@ -10,12 +10,12 @@ export const SIA_INITIAL_UI_CONFIG = {
   annoStats: {
     visible: false,
   },
-};
+}
 
 // read sia-ui-config from localStorage
-const iniFromStorage = localStorage.getItem("sia-ui-config")
-  ? JSON.parse(localStorage.getItem("sia-ui-config"))
-  : SIA_INITIAL_UI_CONFIG;
+const iniFromStorage = localStorage.getItem('sia-ui-config')
+  ? JSON.parse(localStorage.getItem('sia-ui-config'))
+  : SIA_INITIAL_UI_CONFIG
 
 // collect object keys and its type in order to describe the object
 const collectDescription = (obj, array) => {
@@ -23,35 +23,32 @@ const collectDescription = (obj, array) => {
     const description = {
       key: key,
       type: typeof obj[key],
-    };
-    array.push(description);
-
-    if (typeof obj[key] === "object") {
-      collectDescription(obj[key], array);
     }
-  });
-};
+    array.push(description)
+
+    if (typeof obj[key] === 'object') {
+      collectDescription(obj[key], array)
+    }
+  })
+}
 
 // collect object description for ini and storage ui-config
 
-let iniObjectDescriptor = [];
-let storageObjectDescriptor = [];
+let iniObjectDescriptor = []
+let storageObjectDescriptor = []
 
-collectDescription(SIA_INITIAL_UI_CONFIG, iniObjectDescriptor);
-collectDescription(iniFromStorage, storageObjectDescriptor);
+collectDescription(SIA_INITIAL_UI_CONFIG, iniObjectDescriptor)
+collectDescription(iniFromStorage, storageObjectDescriptor)
 
 // compare both object descriptions
 
 const getUiConfig = () => {
-  if (
-    JSON.stringify(iniObjectDescriptor) ===
-    JSON.stringify(storageObjectDescriptor)
-  ) {
-    return iniFromStorage;
+  if (JSON.stringify(iniObjectDescriptor) === JSON.stringify(storageObjectDescriptor)) {
+    return iniFromStorage
   } else {
     // ini description dif from storage: send ini ui-config and store it to local storage
-    return SIA_INITIAL_UI_CONFIG;
+    return SIA_INITIAL_UI_CONFIG
   }
-};
+}
 
-export const uiConfig = getUiConfig();
+export const uiConfig = getUiConfig()

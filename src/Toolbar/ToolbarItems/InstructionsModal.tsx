@@ -1,10 +1,10 @@
-import { CModal, CModalBody, CModalHeader } from "@coreui/react";
-import Instructions from "./Instructions";
+import { CModal, CModalBody, CModalHeader } from '@coreui/react'
+import Instructions from './Instructions'
 
 type InstructionsModalProps = {
-  isOpen: boolean;
-  setIsOpen: (boolean) => void;
-};
+  isOpen: boolean
+  setIsOpen: (boolean) => void
+}
 
 const InstructionsModal = ({ isOpen, setIsOpen }: InstructionsModalProps) => {
   return (
@@ -14,7 +14,7 @@ const InstructionsModal = ({ isOpen, setIsOpen }: InstructionsModalProps) => {
         <Instructions />
       </CModalBody>
     </CModal>
-  );
-};
+  )
+}
 
-export default InstructionsModal;
+export default InstructionsModal

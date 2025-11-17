@@ -1,26 +1,16 @@
 type DaviIconProps = {
-  x: number;
-  y: number;
-  color: string;
-  size: number;
-  onClick?: () => void;
-};
+  x: number
+  y: number
+  color: string
+  size: number
+  onClick?: () => void
+}
 
-const DaviIcon = ({
-  x,
-  y,
-  color,
-  size = 60,
-  onClick = () => {},
-}: DaviIconProps) => {
-  const scale: number = size / 1400;
+const DaviIcon = ({ x, y, color, size = 60, onClick = () => {} }: DaviIconProps) => {
+  const scale: number = size / 1400
 
   return (
-    <g
-      transform={`translate(${x} ${y}) scale(${scale})`}
-      fill={color}
-      onClick={onClick}
-    >
+    <g transform={`translate(${x} ${y}) scale(${scale})`} fill={color} onClick={onClick}>
       <path
         id="Maps"
         d="M620.561,817.217c-1.568-3.62-3.771-7.101-4.611-10.885
@@ -51,7 +41,7 @@ const DaviIcon = ({
                     c-0.074,8.051-6.938,12.819-13.703,12.847C731.482,263.519,724.956,259.059,724.709,250.898z"
       />
     </g>
-  );
-};
+  )
+}
 
-export default DaviIcon;
+export default DaviIcon

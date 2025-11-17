@@ -9,4 +9,4 @@ enum AnnotationMode {
   DELETED,
 }
 
-export default AnnotationMode;
+export default AnnotationMode

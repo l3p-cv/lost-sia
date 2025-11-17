@@ -1,15 +1,15 @@
-import { CButton, CButtonGroup } from "@coreui/react";
-import { faMaximize, faQuestion } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { useState } from "react";
-import InstructionsModal from "./InstructionsModal";
+import { CButton, CButtonGroup } from '@coreui/react'
+import { faMaximize, faQuestion } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { useState } from 'react'
+import InstructionsModal from './InstructionsModal'
 
 type AccessibilityToolsProps = {
-  isDisabled?: boolean;
-  isFullscreen?: boolean;
-  onSetIsFullscreen?: (isFullscreen: boolean) => void;
-};
+  isDisabled?: boolean
+  isFullscreen?: boolean
+  onSetIsFullscreen?: (isFullscreen: boolean) => void
+}
 
 const AccessibilityTools = ({
   isDisabled = false,
@@ -17,7 +17,7 @@ const AccessibilityTools = ({
   onSetIsFullscreen = () => {},
 }: AccessibilityToolsProps) => {
   const [isInstructionsModalVisible, setIsInstructionsModalVisible] =
-    useState<boolean>(false);
+    useState<boolean>(false)
 
   return (
     <CButtonGroup role="group" aria-label="Basic example">
@@ -33,7 +33,7 @@ const AccessibilityTools = ({
       <CButton
         color="primary"
         disabled={isDisabled}
-        variant={isFullscreen ? undefined : "outline"}
+        variant={isFullscreen ? undefined : 'outline'}
         onClick={() => onSetIsFullscreen(!isFullscreen)}
       >
         <FontAwesomeIcon icon={faMaximize as IconProp} size="lg" />
@@ -63,7 +63,7 @@ const AccessibilityTools = ({
         setIsOpen={setIsInstructionsModalVisible}
       />
     </CButtonGroup>
-  );
-};
+  )
+}
 
-export default AccessibilityTools;
+export default AccessibilityTools

@@ -6,4 +6,4 @@ enum AnnotationStatus {
   CHANGED, // modified (after CREATED or DELETED)
 }
 
-export default AnnotationStatus;
+export default AnnotationStatus

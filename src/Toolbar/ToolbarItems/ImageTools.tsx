@@ -1,21 +1,21 @@
-import { CButton, CButtonGroup } from "@coreui/react";
-import { faBan } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { useEffect, useState } from "react";
-import { Label } from "../../types";
-import ImageLabelInput from "./ImageToolItems/ImageLabelInput";
+import { CButton, CButtonGroup } from '@coreui/react'
+import { faBan } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { useEffect, useState } from 'react'
+import { Label } from '../../types'
+import ImageLabelInput from './ImageToolItems/ImageLabelInput'
 
 type ImageToolsProps = {
-  canJunk: boolean;
-  imageLabelIds?: number[];
-  isDisabled?: boolean;
-  isFullscreen?: boolean;
-  isImageJunk?: boolean;
-  possibleLabels: Label[];
-  onImageLabelsChanged?: (selectedImageIds: number[]) => void;
-  onSetIsImageJunk?: (isImageJunk: boolean) => void;
-};
+  canJunk: boolean
+  imageLabelIds?: number[]
+  isDisabled?: boolean
+  isFullscreen?: boolean
+  isImageJunk?: boolean
+  possibleLabels: Label[]
+  onImageLabelsChanged?: (selectedImageIds: number[]) => void
+  onSetIsImageJunk?: (isImageJunk: boolean) => void
+}
 
 const ImageTools = ({
   canJunk,
@@ -27,13 +27,12 @@ const ImageTools = ({
   onImageLabelsChanged = () => {},
   onSetIsImageJunk = () => {},
 }: ImageToolsProps) => {
-  const [isLabelPopupVisible, setIsLabelPopupVisible] =
-    useState<boolean>(false);
+  const [isLabelPopupVisible, setIsLabelPopupVisible] = useState<boolean>(false)
 
   // close modal when the fullscreen state changes
   useEffect(() => {
-    setIsLabelPopupVisible(false);
-  }, [isFullscreen]);
+    setIsLabelPopupVisible(false)
+  }, [isFullscreen])
 
   return (
     <CButtonGroup role="group" aria-label="Image Tools">
@@ -45,8 +44,8 @@ const ImageTools = ({
           selectedLabelsIds={imageLabelIds}
           possibleLabels={possibleLabels}
           onLabelSelect={(selectedLabelIds: number[]) => {
-            setIsLabelPopupVisible(false);
-            onImageLabelsChanged(selectedLabelIds);
+            setIsLabelPopupVisible(false)
+            onImageLabelsChanged(selectedLabelIds)
           }}
         />
       )}
@@ -54,7 +53,7 @@ const ImageTools = ({
       {canJunk && (
         <CButton
           color="primary"
-          variant={isImageJunk ? undefined : "outline"}
+          variant={isImageJunk ? undefined : 'outline'}
           disabled={isDisabled}
           onClick={() => onSetIsImageJunk(!isImageJunk)}
         >
@@ -62,7 +61,7 @@ const ImageTools = ({
         </CButton>
       )}
     </CButtonGroup>
-  );
-};
+  )
+}
 
-export default ImageTools;
+export default ImageTools

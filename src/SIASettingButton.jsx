@@ -1,38 +1,38 @@
-import React, { Component } from "react";
+import React, { Component } from 'react'
 
-import * as tbe from "./types/toolbarEvents";
-import { faCog } from "@fortawesome/free-solid-svg-icons";
-import { CFormSwitch, CPopover } from "@coreui/react";
-import ToolbarItem from "./ToolbarItem";
+import * as tbe from './types/toolbarEvents'
+import { faCog } from '@fortawesome/free-solid-svg-icons'
+import { CFormSwitch, CPopover } from '@coreui/react'
+import ToolbarItem from './ToolbarItem'
 class SIASettingButton extends Component {
   constructor(props) {
-    super(props);
-    this.state = {};
+    super(props)
+    this.state = {}
   }
 
   triggerEvent(e, data) {
     if (this.props.onSettingEvent) {
-      this.props.onSettingEvent(e, data);
+      this.props.onSettingEvent(e, data)
     }
   }
   toggleAnnoDetails() {
-    this.triggerEvent(tbe.SHOW_ANNO_DETAILS);
+    this.triggerEvent(tbe.SHOW_ANNO_DETAILS)
   }
 
   toggleLabelInfo() {
-    this.triggerEvent(tbe.SHOW_LABEL_INFO);
+    this.triggerEvent(tbe.SHOW_LABEL_INFO)
   }
 
   toggleAnnoStats() {
-    this.triggerEvent(tbe.SHOW_ANNO_STATS);
+    this.triggerEvent(tbe.SHOW_ANNO_STATS)
   }
 
   handleStrokeWidthChange(e) {
-    this.triggerEvent(tbe.EDIT_STROKE_WIDTH, parseInt(e.target.value));
+    this.triggerEvent(tbe.EDIT_STROKE_WIDTH, parseInt(e.target.value))
   }
 
   handleNodeRadiusChange(e) {
-    this.triggerEvent(tbe.EDIT_NODE_RADIUS, parseInt(e.target.value));
+    this.triggerEvent(tbe.EDIT_NODE_RADIUS, parseInt(e.target.value))
   }
 
   renderInfoBoxContent() {
@@ -58,26 +58,26 @@ class SIASettingButton extends Component {
           onClick={() => this.toggleAnnoStats()}
         />
       </div>
-    );
+    )
   }
   renderInfoBoxes() {
-    if (!this.props.enabled) return null;
+    if (!this.props.enabled) return null
     if (this.props.enabled === true) {
-      return this.renderInfoBoxContent();
+      return this.renderInfoBoxContent()
     } else {
       if (this.props.enabled.infoBoxes) {
-        return this.renderInfoBoxContent();
+        return this.renderInfoBoxContent()
       }
     }
   }
 
   renderAnnoStyle() {
-    if (!this.props.enabled) return null;
+    if (!this.props.enabled) return null
     if (this.props.enabled === true) {
-      return this.renderAnnoStyleContent();
+      return this.renderAnnoStyleContent()
     } else {
       if (this.props.enabled.annoStyle) {
-        return this.renderAnnoStyleContent();
+        return this.renderAnnoStyleContent()
       }
     }
   }
@@ -102,25 +102,25 @@ class SIASettingButton extends Component {
           onChange={(e) => this.handleNodeRadiusChange(e)}
         />
       </div>
-    );
+    )
   }
 
   render() {
-    if (!this.props.uiConfig) return null;
+    if (!this.props.uiConfig) return null
     const popupContent = (
       <div>
         {this.renderInfoBoxes()}
         {this.renderAnnoStyle()}
       </div>
-    );
+    )
     return (
       <CPopover content={popupContent} placement="right">
         <span>
           <ToolbarItem faIcon={faCog} />
         </span>
       </CPopover>
-    );
+    )
   }
 }
 
-export default SIASettingButton;
+export default SIASettingButton

@@ -26,4 +26,4 @@ enum CanvasAction {
   IMG_ANNO_TIME_UPDATE,
 }
 
-export default CanvasAction;
+export default CanvasAction

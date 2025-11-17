@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react'
 
-import Toolbar from "../../Toolbar/Toolbar";
+import Toolbar from '../../Toolbar/Toolbar'
 // import '../../scss/main.scss'
-import "../main.scss";
-import AnnotationTool from "../../models/AnnotationTool";
-import { possibleLabels } from "../siaDummyData2";
+import '../main.scss'
+import AnnotationTool from '../../models/AnnotationTool'
+import { possibleLabels } from '../siaDummyData2'
 
-import { AllowedTools, AnnotationSettings } from "../../types";
+import { AllowedTools, AnnotationSettings } from '../../types'
 
 const meta = {
-  title: "Components/Toolbar",
+  title: 'Components/Toolbar',
   component: Toolbar,
   argTypes: {
     selectedTool: {
-      control: "select",
+      control: 'select',
       options: [
         AnnotationTool.BBox,
         AnnotationTool.Line,
@@ -23,12 +23,12 @@ const meta = {
     },
   },
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-} satisfies Meta<typeof Toolbar>;
+} satisfies Meta<typeof Toolbar>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 const allowedTools: AllowedTools = {
   bbox: true,
@@ -36,7 +36,7 @@ const allowedTools: AllowedTools = {
   line: true,
   point: true,
   polygon: true,
-};
+}
 
 // export default {
 //   title: "Components/Toolbar",
@@ -62,32 +62,32 @@ const limitedAllowedTools: AllowedTools = {
   line: false,
   point: false,
   polygon: false,
-};
+}
 
 const annotationSettings: AnnotationSettings = {
   canCreate: true,
   canEdit: true,
   canHaveMultipleLabels: true,
   canLabel: true,
-};
+}
 
 const defaultArgs = {
   annotationSettings,
   allowedTools,
   possibleLabels,
   selectedTool: AnnotationTool.BBox,
-};
+}
 
 export const Default: Story = {
   args: defaultArgs,
-};
+}
 
 export const DifferentDefaultTool: Story = {
   args: {
     ...defaultArgs,
     selectedTool: AnnotationTool.Polygon,
   },
-};
+}
 
 export const LimitedAllowedTools: Story = {
   args: {
@@ -95,11 +95,11 @@ export const LimitedAllowedTools: Story = {
     selectedTool: AnnotationTool.BBox,
     allowedTools: limitedAllowedTools,
   },
-};
+}
 
 export const WithImageLabels: Story = {
   args: {
     ...defaultArgs,
     imageLabelIds: [2, 9],
   },
-};
+}

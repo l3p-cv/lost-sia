@@ -5,4 +5,4 @@ enum AnnotationTool {
   Line,
 }
 
-export default AnnotationTool;
+export default AnnotationTool

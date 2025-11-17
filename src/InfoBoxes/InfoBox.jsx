@@ -1,57 +1,57 @@
-import React, { Component } from "react";
-import { Header, Message } from "semantic-ui-react";
-import Draggable from "react-draggable";
+import React, { Component } from 'react'
+import { Header, Message } from 'semantic-ui-react'
+import Draggable from 'react-draggable'
 
 class InfoBox extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       style: {
-        position: "fixed",
+        position: 'fixed',
         top: 200,
         left: 200,
         width: 250,
       },
-    };
+    }
   }
 
   componentDidMount() {
-    this.updateStyle();
+    this.updateStyle()
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.defaultPos !== prevProps.defaultPos) {
-      this.updateStyle();
+      this.updateStyle()
     }
   }
 
   handleOnStop(e) {
     if (this.props.onStop) {
-      this.props.onStop(e);
+      this.props.onStop(e)
     }
   }
 
   updateStyle() {
     this.setState({
       style: { ...this.state.style, ...this.props.defaultPos },
-    });
+    })
   }
 
   onDismiss(e) {
     if (this.props.onDismiss) {
-      this.props.onDismiss(e);
+      this.props.onDismiss(e)
     }
   }
 
   render() {
-    if (!this.props.visible) return null;
+    if (!this.props.visible) return null
     return (
       <Draggable handle=".handle" onStop={(e) => this.handleOnStop(e)}>
         <div style={this.state.style}>
           <Message
             style={{ opacity: 0.98 }}
             onDismiss={(e) => {
-              this.onDismiss(e);
+              this.onDismiss(e)
             }}
             size="small"
           >
@@ -59,7 +59,7 @@ class InfoBox extends Component {
               textAlign="center"
               as="h5"
               className="handle"
-              style={{ cursor: "grab" }}
+              style={{ cursor: 'grab' }}
             >
               {this.props.header}
             </Header>
@@ -69,8 +69,8 @@ class InfoBox extends Component {
           </Message>
         </div>
       </Draggable>
-    );
+    )
   }
 }
 
-export default InfoBox;
+export default InfoBox

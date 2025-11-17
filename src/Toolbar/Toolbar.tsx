@@ -1,28 +1,28 @@
-import { CCol, CRow } from "@coreui/react";
+import { CCol, CRow } from '@coreui/react'
 
-import AnnoToolSelector from "./ToolbarItems/AnnoToolSelector";
-import ImageTools from "./ToolbarItems/ImageTools";
-import AnnotationTool from "../models/AnnotationTool";
-import AccessibilityTools from "./ToolbarItems/AccessibilityTools";
-import { ReactElement } from "react";
-import { AllowedTools, AnnotationSettings, Label } from "../types";
+import AnnoToolSelector from './ToolbarItems/AnnoToolSelector'
+import ImageTools from './ToolbarItems/ImageTools'
+import AnnotationTool from '../models/AnnotationTool'
+import AccessibilityTools from './ToolbarItems/AccessibilityTools'
+import { ReactElement } from 'react'
+import { AllowedTools, AnnotationSettings, Label } from '../types'
 
 type ToolbarProps = {
-  annotationSettings: AnnotationSettings;
-  allowedTools: AllowedTools;
-  additionalButtons?: ReactElement | undefined;
-  isImageJunk?: boolean;
-  imageLabelIds?: number[];
-  isDisabled?: boolean;
-  isFullscreen?: boolean;
-  possibleLabels: Label[];
-  selectedTool: AnnotationTool;
-  onImageLabelsChanged?: (selectedImageIds: number[]) => void;
-  onSetIsFullscreen?: (isFullscreen: boolean) => void;
-  onSetIsImageJunk?: (isImageJunk: boolean) => void;
-  onSetSelectedTool?: (selectedTool: AnnotationTool) => void;
-  onShouldDeleteSelectedAnnotation?: () => void;
-};
+  annotationSettings: AnnotationSettings
+  allowedTools: AllowedTools
+  additionalButtons?: ReactElement | undefined
+  isImageJunk?: boolean
+  imageLabelIds?: number[]
+  isDisabled?: boolean
+  isFullscreen?: boolean
+  possibleLabels: Label[]
+  selectedTool: AnnotationTool
+  onImageLabelsChanged?: (selectedImageIds: number[]) => void
+  onSetIsFullscreen?: (isFullscreen: boolean) => void
+  onSetIsImageJunk?: (isImageJunk: boolean) => void
+  onSetSelectedTool?: (selectedTool: AnnotationTool) => void
+  onShouldDeleteSelectedAnnotation?: () => void
+}
 
 const Toolbar = ({
   annotationSettings,
@@ -77,7 +77,7 @@ const Toolbar = ({
 
       {additionalButtons && additionalButtons}
     </CRow>
-  );
-};
+  )
+}
 
-export default Toolbar;
+export default Toolbar

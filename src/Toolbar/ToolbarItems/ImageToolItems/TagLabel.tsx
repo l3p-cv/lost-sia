@@ -1,56 +1,56 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties } from 'react'
 
 type TagLabelProps = {
-  name: string;
-  color?: string;
-  size?: number;
-  style?: CSSProperties;
-  triangleSize?: number;
-  onClick?: () => void;
-};
+  name: string
+  color?: string
+  size?: number
+  style?: CSSProperties
+  triangleSize?: number
+  onClick?: () => void
+}
 
 const TagLabel = ({
   name,
-  color = "#2185d0",
+  color = '#2185d0',
   size: bodySize = 32,
   style = {},
   triangleSize = 22,
   onClick,
 }: TagLabelProps) => {
   const containerStyle: CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
+    display: 'inline-flex',
+    alignItems: 'center',
     backgroundColor: color,
-    color: "#000",
+    color: '#000',
     height: `${bodySize}px`,
     fontSize: `${bodySize * 0.45}px`,
     padding: `0 1rem 0 0.75rem`,
-    borderRadius: "0 0.25rem 0.25rem 0",
+    borderRadius: '0 0.25rem 0.25rem 0',
     marginLeft: `${triangleSize / 1.4}px`, // hypothenuse of the halfed square
-    position: "relative",
-    overflow: "visible", // allow triangle to stick out
-    cursor: onClick ? "pointer" : "default",
+    position: 'relative',
+    overflow: 'visible', // allow triangle to stick out
+    cursor: onClick ? 'pointer' : 'default',
     ...style,
-  };
+  }
 
   // A rotated square to simulate a triangle
   const triangleStyle: CSSProperties = {
-    position: "absolute",
+    position: 'absolute',
     left: `-${triangleSize / 2}px`,
     width: `${triangleSize}px`,
     height: `${triangleSize}px`,
     backgroundColor: color,
-    transform: "rotate(45deg)",
+    transform: 'rotate(45deg)',
     zIndex: -1, // push behind text
-    pointerEvents: "none",
-  };
+    pointerEvents: 'none',
+  }
 
   return (
     <span style={containerStyle} onClick={onClick}>
       <span style={triangleStyle} />
       {name}
     </span>
-  );
-};
+  )
+}
 
-export default TagLabel;
+export default TagLabel

@@ -1,42 +1,42 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
-import { imgBlob } from "../siaDummyData";
+import type { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
+import { imgBlob } from '../siaDummyData'
 
-import AnnotationTool from "../../models/AnnotationTool";
-import Annotation from "../../Annotation/logic/Annotation";
+import AnnotationTool from '../../models/AnnotationTool'
+import Annotation from '../../Annotation/logic/Annotation'
 
-import { possibleLabels } from "../siaDummyData2";
-import { UiConfig } from "../../types";
-import CanvasWithOffset from "./CanvasOffset";
+import { possibleLabels } from '../siaDummyData2'
+import { UiConfig } from '../../types'
+import CanvasWithOffset from './CanvasOffset'
 
 export const ActionsData = {
   onAnnoEvent: fn(),
   onKeyDown: fn(),
   onKeyUp: fn(),
-};
+}
 
 const meta = {
-  title: "Components/CanvasWithOffset",
+  title: 'Components/CanvasWithOffset',
   component: CanvasWithOffset,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: "fullscreen",
+    layout: 'fullscreen',
   },
-  tags: ["!autodocs"],
+  tags: ['!autodocs'],
   excludeStories: /.*Data$/,
   args: {
     ...ActionsData,
   },
-} satisfies Meta<typeof CanvasWithOffset>;
+} satisfies Meta<typeof CanvasWithOffset>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 const uiConfig: UiConfig = {
   nodeRadius: 4,
   strokeWidth: 4,
   imageCentered: false,
-};
+}
 
 export const Default: Story = {
   args: {
@@ -47,7 +47,7 @@ export const Default: Story = {
     preventScrolling: true,
     uiConfig,
   },
-};
+}
 
 const samplePointAnnotations: Annotation[] = [
   new Annotation(0, AnnotationTool.Point, [{ x: 10, y: 10 }]),
@@ -58,7 +58,7 @@ const samplePointAnnotations: Annotation[] = [
   new Annotation(5, AnnotationTool.Point, [{ x: 250, y: 250 }]),
   new Annotation(6, AnnotationTool.Point, [{ x: 300, y: 300 }]),
   new Annotation(7, AnnotationTool.Point, [{ x: 350, y: 350 }]),
-];
+]
 
 export const WithPoints: Story = {
   args: {
@@ -70,7 +70,7 @@ export const WithPoints: Story = {
     preventScrolling: true,
     uiConfig,
   },
-};
+}
 
 const sampleLineAnnotations: Annotation[] = [
   new Annotation(0, AnnotationTool.Line, [
@@ -87,7 +87,7 @@ const sampleLineAnnotations: Annotation[] = [
   ]),
   new Annotation(2, AnnotationTool.Line, [{ x: 150, y: 150 }]),
   new Annotation(3, AnnotationTool.Line, [{ x: 200, y: 200 }]),
-];
+]
 
 export const WithLines: Story = {
   args: {
@@ -99,7 +99,7 @@ export const WithLines: Story = {
     preventScrolling: true,
     uiConfig,
   },
-};
+}
 
 const sampleBBoxAnnotations: Annotation[] = [
   new Annotation(0, AnnotationTool.BBox, [
@@ -114,7 +114,7 @@ const sampleBBoxAnnotations: Annotation[] = [
     { x: 400, y: 325 },
     { x: 500, y: 375 },
   ]),
-];
+]
 
 export const WithBBoxes: Story = {
   args: {
@@ -126,7 +126,7 @@ export const WithBBoxes: Story = {
     preventScrolling: true,
     uiConfig,
   },
-};
+}
 
 const samplePolygonAnnotations: Annotation[] = [
   new Annotation(0, AnnotationTool.Polygon, [
@@ -142,7 +142,7 @@ const samplePolygonAnnotations: Annotation[] = [
     { x: 600, y: 350 },
     { x: 550, y: 450 },
   ]),
-];
+]
 
 export const WithPolygonAnnotations: Story = {
   args: {
@@ -154,4 +154,4 @@ export const WithPolygonAnnotations: Story = {
     preventScrolling: true,
     uiConfig,
   },
-};
+}

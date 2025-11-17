@@ -1,6 +1,6 @@
-import type { Preview } from "@storybook/react";
+import type { Preview } from '@storybook/react'
 
-import "../src/stories/main.scss";
+import '../src/stories/main.scss'
 
 const preview: Preview = {
   parameters: {
@@ -12,10 +12,10 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ["Welcome"],
+        order: ['Welcome'],
       },
     },
   },
-};
+}
 
-export default preview;
+export default preview

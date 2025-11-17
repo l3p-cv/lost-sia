@@ -9,4 +9,4 @@ enum EditorModes {
   DELETED,
 }
 
-export default EditorModes;
+export default EditorModes
