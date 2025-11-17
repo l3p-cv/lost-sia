@@ -6,6 +6,7 @@ import {
   CFormInput,
   CDropdownDivider,
   CDropdownToggle,
+  CTooltip,
 } from '@coreui/react'
 import { Label } from '../../../types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -66,7 +67,7 @@ const ImageLabelInput = ({
     if (selectedLabelsIds.length === 0)
       return (
         <div style={{ marginTop: 6 }}>
-          <FontAwesomeIcon icon={faTag as IconProps} size="lg" />
+          <FontAwesomeIcon icon={faTag as IconProps} />
         </div>
       )
 
@@ -84,38 +85,40 @@ const ImageLabelInput = ({
   }
 
   return (
-    <CDropdown visible={isVisible} autoClose={false}>
-      {/* this invisible toggle has to be here, othervise the menu is not showing as intended */}
-      <CDropdownToggle
-        variant="outline"
-        caret={false}
-        color={isDisabled ? 'secondary' : 'primary'}
-        style={{ paddingTop: 0, paddingBottom: 0 }}
-        as="div"
-      >
-        {renderLabels()}
-      </CDropdownToggle>
-      <CDropdownMenu>
-        <div className="px-3 py-2">
-          <CFormInput
-            placeholder="Filter label..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            autoFocus
-          />
-        </div>
-        <CDropdownDivider />
-        {filteredLabels.length > 0 ? (
-          filteredLabels.map((label: Label) => (
-            <CDropdownItem key={label.id} onClick={() => updateSelectedLabels(label)}>
-              {label.name}
-            </CDropdownItem>
-          ))
-        ) : (
-          <CDropdownItem disabled>No results</CDropdownItem>
-        )}
-      </CDropdownMenu>
-    </CDropdown>
+    <CTooltip content="Add Image Label">
+      <CDropdown visible={isVisible} autoClose={false}>
+        {/* this invisible toggle has to be here, othervise the menu is not showing as intended */}
+        <CDropdownToggle
+          variant="outline"
+          caret={false}
+          color={isDisabled ? 'secondary' : 'primary'}
+          style={{ paddingTop: 0, paddingBottom: 0 }}
+          as="div"
+        >
+          {renderLabels()}
+        </CDropdownToggle>
+        <CDropdownMenu>
+          <div className="px-3 py-2">
+            <CFormInput
+              placeholder="Filter label..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <CDropdownDivider />
+          {filteredLabels.length > 0 ? (
+            filteredLabels.map((label: Label) => (
+              <CDropdownItem key={label.id} onClick={() => updateSelectedLabels(label)}>
+                {label.name}
+              </CDropdownItem>
+            ))
+          ) : (
+            <CDropdownItem disabled>No results</CDropdownItem>
+          )}
+        </CDropdownMenu>
+      </CDropdown>
+    </CTooltip>
   )
 }
 

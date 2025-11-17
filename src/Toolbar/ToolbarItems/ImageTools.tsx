@@ -1,10 +1,9 @@
-import { CButton, CButtonGroup } from '@coreui/react'
+import { CButtonGroup } from '@coreui/react'
 import { faBan } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { useEffect, useState } from 'react'
 import { Label } from '../../types'
 import ImageLabelInput from './ImageToolItems/ImageLabelInput'
+import IconButton from '../../IconButton'
 
 type ImageToolsProps = {
   canJunk: boolean
@@ -51,14 +50,14 @@ const ImageTools = ({
       )}
 
       {canJunk && (
-        <CButton
+        <IconButton
           color="primary"
-          variant={isImageJunk ? undefined : 'outline'}
+          icon={faBan}
+          isOutline={!isImageJunk}
           disabled={isDisabled}
           onClick={() => onSetIsImageJunk(!isImageJunk)}
-        >
-          <FontAwesomeIcon icon={faBan as IconProp} size="lg" />
-        </CButton>
+          tooltip="Junk image"
+        />
       )}
     </CButtonGroup>
   )
