@@ -167,6 +167,33 @@ const Sia2 = ({
     return newInternalId
   }
 
+  const handleAnnoEditing = (annotation: Annotation) => {
+    const _annotations: Annotation[] = [...annotations]
+
+    // annotation is being edited - remove it from current annotations for this time
+    const selectedAnnotationIndex: number = _annotations.findIndex(
+      (annotation: Annotation) =>
+        annotation.internalId === selectedAnnotation?.internalId,
+    )
+
+    if (selectedAnnotationIndex === -1) return
+
+    // remove the old anno
+    const removedAnno: Annotation = _annotations.splice(selectedAnnotationIndex, 1)[0]
+
+    // do deletion state update without the new anno!
+    onAnnoDeleted(removedAnno, _annotations)
+
+    // add the new anno
+    const newAnnoations: Annotation[] = [..._annotations]
+    newAnnoations.push(annotation)
+
+    // update the list
+    setAnnotations(newAnnoations)
+
+    setSelectedAnnotation(annotation)
+  }
+
   const handleImageJunk = (newJunkState: boolean) => {
     setIsImageJunk(newJunkState)
     onIsImageJunk(newJunkState)
@@ -409,18 +436,7 @@ const Sia2 = ({
               // inform the outer world about our changes
               onAnnoCreationFinished(changedAnno, _annotations)
             }}
-            onAnnoEditing={(annotation: Annotation) => {
-              const _annotations: Annotation[] = [...annotations]
-
-              const selectedAnnotationId: number = _annotations.findIndex(
-                (annotation: Annotation) =>
-                  annotation.internalId === selectedAnnotation?.internalId,
-              )
-
-              _annotations[selectedAnnotationId] = annotation
-
-              setAnnotations(_annotations)
-            }}
+            onAnnoEditing={handleAnnoEditing}
             onSetIsImageJunk={handleImageJunk}
             onNotification={onNotification}
             onRequestNewAnnoId={createNewInternalAnnotationId}

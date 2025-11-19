@@ -237,15 +237,12 @@ const Canvas = ({
     }
   }
 
-  // @TODO
   const editSelectedAnnotation = () => {
     if (
       selectedAnnotation &&
       ![AnnotationTool.Line, AnnotationTool.Polygon].includes(selectedAnnotation!.type)
     )
       return
-
-    // selectedAnnotation!.mode = AnnotationMode.CREATE;
 
     const newSelectedAnnotation: Annotation | undefined = annotations.find(
       (annotation: Annotation) =>
@@ -254,18 +251,20 @@ const Canvas = ({
 
     if (newSelectedAnnotation === undefined) return
 
-    newSelectedAnnotation.mode = AnnotationMode.CREATE
-    newSelectedAnnotation.status = AnnotationStatus.CREATING
-    newSelectedAnnotation.selectedNode = newSelectedAnnotation.coordinates.length - 1
-    setEditorMode(EditorModes.ADD)
+    setEditorMode(EditorModes.CREATE)
     onSetSelectedTool(newSelectedAnnotation.type)
 
-    // replace annotation in list
-    // const selectedAnnotationId: number = annotations.findIndex((annotation: Annotation) => annotation.internalId === selectedAnnotation?.internalId)
-    // const newAnnotations = [...annotations]
-    // newAnnotations[selectedAnnotationId] = newSelectedAnnotation
-    onAnnoEditing(newSelectedAnnotation)
-    // onShouldDeleteAnno(selectedAnnotation!.internalId);
+    // recreate annotation with new internal id
+    const _newAnnotation: Annotation = {
+      ...newSelectedAnnotation,
+      mode: AnnotationMode.CREATE,
+      status: AnnotationStatus.CREATING,
+      internalId: onRequestNewAnnoId(),
+      selectedNode: newSelectedAnnotation.coordinates.length - 1,
+    }
+
+    // "copy" annotation by recreating it with a new internal it and deleting the old one
+    onAnnoEditing(_newAnnotation)
   }
 
   const traverseAnnos = () => {
