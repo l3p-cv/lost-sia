@@ -114,6 +114,7 @@ const Sia2 = ({
     const removedAnno: Annotation = _annotations.splice(annoListIndex, 1)[0]
 
     setAnnotations(_annotations)
+    setSelectedAnnotation(undefined)
 
     // inform the outside world about our changes
     onAnnoDeleted(removedAnno, _annotations)
