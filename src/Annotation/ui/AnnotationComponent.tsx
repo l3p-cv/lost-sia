@@ -100,7 +100,7 @@ const AnnotationComponent = ({
 
     const label = getLabel(scaledAnnotation.labelIds[0])
 
-    if (label === undefined || label.color === undefined)
+    if (label === undefined || label.color === undefined || label.color === null)
       return colorUtils.getDefaultColor()
 
     return label.color
