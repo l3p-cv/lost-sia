@@ -90,7 +90,13 @@ const Sia2 = ({
   // const [toolbarHeight, setToolbarHeight] = useState<number>(-1);
 
   const [outerContainerStyle, setOuterContainerStyle] = useState<CSSProperties>({
-    height: `100%`,
+    // use the max available height as a flex child
+    flex: '1 1 auto',
+    minHeight: 0,
+
+    // give the max available height to the next child
+    display: 'flex',
+    flexDirection: 'column',
   })
 
   const [imageLabelIds, setImageLabelIds] = useState<number[]>(initialImageLabelIds)
@@ -311,8 +317,13 @@ const Sia2 = ({
     <div
       style={{
         ...(isFullscreen ? fullscreenStyle : {}),
-        width: '100%',
-        height: '100%',
+        // use the max available height as a flex child
+        flex: '1 1 auto',
+        minHeight: 0,
+
+        // give the max available height to the next child
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <div

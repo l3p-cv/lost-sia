@@ -884,8 +884,13 @@ const Canvas = ({
     <div
       ref={canvasRef}
       style={{
-        width: '100%',
-        height: '100%',
+        // use the max available height as a flex child
+        flex: '1 1 auto',
+        minHeight: 0,
+
+        // give the max available height to the next child
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <div
@@ -964,8 +969,11 @@ const Canvas = ({
 
       <svg
         ref={svgRef}
-        width="100%"
-        height="100%"
+        style={{
+          // use the max available height as a flex child
+          flex: '1 1 auto',
+          minHeight: 0,
+        }}
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
         onMouseMove={(e) => onMouseMove(e.movementX, e.movementY)}
