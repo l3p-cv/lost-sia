@@ -1,7 +1,6 @@
 import { CSSProperties, MouseEvent, useEffect, useRef, useState } from 'react'
-import { Point } from '../../../types'
+import { AnnotationSettings, Point } from '../../../types'
 import mouse from '../../../utils/mouse'
-import { AnnotationSettings } from '../../../types'
 
 type NodeProps = {
   index: number
@@ -70,10 +69,10 @@ const Node = ({
       setDidItActuallyMove(false)
     }
 
-    window.addEventListener('mouseup', handleMouseUp)
+    globalThis.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      window.removeEventListener('mouseup', handleMouseUp)
+      globalThis.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isDragging])
 

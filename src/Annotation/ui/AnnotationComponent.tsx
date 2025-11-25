@@ -100,7 +100,7 @@ const AnnotationComponent = ({
 
     const label = getLabel(scaledAnnotation.labelIds[0])
 
-    if (label === undefined || label.color === undefined || label.color === null)
+    if (label?.color === undefined || label.color === null)
       return colorUtils.getDefaultColor()
 
     return label.color
@@ -157,7 +157,7 @@ const AnnotationComponent = ({
     // add annotation time (or set it if there was no time before)
     // null seems to be a number in the JS world
     const newAnnoTime: number =
-      isNaN(scaledAnnotation.annoTime) || scaledAnnotation.annoTime === null
+      Number.isNaN(scaledAnnotation.annoTime) || scaledAnnotation.annoTime === null
         ? annoEditDuration
         : scaledAnnotation.annoTime + annoEditDuration
 
@@ -206,7 +206,6 @@ const AnnotationComponent = ({
             isSelected={isSelected}
             pageToStageOffset={pageToStageOffset}
             annotationMode={annotationMode}
-            setAnnotationMode={setAnnotationMode}
             svgScale={svgScale}
             svgTranslation={svgTranslation}
             style={annotationStyle}
@@ -248,7 +247,6 @@ const AnnotationComponent = ({
             isDisabled={isDisabled}
             pageToStageOffset={pageToStageOffset}
             annotationMode={annotationMode}
-            setAnnotationMode={setAnnotationMode}
             svgScale={svgScale}
             svgTranslation={svgTranslation}
             style={annotationStyle}

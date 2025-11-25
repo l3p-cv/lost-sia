@@ -12,7 +12,6 @@ type LineProps = {
   coordinates: Point[]
   isSelected: boolean
   annotationMode: AnnotationMode
-  setAnnotationMode: (annotationMode: AnnotationMode) => void
   pageToStageOffset: Point
   svgScale: number
   svgTranslation: Point
@@ -122,10 +121,10 @@ const Line = ({
       setDidAnnoActuallyMove(false)
     }
 
-    window.addEventListener('mouseup', handleMouseUp)
+    globalThis.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      window.removeEventListener('mouseup', handleMouseUp)
+      globalThis.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isAnnoDragging])
 

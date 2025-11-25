@@ -1,14 +1,13 @@
 import { CSSProperties, MouseEvent, useEffect, useRef, useState } from 'react'
 
 // rename type to avoid naming conflict
-import { Point, SIANotification } from '../../../types'
+import { AnnotationSettings, Point, SIANotification } from '../../../types'
 import Node from '../atoms/Node'
 import PolygonArea from '../atoms/PolygonArea'
 import AnnotationMode from '../../../models/AnnotationMode'
 import Edge from '../atoms/Edge'
 import mouse from '../../../utils/mouse'
 import { NotificationType } from '../../../models'
-import { AnnotationSettings } from '../../../types'
 
 type PolygonProps = {
   annotationSettings: AnnotationSettings
@@ -16,7 +15,6 @@ type PolygonProps = {
   isSelected: boolean
   isDisabled?: boolean
   annotationMode: AnnotationMode
-  setAnnotationMode: (annotationMode: AnnotationMode) => void
   pageToStageOffset: Point
   svgScale: number
   svgTranslation: Point
@@ -148,10 +146,10 @@ const Polygon = ({
       setDidAnnoActuallyMove(false)
     }
 
-    window.addEventListener('mouseup', handleMouseUp)
+    globalThis.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      window.removeEventListener('mouseup', handleMouseUp)
+      globalThis.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isAnnoDragging])
 
@@ -246,16 +244,12 @@ const Polygon = ({
         annotationMode === AnnotationMode.ADD) &&
         renderInfiniteSelectionArea()}
       <PolygonArea
-        annotationSettings={annotationSettings}
         coordinates={coordinates}
         isSelected={isSelected}
         isDisabled={isDisabled}
         annotationMode={annotationMode}
-        pageToStageOffset={pageToStageOffset}
         style={style}
-        svgScale={svgScale}
         onFinishAnnoCreate={handleFinishAnnoCreate}
-        onIsDraggingStateChanged={onIsDraggingStateChanged}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
       />

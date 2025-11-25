@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { extname, relative, resolve } from 'path'
+import { extname, relative, resolve } from 'node:path'
 import { globSync } from 'glob'
 import dts from 'unplugin-dts/vite'
 

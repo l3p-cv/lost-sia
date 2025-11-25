@@ -129,10 +129,10 @@ const BBox = ({
       }
     }
 
-    window.addEventListener('mouseup', handleMouseUp)
+    globalThis.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      window.removeEventListener('mouseup', handleMouseUp)
+      globalThis.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isAnnoCreating])
 
@@ -147,10 +147,10 @@ const BBox = ({
       setDidAnnoActuallyMove(false)
     }
 
-    window.addEventListener('mouseup', handleMouseUp)
+    globalThis.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      window.removeEventListener('mouseup', handleMouseUp)
+      globalThis.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isAnnoDragging])
 
@@ -165,10 +165,10 @@ const BBox = ({
       setDidAnnoActuallyMove(false)
     }
 
-    window.addEventListener('mouseup', handleMouseUp)
+    globalThis.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      window.removeEventListener('mouseup', handleMouseUp)
+      globalThis.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isEdgeDragging])
 
@@ -297,14 +297,10 @@ const BBox = ({
       {(isAnnoDragging || annotationMode === AnnotationMode.CREATE) &&
         renderInfiniteSelectionArea(false)}
       <PolygonArea
-        annotationSettings={annotationSettings}
         coordinates={coordinates}
         isSelected={isSelected}
         annotationMode={annotationMode}
-        pageToStageOffset={pageToStageOffset}
         style={style}
-        svgScale={svgScale}
-        onIsDraggingStateChanged={onIsDraggingStateChanged}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
       />

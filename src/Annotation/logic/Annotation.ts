@@ -30,7 +30,7 @@ class Annotation {
     this.status = status
     this.coordinates = coordinates
     this.selectedNode = 1
-    this.annoTime = 0.0
+    this.annoTime = 0
   }
 }
 

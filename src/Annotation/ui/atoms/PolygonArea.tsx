@@ -1,22 +1,17 @@
 import { CSSProperties, useEffect, useState } from 'react'
 import { Point } from '../../../types'
 import AnnotationMode from '../../../models/AnnotationMode'
-import { AnnotationSettings } from '../../../types'
 
 type PolygonAreaProps = {
   coordinates: Point[]
   isSelected: boolean
   isDisabled?: boolean
   annotationMode: AnnotationMode
-  annotationSettings: AnnotationSettings
-  pageToStageOffset: Point
-  svgScale: number
   style: CSSProperties
   onFinishAnnoCreate?: () => void
   onMouseDown: (e: React.MouseEvent<SVGPolygonElement, MouseEvent>) => void
   onMouseUp?: (e: React.MouseEvent<SVGPolygonElement, MouseEvent>) => void
   onMouseMove: (e: React.MouseEvent<SVGPolygonElement, MouseEvent>) => void
-  onIsDraggingStateChanged: (bool) => void
 }
 
 const PolygonArea = ({
