@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { possibleLabels } from './siaDummyData2'
+import exampleLabels from './exampleData/exampleLabels'
 import { fn } from '@storybook/test'
 import LabelInput from '../Canvas/LabelInput'
 
@@ -17,7 +17,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    possibleLabels,
+    possibleLabels: exampleLabels.voc,
     isVisible: true,
     selectedLabelsIds: [],
     onLabelSelect: fn(),

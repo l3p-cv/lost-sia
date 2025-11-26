@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import Sia from '../Sia'
 import type { Label } from '../types'
-import { imgBlob } from './siaDummyData'
+import exampleImage from './exampleData/exampleImage'
 
 export const ActionsData = {}
 
@@ -11,7 +11,7 @@ const meta = {
   component: Sia,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: 'padding',
+    layout: 'fullscreen',
   },
   tags: ['!autodocs'],
   excludeStories: /.*Data$/,
@@ -22,10 +22,11 @@ const meta = {
     (Story) => (
       <div
         style={{
-          width: '50vw',
           height: '65vh',
           padding: 10,
           overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <Story />
@@ -56,7 +57,7 @@ const minimalExampleLabels: Label[] = [
 export const Minimal: Story = {
   args: {
     ...ActionsData,
-    image: imgBlob,
+    image: exampleImage,
     possibleLabels: minimalExampleLabels,
   },
   parameters: {

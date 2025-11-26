@@ -2,31 +2,26 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import Sia from '../../Sia'
 
-import { Label, UiConfig } from '../../types'
+import { UiConfig } from '../../types'
 
-import { imgBlob, possibleLabels } from '../siaDummyData'
+import exampleImage from '../exampleData/exampleImage'
+import exampleLabels from '../exampleData/exampleLabels'
 
 export const ActionsData = {}
 
 const meta = {
-  title: 'Components/Sia2',
+  title: 'Components/Sia',
   component: Sia,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: 'padding',
+    layout: 'fullscreen',
   },
   tags: ['!autodocs'],
   excludeStories: /.*Data$/,
   args: {
     ...ActionsData,
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: '50vw', height: '65vh' }}>
-        <Story />
-      </div>
-    ),
-  ],
+  decorators: [(Story) => <Story />],
 } satisfies Meta<typeof Sia>
 
 export default meta
@@ -38,39 +33,27 @@ const uiConfig: UiConfig = {
   imageCentered: false,
 }
 
+const defaultArgs = {
+  ...ActionsData,
+  uiConfig,
+  image: exampleImage,
+  possibleLabels: exampleLabels.voc,
+}
+
 /**
  * SIA with dummy data
  */
 export const Default: Story = {
-  args: {
-    ...ActionsData,
-    uiConfig,
-    image: imgBlob,
-    possibleLabels,
-  },
+  args: defaultArgs,
 }
-
-const minimalExampleLabels: Label[] = [
-  {
-    id: 1,
-    name: 'Cat',
-    description: 'Includes all cats',
-  },
-  {
-    id: 2,
-    name: 'Dog',
-    description: 'Includes all dogs',
-  },
-]
 
 /**
  * Minimal SIA example
  */
 export const Minimal: Story = {
   args: {
-    ...ActionsData,
-    image: imgBlob,
-    possibleLabels: minimalExampleLabels,
+    ...defaultArgs,
+    possibleLabels: exampleLabels.minimal,
   },
   parameters: {
     docs: {
@@ -103,20 +86,14 @@ export const Minimal: Story = {
 
 export const Loading: Story = {
   args: {
-    ...ActionsData,
+    ...defaultArgs,
     isLoading: true,
-    uiConfig,
-    image: imgBlob,
-    possibleLabels: [],
   },
 }
 
 export const Junk: Story = {
   args: {
-    ...ActionsData,
+    ...defaultArgs,
     initialIsImageJunk: true,
-    uiConfig,
-    image: imgBlob,
-    possibleLabels: [],
   },
 }

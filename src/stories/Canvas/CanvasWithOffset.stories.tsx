@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { fn } from '@storybook/test'
-import { imgBlob } from '../siaDummyData'
+import exampleImage from '../exampleData/exampleImage'
 
 import AnnotationTool from '../../models/AnnotationTool'
-import Annotation from '../../Annotation/logic/Annotation'
 
-import { possibleLabels } from '../siaDummyData2'
 import { UiConfig } from '../../types'
 import CanvasWithOffset from './CanvasOffset'
+
+import exampleAnnotations from '../exampleData/exampleAnnotations'
+import exampleLabels from '../exampleData/exampleLabels'
 
 export const ActionsData = {
   onAnnoEvent: fn(),
@@ -38,120 +39,47 @@ const uiConfig: UiConfig = {
   imageCentered: false,
 }
 
-export const Default: Story = {
-  args: {
-    ...ActionsData,
-    image: imgBlob,
-    selectedAnnoTool: AnnotationTool.Point,
-    possibleLabels,
-    preventScrolling: true,
-    uiConfig,
-  },
+const defaultArgs = {
+  ...ActionsData,
+  selectedAnnotation: undefined,
+  image: exampleImage,
+  selectedAnnoTool: AnnotationTool.Point,
+  possibleLabels: exampleLabels.voc,
+  preventScrolling: true,
+  uiConfig,
 }
 
-const samplePointAnnotations: Annotation[] = [
-  new Annotation(0, AnnotationTool.Point, [{ x: 10, y: 10 }]),
-  new Annotation(1, AnnotationTool.Point, [{ x: 50, y: 50 }]),
-  new Annotation(2, AnnotationTool.Point, [{ x: 100, y: 100 }]),
-  new Annotation(3, AnnotationTool.Point, [{ x: 150, y: 150 }]),
-  new Annotation(4, AnnotationTool.Point, [{ x: 200, y: 200 }]),
-  new Annotation(5, AnnotationTool.Point, [{ x: 250, y: 250 }]),
-  new Annotation(6, AnnotationTool.Point, [{ x: 300, y: 300 }]),
-  new Annotation(7, AnnotationTool.Point, [{ x: 350, y: 350 }]),
-]
+export const Default: Story = {
+  args: defaultArgs,
+}
 
 export const WithPoints: Story = {
   args: {
-    ...ActionsData,
-    annotations: samplePointAnnotations,
-    image: imgBlob,
-    selectedAnnoTool: AnnotationTool.Point,
-    possibleLabels,
-    preventScrolling: true,
-    uiConfig,
+    ...defaultArgs,
+    annotations: exampleAnnotations.point,
   },
 }
-
-const sampleLineAnnotations: Annotation[] = [
-  new Annotation(0, AnnotationTool.Line, [
-    { x: 10, y: 10 },
-    { x: 100, y: 100 },
-  ]),
-  new Annotation(1, AnnotationTool.Line, [
-    { x: 50, y: 50 },
-    { x: 200, y: 100 },
-    { x: 300, y: 100 },
-    { x: 450, y: 120 },
-    { x: 400, y: 200 },
-    { x: 200, y: 200 },
-  ]),
-  new Annotation(2, AnnotationTool.Line, [{ x: 150, y: 150 }]),
-  new Annotation(3, AnnotationTool.Line, [{ x: 200, y: 200 }]),
-]
 
 export const WithLines: Story = {
   args: {
-    ...ActionsData,
-    annotations: sampleLineAnnotations,
-    image: imgBlob,
+    ...defaultArgs,
+    annotations: exampleAnnotations.line,
     selectedAnnoTool: AnnotationTool.Line,
-    possibleLabels,
-    preventScrolling: true,
-    uiConfig,
   },
 }
-
-const sampleBBoxAnnotations: Annotation[] = [
-  new Annotation(0, AnnotationTool.BBox, [
-    { x: 50, y: 50 },
-    { x: 200, y: 100 },
-  ]),
-  new Annotation(1, AnnotationTool.BBox, [
-    { x: 150, y: 150 },
-    { x: 200, y: 200 },
-  ]),
-  new Annotation(2, AnnotationTool.BBox, [
-    { x: 400, y: 325 },
-    { x: 500, y: 375 },
-  ]),
-]
 
 export const WithBBoxes: Story = {
   args: {
-    ...ActionsData,
-    annotations: sampleBBoxAnnotations,
-    image: imgBlob,
+    ...defaultArgs,
+    annotations: exampleAnnotations.bbox,
     selectedAnnoTool: AnnotationTool.BBox,
-    possibleLabels,
-    preventScrolling: true,
-    uiConfig,
   },
 }
 
-const samplePolygonAnnotations: Annotation[] = [
-  new Annotation(0, AnnotationTool.Polygon, [
-    { x: 50, y: 50 },
-    { x: 200, y: 100 },
-    { x: 250, y: 100 },
-    { x: 250, y: 200 },
-  ]),
-  new Annotation(1, AnnotationTool.Polygon, [
-    { x: 500, y: 300 },
-    { x: 500, y: 320 },
-    { x: 550, y: 370 },
-    { x: 600, y: 350 },
-    { x: 550, y: 450 },
-  ]),
-]
-
 export const WithPolygonAnnotations: Story = {
   args: {
-    ...ActionsData,
-    annotations: samplePolygonAnnotations,
-    image: imgBlob,
+    ...defaultArgs,
+    annotations: exampleAnnotations.polygon,
     selectedAnnoTool: AnnotationTool.Polygon,
-    possibleLabels,
-    preventScrolling: true,
-    uiConfig,
   },
 }

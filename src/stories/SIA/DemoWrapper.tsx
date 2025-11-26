@@ -4,9 +4,8 @@ import AnnotationTool from '../../models/AnnotationTool'
 import Sia from '../../Sia'
 
 import type { AnnotationSettings, ExternalAnnotation, UiConfig } from '../../types'
-
-import { imgBlob } from '../siaDummyData'
-import { possibleLabels } from '../siaDummyData2'
+import exampleLabels from '../exampleData/exampleLabels'
+import exampleImage from '../exampleData/exampleImage'
 
 type DemoWrapperProps = {
   annotations?: ExternalAnnotation[]
@@ -30,9 +29,9 @@ const DemoWrapper = ({
       annotationSettings={annotationSettings}
       initialAnnotations={annotations}
       isLoading={isLoading}
-      possibleLabels={possibleLabels}
+      possibleLabels={exampleLabels.voc}
       uiConfig={uiConfig}
-      image={imgBlob}
+      image={exampleImage}
       defaultAnnotationTool={AnnotationTool.Polygon}
       onAnnoCreated={(anno: Annotation, _: Annotation[]) => {
         console.log('CREATED', anno)

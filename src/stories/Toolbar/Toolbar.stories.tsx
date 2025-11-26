@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import Toolbar from '../../Toolbar/Toolbar'
-// import '../../scss/main.scss'
 import '../main.scss'
 import AnnotationTool from '../../models/AnnotationTool'
-import { possibleLabels } from '../siaDummyData2'
 
 import { AllowedTools, AnnotationSettings } from '../../types'
+import exampleLabels from '../exampleData/exampleLabels'
 
 const meta = {
   title: 'Components/Toolbar',
@@ -38,24 +37,6 @@ const allowedTools: AllowedTools = {
   polygon: true,
 }
 
-// export default {
-//   title: "Components/Toolbar",
-//   component: Toolbar,
-//   parameters: {
-//     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-//     layout: "centered",
-//   },
-//   tags: ["autodocs"],
-//   args: {},
-//   argTypes: {
-//     defaultTool: {
-//       control: "select",
-//       options: AnnotationTool,
-//       description: "Select the right annotation tool",
-//     },
-//   },
-// };
-
 const limitedAllowedTools: AllowedTools = {
   bbox: true,
   junk: false,
@@ -74,7 +55,7 @@ const annotationSettings: AnnotationSettings = {
 const defaultArgs = {
   annotationSettings,
   allowedTools,
-  possibleLabels,
+  possibleLabels: exampleLabels.voc,
   selectedTool: AnnotationTool.BBox,
 }
 

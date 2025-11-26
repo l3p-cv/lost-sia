@@ -4,3 +4,9 @@
 @use '@coreui/coreui/scss/coreui' with (
     $primary: $primary
 );
+
+html, body.sb-main-fullscreen, body.sb-main-fullscreen #storybook-root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}

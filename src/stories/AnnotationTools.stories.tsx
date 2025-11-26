@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import Sia from '../Sia'
-import { imgBlob } from './siaDummyData'
+import exampleImage from './exampleData/exampleImage'
 import { AllowedTools } from '../types'
 
 export const ActionsData = {}
@@ -48,7 +48,7 @@ const allowedTools: AllowedTools = {
 export const BBoxOnly: Story = {
   args: {
     ...ActionsData,
-    image: imgBlob,
+    image: exampleImage,
     possibleLabels: [],
     allowedTools,
   },
@@ -88,7 +88,7 @@ const noJunkTools = {
 export const NoJunk: Story = {
   args: {
     ...ActionsData,
-    image: imgBlob,
+    image: exampleImage,
     possibleLabels: [],
     allowedTools: noJunkTools,
   },

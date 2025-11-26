@@ -75,7 +75,7 @@ const Toolbar = ({
         </CCol>
       )}
 
-      {additionalButtons && additionalButtons}
+      {additionalButtons}
     </CRow>
   )
 }
