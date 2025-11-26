@@ -11,27 +11,13 @@ const meta = {
   component: Sia,
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: 'padding',
+    layout: 'fullscreen',
   },
   tags: ['!autodocs'],
   excludeStories: /.*Data$/,
   args: {
     ...ActionsData,
   },
-  decorators: [
-    (Story) => (
-      <div
-        style={{
-          width: '50vw',
-          height: '65vh',
-          padding: 10,
-          overflow: 'hidden',
-        }}
-      >
-        <Story />
-      </div>
-    ),
-  ],
 } satisfies Meta<typeof Sia>
 
 export default meta
