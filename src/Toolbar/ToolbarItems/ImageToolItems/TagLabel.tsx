@@ -25,6 +25,7 @@ const TagLabel = ({
     height: `${bodySize}px`,
     fontSize: `${bodySize * 0.45}px`,
     padding: `0 1rem 0 0.75rem`,
+    border: 0,
     borderRadius: '0 0.25rem 0.25rem 0',
     marginLeft: `${triangleSize / 1.4}px`, // hypothenuse of the halfed square
     position: 'relative',
@@ -46,10 +47,10 @@ const TagLabel = ({
   }
 
   return (
-    <span style={containerStyle} onClick={onClick}>
+    <button style={containerStyle} onClick={onClick}>
       <span style={triangleStyle} />
       {name}
-    </span>
+    </button>
   )
 }
 

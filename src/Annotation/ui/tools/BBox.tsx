@@ -87,10 +87,12 @@ const BBox = ({
 
       // apply mouse move to the rectangle coordinates
       const movedCoordinates: Point[] = newRectangle.map((coordinate: Point) => {
+        // counter the canvas scaling (it will be automatically applied when rendering the annotation coordinates)
+        const newX = (coordinate.x += e.movementX / svgScale)
+        const newY = (coordinate.y += e.movementY / svgScale)
         return {
-          // counter the canvas scaling (it will be automatically applied when rendering the annotation coordinates)
-          x: (coordinate.x += e.movementX / svgScale),
-          y: (coordinate.y += e.movementY / svgScale),
+          x: newX,
+          y: newY,
         }
       })
 

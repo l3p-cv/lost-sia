@@ -10,7 +10,7 @@ import { AllowedTools, AnnotationSettings, Label } from '../types'
 type ToolbarProps = {
   annotationSettings: AnnotationSettings
   allowedTools: AllowedTools
-  additionalButtons?: ReactElement | undefined
+  additionalButtons?: ReactElement
   isImageJunk?: boolean
   imageLabelIds?: number[]
   isDisabled?: boolean

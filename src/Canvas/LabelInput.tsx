@@ -41,8 +41,11 @@ const LabelInput = ({
       // check if item in list (get its index if so)
       const foundIndex: number = selectedLabelsIds.indexOf(clickedLabel.id)
       // add label if not in list, remove label if in list
-      if (foundIndex !== -1) newLabelIds.splice(foundIndex, 1)
-      else newLabelIds.push(clickedLabel.id)
+      if (foundIndex === -1) {
+        newLabelIds.push(clickedLabel.id)
+      } else {
+        newLabelIds.splice(foundIndex, 1)
+      }
     }
     // single-label: just replace list with clicked item
     else newLabelIds = [clickedLabel.id]

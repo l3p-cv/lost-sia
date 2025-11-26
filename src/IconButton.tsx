@@ -10,18 +10,18 @@ type IconButtonProps = {
   margin?: number
   icon?: IconDefinition
   text?: string
-  size?: 'sm' | 'lg' | undefined
+  size?: 'sm' | 'lg'
   isTextLeft?: boolean
   style?: CSSProperties
   id?: string
-  type?: 'button' | 'submit' | 'reset' | undefined
+  type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
   onClick?: () => void
   className?: string
   color?: string
   isOutline?: boolean
   tooltip?: string
-  ttipPlacement?: 'top' | 'left' | 'right' | 'auto' | 'bottom' | undefined
+  ttipPlacement?: 'top' | 'left' | 'right' | 'auto' | 'bottom'
   shape?: string
 }
 
@@ -64,7 +64,7 @@ const IconButton = ({
       )
     }
     const ic =
-      iconButtonIcon && iconButtonIcon.iconName && iconButtonIcon.prefix ? (
+      iconButtonIcon?.iconName && iconButtonIcon.prefix ? (
         <FontAwesomeIcon key="icon" icon={iconButtonIcon} size={loadingSize || '2x'} />
       ) : null
     const iconButtonText = text ? (

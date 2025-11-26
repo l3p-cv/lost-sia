@@ -13,12 +13,14 @@ import KeyAction from '../models/KeyAction'
 import Annotation from '../Annotation/logic/Annotation'
 import CanvasAction from '../models/CanvasAction'
 import AnnotationComponent from '../Annotation/ui/AnnotationComponent'
-import { AnnotationSettings, Label, UiConfig } from '../types'
 import {
+  AnnotationSettings,
+  Label,
   Point,
   PolygonOperationResult,
   SIANotification,
   ToolCoordinates,
+  UiConfig,
   Vector2,
 } from '../types'
 import mouse from '../utils/mouse'
@@ -122,7 +124,7 @@ const Canvas = ({
   // largest possible annotation size fitting the whole image
   const [stageSize, setStageSize] = useState<Vector2>({ x: -1, y: -1 })
 
-  const [svgScale, setSvgScale] = useState<number>(1.0)
+  const [svgScale, setSvgScale] = useState<number>(1)
   const [svgTranslation, setSvgTranslation] = useState<Vector2>({ x: 0, y: 0 })
   const centeredSvgTranslation: Vector2 = {
     x: svgTranslation.x + imageCenteringSpace,
@@ -188,8 +190,6 @@ const Canvas = ({
     setPageToCanvasOffset(pageOffset)
   }
 
-  // const pageToStageOffset = calculatePageToStageOffset();
-
   const keyMapper = new KeyMapper((keyAction: KeyAction) => handleKeyAction(keyAction))
 
   const createNewAnnotation = (antiScaledMouseStagePosition: Point) => {
@@ -240,7 +240,7 @@ const Canvas = ({
   const editSelectedAnnotation = () => {
     if (
       selectedAnnotation &&
-      ![AnnotationTool.Line, AnnotationTool.Polygon].includes(selectedAnnotation!.type)
+      ![AnnotationTool.Line, AnnotationTool.Polygon].includes(selectedAnnotation.type)
     )
       return
 
@@ -298,8 +298,7 @@ const Canvas = ({
     if (nextAnno) return onSelectAnnotation(nextAnno)
 
     // fallback: there was no anno with an higher id -> just use first anno
-    if (annotations.length > 0)
-      return onSelectAnnotation(annotations[annotations.length - 1])
+    if (annotations.length > 0) return onSelectAnnotation(annotations.at(-1))
   }
 
   const copyCurrentAnnotation = () => {
@@ -350,7 +349,7 @@ const Canvas = ({
       case KeyAction.DELETE_ANNO_IN_CREATION:
         // remove an unfinished annotation
         if (editorMode === EditorModes.CREATE) {
-          onShouldDeleteAnno(selectedAnnotation!.internalId)
+          onShouldDeleteAnno(selectedAnnotation.internalId)
           setEditorMode(EditorModes.VIEW)
         }
         break
@@ -468,7 +467,7 @@ const Canvas = ({
       setImgSize({ x: width, y: height })
     }
 
-    setSvgScale(1.0)
+    setSvgScale(1)
     setSvgTranslation({ x: 0, y: 0 })
 
     setLabelInputPosition(undefined)
@@ -483,7 +482,7 @@ const Canvas = ({
   // image changed after init -> reset everything
   useEffect(() => {
     if (canvasRef?.current !== undefined) {
-      const { width, height } = canvasRef!.current!.getBoundingClientRect()
+      const { width, height } = canvasRef.current!.getBoundingClientRect()
 
       // for whatever reason the ref adds the toolbars height to the available space, leading to a container size reaching outside the bottom
       // remove its height here manually
@@ -493,12 +492,12 @@ const Canvas = ({
 
       // listen for size changes on div element
       const resizeObserver = new ResizeObserver(() => {
-        const { width, height } = canvasRef!.current!.getBoundingClientRect()
+        const { width, height } = canvasRef.current!.getBoundingClientRect()
         const heightWithoutToolbar: number = height - toolbarHeight
 
         setCanvasSize({ x: width, y: heightWithoutToolbar })
       })
-      resizeObserver.observe(canvasRef!.current!)
+      resizeObserver.observe(canvasRef.current)
 
       // cleanup
       return () => resizeObserver.disconnect()
@@ -533,11 +532,11 @@ const Canvas = ({
 
     // listen for size changes on div element
     const imgResizeObserver = new ResizeObserver(() => {
-      const { width, height } = imageRef!.current!.getBoundingClientRect()
+      const { width, height } = imageRef.current!.getBoundingClientRect()
 
       setImgSize({ x: width, y: height })
     })
-    imgResizeObserver.observe(imageRef!.current!)
+    imgResizeObserver.observe(imageRef.current)
 
     return () => imgResizeObserver.disconnect()
   }, [imageRef])
@@ -633,7 +632,7 @@ const Canvas = ({
       setEditorMode(EditorModes.CAMERA_MOVE)
     } else if (e.button === 2) {
       // check if annotation creation allowed in settings
-      if (!annotationSettings!.canCreate) return
+      if (!annotationSettings.canCreate) return
 
       if (editorMode === EditorModes.ADD || editorMode === EditorModes.CREATE) return
 
@@ -666,12 +665,8 @@ const Canvas = ({
   }
 
   const onMouseUp = (e) => {
-    switch (e.button) {
-      case 1:
-        setEditorMode(EditorModes.VIEW)
-        break
-      default:
-        break
+    if (e.button === 1) {
+      setEditorMode(EditorModes.VIEW)
     }
   }
 
@@ -714,7 +709,7 @@ const Canvas = ({
     }
 
     // contstrain zoom
-    if (newScale < 1.0) {
+    if (newScale < 1) {
       setSvgScale(1)
       if (svgTranslation.x != 0 || svgTranslation.y != 0)
         setSvgTranslation({ x: 0, y: 0 })
@@ -896,9 +891,9 @@ const Canvas = ({
       <div
         style={{
           position: 'absolute',
-          left: labelInputPosition?.x !== undefined ? labelInputPosition.x : 0,
-          top: labelInputPosition?.y !== undefined ? labelInputPosition.y : 0,
-          display: labelInputPosition?.y !== undefined ? 'inherit' : 'none',
+          left: labelInputPosition?.x ?? 0,
+          top: labelInputPosition?.y ?? 0,
+          display: labelInputPosition?.y === undefined ? 'none' : 'inherit',
           zIndex: isLabelInputVisible ? 7000 : -1,
         }}
       >
@@ -907,7 +902,7 @@ const Canvas = ({
           isVisible={isLabelInputVisible}
           selectedLabelsIds={selectedAnnotation?.labelIds}
           possibleLabels={possibleLabels}
-          isMultilabel={annotationSettings!.canHaveMultipleLabels}
+          isMultilabel={annotationSettings.canHaveMultipleLabels}
           onLabelSelect={(selectedLabelIds: number[]) => {
             // close the input popup
             setIsLabelInputVisible(false)
@@ -915,7 +910,7 @@ const Canvas = ({
             // inform parent which label was chosen
             if (selectedLabelIds.length > 0) {
               const newLabelIds: number[] = selectedLabelIds.filter(
-                (labelId: number) => !selectedAnnotation!.labelIds!.includes(labelId),
+                (labelId: number) => !selectedAnnotation.labelIds.includes(labelId),
               )
 
               if (newLabelIds.length > 0) {
@@ -935,7 +930,7 @@ const Canvas = ({
             const updatedAnno: Annotation = {
               ...selectedAnnotation,
               coordinates: transform.convertPercentagedCoordinatesToStage(
-                selectedAnnotation!.coordinates,
+                selectedAnnotation.coordinates,
                 imgSize,
                 stageSize,
               ),

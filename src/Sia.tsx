@@ -17,7 +17,7 @@ import {
 } from './types'
 
 type SiaProps = {
-  additionalButtons?: ReactElement | undefined
+  additionalButtons?: ReactElement
   allowedTools?: AllowedTools
   polygonOperationResult?: PolygonOperationResult
   annotationSettings?: AnnotationSettings
@@ -55,8 +55,8 @@ const Sia2 = ({
   image,
   isLoading = false,
   isPolygonSelectionMode = false,
-  initialAnnotations = [],
-  initialImageLabelIds = [],
+  initialAnnotations = undefined,
+  initialImageLabelIds = undefined,
   initialIsImageJunk = false,
   possibleLabels,
   onAnnoCreated = (_, __) => {},
@@ -83,21 +83,21 @@ const Sia2 = ({
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>()
 
   const [selectedAnnoTool, setSelectedAnnoTool] = useState<AnnotationTool>(
-    defaultAnnotationTool !== undefined ? defaultAnnotationTool : AnnotationTool.Point,
+    defaultAnnotationTool ?? AnnotationTool.Point,
   )
 
   // for adjusting the container/canvas size
   // const [toolbarHeight, setToolbarHeight] = useState<number>(-1);
 
-  const [outerContainerStyle, setOuterContainerStyle] = useState<CSSProperties>({
-    // use the max available height as a flex child
-    flex: '1 1 auto',
-    minHeight: 0,
+  // const [outerContainerStyle, setOuterContainerStyle] = useState<CSSProperties>({
+  //   // use the max available height as a flex child
+  //   flex: '1 1 auto',
+  //   minHeight: 0,
 
-    // give the max available height to the next child
-    display: 'flex',
-    flexDirection: 'column',
-  })
+  //   // give the max available height to the next child
+  //   display: 'flex',
+  //   flexDirection: 'column',
+  // })
 
   const [imageLabelIds, setImageLabelIds] = useState<number[]>(initialImageLabelIds)
 
@@ -109,7 +109,7 @@ const Sia2 = ({
 
   const deleteAnnotationByInternalId = (internalId: number) => {
     // get index of selected annotation
-    const annoListIndex: number = annotations!.findIndex(
+    const annoListIndex: number = annotations.findIndex(
       (anno) => anno.internalId === internalId,
     )
 
@@ -148,7 +148,7 @@ const Sia2 = ({
           mode: AnnotationMode.VIEW,
           selectedNode: 1,
           status: externalAnno.status,
-          annoTime: externalAnno.annoTime !== undefined ? externalAnno.annoTime : 0.0,
+          annoTime: externalAnno.annoTime ?? 0,
         }
 
         return _anno
@@ -156,7 +156,7 @@ const Sia2 = ({
     )
 
     // list all used internal ids (from 0 to internalAnnoId)
-    setUsedInternalIds([...Array(internalAnnoId).keys()])
+    setUsedInternalIds([...new Array(internalAnnoId).keys()])
 
     setAnnotations(_annotations)
   }
@@ -220,7 +220,12 @@ const Sia2 = ({
     // update the initial annotations only when the image is not set
     // (the annotations are always loaded before the image)
     // when we dont have any annos, we dont need to call it (prevents render errors on initialization)
-    if (image !== undefined || initialAnnotations.length === 0) return
+    if (
+      image !== undefined ||
+      initialAnnotations === undefined ||
+      initialAnnotations.length === 0
+    )
+      return
 
     createInitialAnnotations()
   }, [initialAnnotations])
@@ -304,6 +309,16 @@ const Sia2 = ({
     width: '100%',
     height: '100%',
     padding: 15,
+  }
+
+  const outerContainerStyle: CSSProperties = {
+    // use the max available height as a flex child
+    flex: '1 1 auto',
+    minHeight: 0,
+
+    // give the max available height to the next child
+    display: 'flex',
+    flexDirection: 'column',
   }
 
   if (allowedTools === undefined)
@@ -410,9 +425,10 @@ const Sia2 = ({
               if (isPolygonSelectionMode) {
                 if (polygonOperationResult?.annotationsToDelete !== undefined) {
                   // we also want to remove the current selected annotation
-                  polygonOperationResult.annotationsToDelete.push(selectedAnnotation!)
+                  polygonOperationResult.annotationsToDelete.push(selectedAnnotation)
 
-                  polygonOperationResult.annotationsToDelete.forEach((annotation) => {
+                  for (const annotation of polygonOperationResult.annotationsToDelete) {
+                    // polygonOperationResult.annotationsToDelete.forEach((annotation) => {
                     // remove annotations "the official way" (inform the server what we did)
                     deleteAnnotationByInternalId(annotation.internalId)
 
@@ -420,13 +436,13 @@ const Sia2 = ({
                     // therefore also manually remove the annotations here
 
                     // get index of selected annotation
-                    const annoListIndex: number = _annotations!.findIndex(
+                    const annoListIndex: number = _annotations.findIndex(
                       (anno) => anno.internalId === annotation.internalId,
                     )
 
                     // remove annotation from object
                     _annotations.splice(annoListIndex, 1)
-                  })
+                  }
                 }
               }
 

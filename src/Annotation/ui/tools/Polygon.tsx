@@ -102,10 +102,12 @@ const Polygon = ({
     if (isAnnoDragging) {
       // apply mouse move to all coordinates
       const movedCoordinates: Point[] = coordinates.map((coordinate: Point) => {
+        // counter the canvas scaling (it will be automatically applied when rendering the annotation coordinates)
+        const newX = (coordinate.x += e.movementX / svgScale)
+        const newY = (coordinate.y += e.movementY / svgScale)
         return {
-          // counter the canvas scaling (it will be automatically applied when rendering the annotation coordinates)
-          x: (coordinate.x += e.movementX / svgScale),
-          y: (coordinate.y += e.movementY / svgScale),
+          x: newX,
+          y: newY,
         }
       })
 

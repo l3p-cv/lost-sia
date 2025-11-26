@@ -1,15 +1,18 @@
 import KeyAction from '../models/KeyAction'
 
 class KeyMapper {
-  isControlDown: boolean
+  isControlDown: boolean = false
   keyActionHandler: ((keyAction) => void) | undefined
 
   constructor(keyActionHandler: ((keyAction) => void) | undefined = undefined) {
-    this.isControlDown = false
     this.keyActionHandler = keyActionHandler
   }
 
-  keyDown(key: string, isShiftKeyPressed: boolean = false, isCtrlKeyPressed: boolean) {
+  keyDown(
+    key: string,
+    isShiftKeyPressed: boolean = false,
+    isCtrlKeyPressed: boolean = false,
+  ) {
     switch (key) {
       case 'Enter':
         this.triggerKeyAction(KeyAction.EDIT_LABEL)

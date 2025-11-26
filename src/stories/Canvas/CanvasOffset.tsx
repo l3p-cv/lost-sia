@@ -2,7 +2,6 @@ import { CSSProperties } from 'react'
 import Annotation from '../../Annotation/logic/Annotation'
 import Canvas from '../../Canvas/Canvas'
 import AnnotationTool from '../../models/AnnotationTool'
-import CanvasAction from '../../models/CanvasAction'
 import type { AnnotationSettings, Label, UiConfig } from '../../types'
 
 type CanvasProps = {
@@ -12,9 +11,6 @@ type CanvasProps = {
   possibleLabels: Label[]
   preventScrolling: boolean
   uiConfig: UiConfig
-  onAnnoEvent?: (annotation: Annotation, canvasAction: CanvasAction) => void | undefined
-  onKeyDown?: (e) => void | undefined
-  onKeyUp?: (e) => void | undefined
 }
 
 const annotationSettings: AnnotationSettings = {
