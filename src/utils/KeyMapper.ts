@@ -12,7 +12,7 @@ class KeyMapper {
     key: string,
     isShiftKeyPressed: boolean = false,
     isCtrlKeyPressed: boolean = false,
-  ) {
+  ): boolean {
     switch (key) {
       case 'Enter':
         this.triggerKeyAction(KeyAction.EDIT_LABEL)
@@ -66,8 +66,12 @@ class KeyMapper {
         this.triggerKeyAction(KeyAction.DELETE_ANNO_IN_CREATION)
         break
       default:
-        break
+        // no key found
+        return false
     }
+
+    // tell caller that we have found a key
+    return true
   }
 
   // keyUp(key: string) {

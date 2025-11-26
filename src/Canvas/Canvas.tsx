@@ -612,9 +612,10 @@ const Canvas = ({
   }
 
   const onKeyDown = (e: KeyboardEvent) => {
-    e.preventDefault()
+    const hasKey = keyMapper.keyDown(e.key, e.shiftKey, e.ctrlKey)
 
-    keyMapper.keyDown(e.key, e.shiftKey, e.ctrlKey)
+    // do the default action only if the button was not found in the mapper
+    if (hasKey) e.preventDefault()
   }
 
   const onKeyUp = (e: KeyboardEvent) => {
