@@ -1,0 +1,6 @@
+@use "variables" as *;
+
+@use "@coreui/coreui/scss/coreui" with (
+  $primary: $primary,
+  $secondary: $secondary
+);

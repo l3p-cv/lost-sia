@@ -1,54 +1,54 @@
-import React, { useState, useEffect, useRef } from "react";
-import { List, Divider, TextArea, Form, Label, Icon } from "semantic-ui-react";
-import InfoBox from "./InfoBox";
-import PopUp from "../SiaPopup";
+import React, { useState, useEffect, useRef } from 'react'
+import { List, TextArea, Form, Label, Icon } from 'semantic-ui-react'
+import InfoBox from './InfoBox'
+import PopUp from '../SiaPopup'
 
 const AnnoDetails = (props) => {
-  const [comment, setComment] = useState("");
-  const [example, setExample] = useState(false);
-  const [showSaveBtn, setShowSaveBtn] = useState(false);
-  const tARef = useRef();
+  const [comment, setComment] = useState('')
+  const [example, setExample] = useState(false)
+  const [showSaveBtn, setShowSaveBtn] = useState(false)
+  const tARef = useRef()
   useEffect(() => {
     if (props.anno) {
       if (props.anno.comment) {
-        setComment(props.anno.comment);
+        setComment(props.anno.comment)
       } else {
-        setComment("");
+        setComment('')
       }
     }
-  }, [props.anno]);
+  }, [props.anno])
 
   useEffect(() => {
     if (tARef.current) {
-      tARef.current.focus();
+      tARef.current.focus()
     }
-  }, [props.commentInputTrigger]);
+  }, [props.commentInputTrigger])
 
   const onDismiss = () => {
     if (props.onDismiss) {
-      props.onDismiss();
+      props.onDismiss()
     }
-  };
+  }
 
   const onCommentUpdate = () => {
     if (props.onCommentUpdate) {
-      props.onCommentUpdate(comment);
+      props.onCommentUpdate(comment)
     }
-    setShowSaveBtn(false);
-  };
+    setShowSaveBtn(false)
+  }
 
   const onMarkExampleClick = () => {
     // setExample(!example)
     if (props.onMarkExample) {
-      props.onMarkExample(props.anno);
+      props.onMarkExample(props.anno)
     }
-  };
+  }
 
   const renderSaveBtn = () => {
     if (showSaveBtn) {
-      return <Label as="a" corner="right" icon="save" color="red"></Label>;
+      return <Label as="a" corner="right" icon="save" color="red"></Label>
     }
-  };
+  }
 
   const renderComment = () => {
     return (
@@ -66,36 +66,36 @@ const AnnoDetails = (props) => {
           ></TextArea>
         </Form>
       </div>
-    );
-  };
+    )
+  }
   const renderLabels = () => {
     if (props.anno) {
-      const selectedLabelIds = props.anno.labelIds;
-      if (!selectedLabelIds) return "No Label";
+      const selectedLabelIds = props.anno.labelIds
+      if (!selectedLabelIds) return 'No Label'
 
-      let lbls = "";
+      let lbls = ''
       props.anno.labelIds.forEach((lbl, idx) => {
         const labelObject = props.possibleLabels.find((el) => {
-          return el.id === lbl;
-        });
-        if (idx > 0) lbls += ", ";
-        lbls += labelObject.label;
-      });
-      if (!lbls) return "No Label";
-      return lbls;
+          return el.id === lbl
+        })
+        if (idx > 0) lbls += ', '
+        lbls += labelObject.label
+      })
+      if (!lbls) return 'No Label'
+      return lbls
     } else {
-      return "No Label";
+      return 'No Label'
     }
-  };
+  }
 
   const renderExampleMark = () => {
-    if (!props.allowedToMarkExample) return null;
-    let color = "grey";
-    let iconName = "bookmark outline";
+    if (!props.allowedToMarkExample) return null
+    let color = 'grey'
+    let iconName = 'bookmark outline'
     if (props.anno) {
       if (props.anno.isExample) {
-        color = "yellow";
-        iconName = "bookmark";
+        color = 'yellow'
+        iconName = 'bookmark'
       }
     }
     const mark = (
@@ -106,19 +106,19 @@ const AnnoDetails = (props) => {
         size="medium"
         corner="left"
         onClick={() => {
-          onMarkExampleClick();
+          onMarkExampleClick()
         }}
       >
         <Icon name={iconName} />
       </Label>
-    );
+    )
     return (
       <PopUp
         content="Mark this annotation as example for other annotators"
         trigger={mark}
       />
-    );
-  };
+    )
+  }
 
   const renderDescription = () => {
     if (props.anno) {
@@ -136,31 +136,30 @@ const AnnoDetails = (props) => {
             <List.Item icon="tag" content={renderLabels()} />
             <List.Item
               icon="time"
-              content={`${props.anno.annoTime.toLocaleString("us", {
+              content={`${props.anno.annoTime.toLocaleString('us', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })} seconds`}
             />
             {/* <List.Item icon='time' content={props.anno.annoTime} /> */}
           </List>
-          {/* <Divider horizontal> Comment </Divider> */}
           {renderComment()}
         </div>
-      );
+      )
     } else {
-      return "No annotation selected!";
+      return 'No annotation selected!'
     }
-  };
+  }
 
   return (
     <InfoBox
-      header={"Annotation Details"}
+      header={'Annotation Details'}
       content={renderDescription()}
       visible={props.visible}
       defaultPos={props.defaultPos}
       onDismiss={(e) => onDismiss()}
     />
-  );
-};
+  )
+}
 
-export default AnnoDetails;
+export default AnnoDetails

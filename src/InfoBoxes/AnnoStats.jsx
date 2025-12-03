@@ -1,42 +1,41 @@
-import React, { useState, useEffect } from "react";
-// import {connect} from 'react-redux'
-import { List, Label } from "semantic-ui-react";
-import InfoBox from "./InfoBox";
-import * as colorlut from "../utils/colorlut";
+import React, { useState, useEffect } from 'react'
+import { List, Label } from 'semantic-ui-react'
+import InfoBox from './InfoBox'
+import * as colorlut from '../utils/color'
 // import actions from '../../../../actions'
 // import * as transform from '../utils/transform'
 // const { siaShowImgBar } = actions
 
 const AnnoStats = (props) => {
-  const [hideList, setHideList] = useState([]);
+  const [hideList, setHideList] = useState([])
 
   useEffect(() => {
-    setHideList([]);
-  }, [props.imgLoadCount]);
+    setHideList([])
+  }, [props.imgLoadCount])
 
   const onDismiss = () => {
     if (props.onDismiss) {
-      props.onDismiss();
+      props.onDismiss()
     }
-  };
+  }
 
   const onLblClick = (lbl) => {
-    let hideLbl = false;
+    let hideLbl = false
     if (hideList.includes(lbl.id)) {
-      setHideList(hideList.filter((e) => e !== lbl.id));
-      hideLbl = false;
+      setHideList(hideList.filter((e) => e !== lbl.id))
+      hideLbl = false
     } else {
       // hideList.push(lbl.id)
-      setHideList([...hideList, lbl.id]);
-      hideLbl = true;
+      setHideList([...hideList, lbl.id])
+      hideLbl = true
     }
     if (props.onHideLbl) {
-      props.onHideLbl(lbl, hideLbl);
+      props.onHideLbl(lbl, hideLbl)
     }
-  };
+  }
 
   const renderRow = (s) => {
-    const opacity = hideList.includes(s.id) ? 0.5 : 1.0;
+    const opacity = hideList.includes(s.id) ? 0.5 : 1.0
     return (
       <List.Item key={s.id}>
         <List.Content>
@@ -51,57 +50,57 @@ const AnnoStats = (props) => {
           </Label>
         </List.Content>
       </List.Item>
-    );
-  };
+    )
+  }
 
   const renderRows = () => {
-    let stats = {};
+    let stats = {}
     props.annos.forEach((a) => {
       // // console.log('render rows', a)
-      if (a.status !== "deleted") {
+      if (a.status !== 'deleted') {
         a.labelIds.forEach((lblId) => {
           if (lblId in stats) {
-            stats[lblId] += 1;
+            stats[lblId] += 1
           } else {
-            stats[lblId] = 1;
+            stats[lblId] = 1
           }
-        });
+        })
         if (a.labelIds.length === 0) {
           if ((-1) in stats) {
-            stats[-1] += 1;
+            stats[-1] += 1
           } else {
-            stats[-1] = 1;
+            stats[-1] = 1
           }
         }
       }
-    });
+    })
     const res = Object.entries(stats).map(([key, value]) => {
       let lbl = props.possibleLabels.find((e) => {
-        return e.id === parseInt(key);
-      });
+        return e.id === parseInt(key)
+      })
       if (!lbl) {
-        lbl = { id: -1, label: "No Label", color: colorlut.getDefaultColor() };
+        lbl = { id: -1, label: 'No Label', color: colorlut.getDefaultColor() }
       }
 
-      lbl.amount = value;
+      lbl.amount = value
       // return renderRow({class:idToLbl[key], amount:value, color:idToColor[key]})
-      return renderRow(lbl);
-    });
-    return res;
-  };
+      return renderRow(lbl)
+    })
+    return res
+  }
   const renderDescription = () => {
-    return <List>{renderRows()}</List>;
-  };
+    return <List>{renderRows()}</List>
+  }
 
   return (
     <InfoBox
-      header={"Annotations per Label"}
+      header={'Annotations per Label'}
       content={renderDescription()}
       visible={props.visible}
       defaultPos={props.defaultPos}
       onDismiss={(e) => onDismiss()}
     />
-  );
-};
+  )
+}
 
-export default AnnoStats;
+export default AnnoStats

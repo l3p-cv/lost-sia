@@ -1,13 +1,13 @@
 {
   "name": "lost-sia",
-  "version": "2.0.0",
+  "version": "0.0.0-alpha0",
   "description": "Single Image Annotation Tool",
   "license": "MIT",
   "repository": "l3p-cv/lost-sia",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "type": "module",
+  "types": "./dist/index.d.ts",
   "keywords": [
     "lost",
     "annotation",
@@ -20,71 +20,91 @@
   },
   "exports": {
     ".": {
-      "import": "./src/index.js",
-      "require": "./src/index.js"
-    }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.js"
+    },
+    "./models": {
+      "bun": "./src/models/index.js",
+      "types": "./dist/models/index.d.ts",
+      "import": "./dist/models/index.js",
+      "require": "./dist/models/index.js"
+    },
+    "./styles/variables": "./src/styles/_variables.scss",
+    "./styles/coreui": "./src/styles/coreui.scss"
   },
   "files": [
-    "src"
+    "dist",
+    "src",
+    "styles"
   ],
+  "style": "dist/main.css",
   "scripts": {
     "build": "vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "publishpkg": "npm publish",
     "test": "vitest run",
+    "start": "storybook dev -p 6006",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
   },
   "dependencies": {
-    "@coreui/react": "^5.0.0",
-    "@fortawesome/free-regular-svg-icons": "^6.5.2",
-    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "lodash-es": "^4.17.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-draggable": "^4.4.6",
-    "sass": "^1.77.1",
+    "sass": "^1.89.2",
     "semantic-ui-css": "2.5.0",
     "semantic-ui-react": "^2.0.3"
   },
   "peerDependencies": {
-    "lodash": "^4.17.15",
+    "@coreui/react": "^5.9.1",
     "prop-types": "^15.5.4",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^1.5.0",
-    "@storybook/addon-essentials": "^8.1.5",
-    "@storybook/addon-interactions": "^8.1.5",
-    "@storybook/addon-links": "^8.1.5",
-    "@storybook/addon-onboarding": "^8.1.5",
-    "@storybook/blocks": "^8.1.5",
-    "@storybook/react": "^8.1.5",
-    "@storybook/react-vite": "^8.1.5",
-    "@storybook/test": "^8.1.5",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.39.1",
+    "@microsoft/api-extractor": "^7.52.13",
+    "@storybook/addon-docs": "^9.1.10",
+    "@storybook/addon-links": "^9.0.12",
+    "@storybook/react": "^9.0.12",
+    "@storybook/react-vite": "^9.0.12",
+    "@storybook/test": "9.0.0-alpha.2",
+    "@types/react": "^19.1.16",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
     "@vitejs/plugin-react": "^4.3.0",
     "cross-env": "^7.0.3",
-    "eslint": "^8.0.1",
+    "eslint": "^9.39.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-config-standard-react": "^13.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.2.0",
-    "eslint-plugin-react": "^7.34.2",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-standard": "^5.0.0",
-    "eslint-plugin-storybook": "^0.8.0",
-    "glob": "^10.4.1",
+    "eslint-plugin-storybook": "^10.0.7",
+    "glob": "^11.0.3",
+    "lodash-es": "^4.17.21",
     "prettier": "^3.3.3",
-    "prop-types": "^15.8.1",
     "react-redux": "^9.1.2",
     "redux": "^5.0.1",
-    "storybook": "^8.1.5",
-    "vite": "^5.2.12",
-    "vitest": "^1.6.0"
+    "storybook": "^9.0.12",
+    "unplugin-dts": "^1.0.0-beta.6",
+    "vite": "^5.4.19",
+    "vitest": "^1.6.1"
   },
   "eslintConfig": {
     "extends": [

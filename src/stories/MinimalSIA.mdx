@@ -1,0 +1,20 @@
+import { Canvas, Meta, Source, Story } from '@storybook/addon-docs/blocks'
+import * as SiaStories from './MinimalSia.stories.tsx'
+
+<Meta of={SiaStories} />
+
+# SIA Examples
+
+Here we'll show you how to include SIA into your project!
+
+## Minimal SIA
+
+Including SIA in its minimal form is very simple: Just use the `Sia` component and give it an image and possible Labels as parameters:
+
+<Source of={SiaStories.Minimal} language="tsx" />
+
+This will get you the following:
+
+<Canvas>
+  <Story of={SiaStories.Minimal} />
+</Canvas>

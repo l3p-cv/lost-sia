@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Your stuff here
 
+## [3.0.0] - 2025-12-03
+### Breaking Changes
+- Complete rework of LOST-SIA
+- The props for the SIA component to the outside worls have changed completely.
+
 ## [2.0.0] - 2025-07-02 
 ### Changed
 - Order of buttons in ToolBar: Move setting and filter btn up

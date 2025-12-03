@@ -1,25 +1,24 @@
-import Prompt from "./Prompt";
-import React from "react";
-import { Card, Divider, Header, Image } from "semantic-ui-react";
+import Prompt from './Prompt'
+import React from 'react'
+import { Card, Image } from 'semantic-ui-react'
 
 const LabelExampleViewer = (props) => {
   const requestExample = (e) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (props.onRequestExample) {
-      props.onRequestExample();
+      props.onRequestExample()
     }
-  };
+  }
   const renderContent = () => {
-    if (!props.lbl) return null;
-    if (!props.exampleImg) return null;
+    if (!props.lbl) return null
+    if (!props.exampleImg) return null
     const description = (
       <div>
-        {/* <Divider horizontal> Description </Divider> */}
         {props.lbl.description}
-        <Divider horizontal> comment </Divider>
-        {props.exampleImg.anno ? props.exampleImg.anno.comment : "no comment"}
+        <h4>Comment:</h4>
+        {props.exampleImg.anno ? props.exampleImg.anno.comment : 'no comment'}
       </div>
-    );
+    )
     return (
       <div>
         <Card
@@ -47,24 +46,24 @@ const LabelExampleViewer = (props) => {
             {props.lbl.description}
             <Image src={props.exampleImg.img} centered size='medium'></Image> */}
       </div>
-    );
-  };
+    )
+  }
 
   const handlePromptClick = () => {
     if (props.onClose) {
-      props.onClose();
+      props.onClose()
     }
-  };
+  }
 
   return (
     <Prompt
       onClick={() => {
-        handlePromptClick();
+        handlePromptClick()
       }}
       active={props.active}
       content={renderContent()}
     />
-  );
-};
+  )
+}
 
-export default LabelExampleViewer;
+export default LabelExampleViewer

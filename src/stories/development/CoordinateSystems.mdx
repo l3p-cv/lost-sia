@@ -1,0 +1,25 @@
+# Coordinate Systems
+
+SIA uses a scene-graph-like scheme for handling annotations.  
+Outside of SIA, every coordinate is normalized; it is a pair of values between 0 and 1 that represents the fraction of the image.  
+For example, the coordinate `{x: 0.5, y: 1}` would be in the bottom line and in the middle row of the image.
+
+Inside the `Canvas` component, a different system is used: Instead of using the fraction, the Canvas uses the pixel values of the so-called stage.
+
+## Stage handling
+
+The stage is a compromise between the image and the available space for the canvas.  
+It represents the biggest possible scaling of the image that fits onto the canvas and can be made without affecting the aspect ratio of the image.
+
+![StageHandling](../../docs/StageHandling.svg)
+
+To convert the coordinates from the image into the stage coordinate system, each coordinate can be multiplied with the `imageToStageFactor`.
+
+## Translations
+
+The manual translations (when the user moved the image using wasd or the mouse) and the zoom are handled using the svg transform.  
+Therefore its not needed to translate the coordinates according to these modifications.  
+However, mouse events are not in relation to the stage or image but to the current page.  
+Because of this, the mouse coordinates need to be translated from the page coordinate system into the stage coordinate system by countering the svg transformations and applying the `pageToStageOffset`.
+
+![CoordinateSystems](../../docs/CoordinateSystems.svg)
