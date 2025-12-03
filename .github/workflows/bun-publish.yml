@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
@@ -30,11 +30,11 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
         with:
           bun-version: latest
       - name: Set version of package.json
-        uses: ramonpaolo/bump-version@v2.3.1
+        uses: ramonpaolo/bump-version@b5f7d48f6d207e9786e9bb73fffe2195954d3d97
         with:
           tag: ${{ github.event.release.tag_name }}
       - run: bun install --frozen-lockfile
