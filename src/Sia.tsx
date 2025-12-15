@@ -44,7 +44,7 @@ type SiaProps = {
 /**
  * Main SIA component
  */
-const Sia2 = ({
+const Sia = ({
   additionalButtons,
   allowedTools: propAllowedTools,
   polygonOperationResult = { annotationsToDelete: [], polygonsToCreate: [] },
@@ -78,6 +78,12 @@ const Sia2 = ({
   const [annotations, setAnnotations] = useState<Annotation[]>([])
   const [annotationSettings, setAnnotationSettings] = useState<AnnotationSettings>()
 
+  // tracks how far we went back in the history
+  const [annotationHistoryIndex, setAnnotationHistoryIndex] = useState<
+    number | undefined
+  >()
+  const [annotationHistory, setAnnotationHistory] = useState<Annotation[][]>([])
+
   const [uiConfig, setUiConfig] = useState<UiConfig>()
 
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>()
@@ -85,6 +91,19 @@ const Sia2 = ({
   const [selectedAnnoTool, setSelectedAnnoTool] = useState<AnnotationTool>(
     defaultAnnotationTool ?? AnnotationTool.Point,
   )
+
+  const updateAnnotationHistory = (annotations: Annotation[]) => {
+    const _annotations = [...annotations]
+    const _annotationHistory = [...annotationHistory]
+
+    // update the list with out latest change (it is always living in the present)
+    _annotationHistory.push(_annotations)
+
+    // keep history index marker in the present
+    setAnnotationHistoryIndex(undefined)
+
+    setAnnotationHistory(_annotationHistory)
+  }
 
   // for adjusting the container/canvas size
   // const [toolbarHeight, setToolbarHeight] = useState<number>(-1);
@@ -121,6 +140,7 @@ const Sia2 = ({
 
     setAnnotations(_annotations)
     setSelectedAnnotation(undefined)
+    updateAnnotationHistory(_annotations)
 
     // inform the outside world about our changes
     onAnnoDeleted(removedAnno, _annotations)
@@ -159,6 +179,7 @@ const Sia2 = ({
     setUsedInternalIds([...new Array(internalAnnoId).keys()])
 
     setAnnotations(_annotations)
+    updateAnnotationHistory(_annotations)
   }
 
   const createNewInternalAnnotationId = (): number => {
@@ -206,11 +227,47 @@ const Sia2 = ({
     onIsImageJunk(newJunkState)
   }
 
+  const handleTraverseAnnotationHistory = (isUndo: boolean) => {
+    // undefined -> last element
+    const _annotationHistoryIndex = annotationHistoryIndex ?? annotationHistory.length - 1
+
+    const isPresent = _annotationHistoryIndex == annotationHistory.length - 1
+    const isFirst = annotationHistoryIndex == 0
+
+    // we cannot go into the future (yet) or past the past
+    if ((isPresent && !isUndo) || (isFirst && isUndo)) return
+
+    // request time travel using state update
+    const newHistoryIndex = _annotationHistoryIndex + (isUndo ? -1 : 1)
+    setAnnotationHistoryIndex(newHistoryIndex)
+  }
+
+  useEffect(() => {
+    if (
+      annotationHistoryIndex == undefined ||
+      annotationHistoryIndex < 0 ||
+      annotationHistoryIndex > annotationHistory.length - 1
+    )
+      return
+
+    // update the shown annotations when we travel in time using the history index
+    const refSelectedAnnotationsFromHistory = annotationHistory[annotationHistoryIndex]
+    const selectedAnnotationsFromHistory: Annotation[] = [
+      ...refSelectedAnnotationsFromHistory,
+    ]
+
+    setAnnotations(selectedAnnotationsFromHistory)
+  }, [annotationHistoryIndex])
+
   useEffect(() => {
     // remove current annotations when the image changes
     if (image === undefined) {
       setAnnotations([])
       setSelectedAnnotation(undefined)
+
+      // reset time machine
+      setAnnotationHistory([])
+      setAnnotationHistoryIndex(undefined)
     }
   }, [image])
 
@@ -397,6 +454,7 @@ const Sia2 = ({
               setAnnotations(_annotations)
               setSelectedAnnotation(annotation)
               onAnnoCreated(annotation, _annotations)
+              // dont update history here - we dont have a finished anno at this point
             }}
             onAnnoChanged={(changedAnno: Annotation) => {
               // update annotation list
@@ -410,6 +468,11 @@ const Sia2 = ({
               const _annotations: Annotation[] = [...annotations]
               _annotations[annoListIndex] = changedAnno
               setAnnotations(_annotations)
+
+              // only update history for full/finished annotations
+              if (changedAnno.status !== AnnotationStatus.CREATING) {
+                updateAnnotationHistory(_annotations)
+              }
 
               // inform the outside world about our change
               onAnnoChanged(changedAnno, _annotations)
@@ -457,6 +520,7 @@ const Sia2 = ({
               }
 
               setAnnotations(_annotations)
+              updateAnnotationHistory(_annotations)
 
               // mark annotation as fully created
               changedAnno.status = AnnotationStatus.CREATED
@@ -474,6 +538,7 @@ const Sia2 = ({
             }}
             onSetSelectedTool={setSelectedAnnoTool}
             onShouldDeleteAnno={deleteAnnotationByInternalId}
+            onTraverseAnnotationHistory={handleTraverseAnnotationHistory}
           />
         )}
       </div>
@@ -481,4 +546,4 @@ const Sia2 = ({
   )
 }
 
-export default Sia2
+export default Sia
