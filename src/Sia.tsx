@@ -13,6 +13,7 @@ import {
   Label,
   PolygonOperationResult,
   SIANotification,
+  TimeTravelChanges,
   UiConfig,
 } from './types'
 
@@ -39,6 +40,7 @@ type SiaProps = {
   onIsImageJunk?: (isJunk: boolean) => void
   onNotification?: (notification: SIANotification) => void
   onSelectAnnotation?: (annotation: Annotation) => void
+  onTimeTravel?: (timeTravelAction: TimeTravelChanges) => void
 }
 
 /**
@@ -67,6 +69,7 @@ const Sia = ({
   onIsImageJunk = () => {},
   onNotification = (_) => {},
   onSelectAnnotation = (_) => {},
+  onTimeTravel = (_) => {},
 }: SiaProps) => {
   const marginBetweenToolbarAndContainerPixels: number = 10
 
@@ -95,6 +98,13 @@ const Sia = ({
   const updateAnnotationHistory = (annotations: Annotation[]) => {
     const _annotations = [...annotations]
     const _annotationHistory = [...annotationHistory]
+
+    // user did some changes from within the past
+    // time to create an alternative timeline and delete the original one
+    if (annotationHistoryIndex !== undefined) {
+      // remove everything after the state the user is
+      _annotationHistory.splice(annotationHistoryIndex + 1)
+    }
 
     // update the list with out latest change (it is always living in the present)
     _annotationHistory.push(_annotations)
@@ -232,7 +242,7 @@ const Sia = ({
     const _annotationHistoryIndex = annotationHistoryIndex ?? annotationHistory.length - 1
 
     const isPresent = _annotationHistoryIndex == annotationHistory.length - 1
-    const isFirst = annotationHistoryIndex == 0
+    const isFirst = _annotationHistoryIndex == 0
 
     // we cannot go into the future (yet) or past the past
     if ((isPresent && !isUndo) || (isFirst && isUndo)) return
@@ -240,6 +250,40 @@ const Sia = ({
     // request time travel using state update
     const newHistoryIndex = _annotationHistoryIndex + (isUndo ? -1 : 1)
     setAnnotationHistoryIndex(newHistoryIndex)
+  }
+
+  const getTimeTravelInductedChanges = (
+    timeTravelledAnnotations: Annotation[],
+  ): TimeTravelChanges => {
+    const addedAnnotations: Annotation[] = []
+    const removedAnnotations: Annotation[] = []
+    const changedAnnotations: Annotation[] = []
+
+    // check which items have been added or changed
+    for (const travelledAnno of timeTravelledAnnotations) {
+      const currentAnno = annotations.find(
+        (anno) => anno.internalId === travelledAnno.internalId,
+      )
+
+      if (!currentAnno) {
+        addedAnnotations.push(travelledAnno)
+      } else if (JSON.stringify(currentAnno) !== JSON.stringify(travelledAnno)) {
+        changedAnnotations.push(travelledAnno)
+      }
+    }
+
+    // check which items have been deleted
+    for (const anno of annotations) {
+      const travelledAnno = timeTravelledAnnotations.find(
+        (tAnno) => tAnno.internalId === anno.internalId,
+      )
+
+      if (!travelledAnno) {
+        removedAnnotations.push(anno)
+      }
+    }
+
+    return { addedAnnotations, removedAnnotations, changedAnnotations }
   }
 
   useEffect(() => {
@@ -257,6 +301,11 @@ const Sia = ({
     ]
 
     setAnnotations(selectedAnnotationsFromHistory)
+
+    const timeTravelInductedChanges: TimeTravelChanges = getTimeTravelInductedChanges(
+      selectedAnnotationsFromHistory,
+    )
+    onTimeTravel(timeTravelInductedChanges)
   }, [annotationHistoryIndex])
 
   useEffect(() => {

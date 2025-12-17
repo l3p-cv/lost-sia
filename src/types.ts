@@ -65,3 +65,9 @@ export type Vector2 = {
   x: number
   y: number
 }
+
+export type TimeTravelChanges = {
+  addedAnnotations: Annotation[]
+  removedAnnotations: Annotation[]
+  changedAnnotations: Annotation[]
+}
