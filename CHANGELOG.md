@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Changed
+- Your stuff here
+
+## [3.1.0] - 2025-12-17
+### Changed
 - Updated react to 19.2.1 (major update from v18)
 ### Added
 - Added time travel (undo + redo changes using ctrl +z/y)
