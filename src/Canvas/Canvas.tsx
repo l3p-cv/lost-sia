@@ -63,6 +63,7 @@ type CanvasProps = {
   onSetIsImageJunk: (newJunkState: boolean) => void
   onSetSelectedTool: (tool: AnnotationTool) => void
   onShouldDeleteAnno: (internalAnnoId: number) => void
+  onTraverseAnnotationHistory: (isUndo: boolean) => void
 }
 
 const Canvas = ({
@@ -92,6 +93,7 @@ const Canvas = ({
   onSetIsImageJunk,
   onSetSelectedTool = (_) => {},
   onShouldDeleteAnno,
+  onTraverseAnnotationHistory,
 }: CanvasProps) => {
   const [editorMode, setEditorMode] = useState<EditorModes>(EditorModes.VIEW)
   const [annoTimestamp, setAnnoTimestamp] = useState<number | undefined>()
@@ -360,10 +362,10 @@ const Canvas = ({
         console.log('KeyAction TODO: LEAVE_ANNO_ADD_MODE')
         break
       case KeyAction.UNDO:
-        console.log('KeyAction TODO: UNDO')
+        onTraverseAnnotationHistory(true)
         break
       case KeyAction.REDO:
-        console.log('KeyAction TODO: REDO')
+        onTraverseAnnotationHistory(false)
         break
       case KeyAction.TRAVERSE_ANNOS:
         traverseAnnos()

@@ -48,7 +48,9 @@ const AnnoBar = ({
   useEffect(() => {
     // get the most top left point from the annotation
     const topPoints: Point[] = transform.getTopPoint(annotationCoordinates)
-    const newTopLeftPoint: Point = transform.getMostLeftPoints(topPoints)[0]
+    const newTopLeftPoints: Point[] = transform.getMostLeftPoints(topPoints)
+    const newTopLeftPoint: Point =
+      newTopLeftPoints.length > 0 ? newTopLeftPoints[0] : { x: 0, y: 0 }
 
     setTopLeftPoint(newTopLeftPoint)
 

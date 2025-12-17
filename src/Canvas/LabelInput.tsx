@@ -67,7 +67,7 @@ const LabelInput = ({
       </CPopover>
 
       <CDropdown visible={isVisible} autoClose={false} style={{ marginTop: -25 }}>
-        {/* this invisible toggle has to be here, othervise the menu is not showing as intended */}
+        {/* this invisible toggle has to be here, otherwise the menu is not showing as intended */}
         <CDropdownToggle style={{ display: 'none' }} />
         <CDropdownMenu>
           <div className="px-3 py-2">
