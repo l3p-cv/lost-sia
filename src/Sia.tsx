@@ -557,6 +557,8 @@ const Sia = ({
                   }
                 }
               }
+              // mark annotation as fully created before storing it
+              changedAnno.status = AnnotationStatus.CREATED
 
               // are we just marking an existing annotation as finished or did we created it in the same frame
               if (hasAnnoJustBeenCreated) _annotations.push(changedAnno)
@@ -570,9 +572,6 @@ const Sia = ({
 
               setAnnotations(_annotations)
               updateAnnotationHistory(_annotations)
-
-              // mark annotation as fully created
-              changedAnno.status = AnnotationStatus.CREATED
 
               // inform the outer world about our changes
               onAnnoCreationFinished(changedAnno, _annotations)

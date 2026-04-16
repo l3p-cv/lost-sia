@@ -340,7 +340,24 @@ const Canvas = ({
   const handleKeyAction = (keyAction: KeyAction) => {
     switch (keyAction) {
       case KeyAction.EDIT_LABEL:
-        if (selectedAnnotation) setIsLabelInputVisible(true)
+        if (selectedAnnotation) {
+          // selectedAnnotation coordinates are in the percentaged system — convert to stage first
+          const stageCoords = transform.convertPercentagedCoordinatesToStage(
+            selectedAnnotation.coordinates,
+            imgSize,
+            stageSize,
+          )
+          const leftPoints: Point[] = transform.getMostLeftPoints(stageCoords)
+          const topLeftPoint: Point = transform.getTopPoint(leftPoints)[0]
+          const pageTopLeftPoint: Point = transform.convertStageToPage(
+            topLeftPoint,
+            pageToStageOffset,
+            svgScale,
+            svgTranslation,
+          )
+          setLabelInputPosition(pageTopLeftPoint)
+          setIsLabelInputVisible(true)
+        }
         break
       case KeyAction.DELETE_ANNO:
         if (selectedAnnotation) onShouldDeleteAnno(selectedAnnotation.internalId)
@@ -921,22 +938,20 @@ const Canvas = ({
               }
             }
 
+            // Look up the current annotation from scaledAnnotations
+            const currentScaled = scaledAnnotations.find(
+              (a) => a.internalId === selectedAnnotation.internalId,
+            )
+
             // change the status to CHANGED when the annotation was loaded (initialAnnotations)
             const newAnnotationStatus: AnnotationStatus =
-              selectedAnnotation.status === AnnotationStatus.LOADED
+              currentScaled.status === AnnotationStatus.LOADED
                 ? AnnotationStatus.CHANGED
-                : selectedAnnotation.status
+                : currentScaled.status
 
-            // selectedAnnotation comes from SIA and is therefore in the percentaged system
-            // convert it first
-            // also update the new labels
             const updatedAnno: Annotation = {
               ...selectedAnnotation,
-              coordinates: transform.convertPercentagedCoordinatesToStage(
-                selectedAnnotation.coordinates,
-                imgSize,
-                stageSize,
-              ),
+              coordinates: currentScaled.coordinates,
               labelIds: [...selectedLabelIds],
               status: newAnnotationStatus,
             }
