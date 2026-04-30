@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Changed
 - Your stuff here
-### Fix
+### Fixed
 - Fixed not saving labels when pressing enter directly after finishing poly-annotation
 
 ## [3.1.0] - 2025-12-17

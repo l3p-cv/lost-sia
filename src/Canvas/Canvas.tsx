@@ -337,6 +337,15 @@ const Canvas = ({
     onSelectAnnotation(annotationToPaste)
   }
 
+  /** Returns the page-space position of an annotation's top-left corner.
+   * @param stageCoords - annotation coordinates already in stage (pixel) space
+   */
+  const getAnnoTopLeftPagePosition = (stageCoords: Point[]): Point => {
+    const leftPoints: Point[] = transform.getMostLeftPoints(stageCoords)
+    const topLeftPoint: Point = transform.getTopPoint(leftPoints)[0]
+    return transform.convertStageToPage(topLeftPoint, pageToStageOffset, svgScale, svgTranslation)
+  }
+
   const handleKeyAction = (keyAction: KeyAction) => {
     switch (keyAction) {
       case KeyAction.EDIT_LABEL:
@@ -347,15 +356,7 @@ const Canvas = ({
             imgSize,
             stageSize,
           )
-          const leftPoints: Point[] = transform.getMostLeftPoints(stageCoords)
-          const topLeftPoint: Point = transform.getTopPoint(leftPoints)[0]
-          const pageTopLeftPoint: Point = transform.convertStageToPage(
-            topLeftPoint,
-            pageToStageOffset,
-            svgScale,
-            svgTranslation,
-          )
-          setLabelInputPosition(pageTopLeftPoint)
+          setLabelInputPosition(getAnnoTopLeftPagePosition(stageCoords))
           setIsLabelInputVisible(true)
         }
         break
@@ -760,16 +761,7 @@ const Canvas = ({
     onSelectAnnotation(percentagedAnnotation)
 
     // get top left point of annotation
-    const leftPoints: Point[] = transform.getMostLeftPoints(annotation.coordinates)
-    const topLeftPoint: Point = transform.getTopPoint(leftPoints)[0]
-    const pageTopLeftPoint: Point = transform.convertStageToPage(
-      topLeftPoint,
-      pageToStageOffset,
-      svgScale,
-      svgTranslation,
-    )
-
-    setLabelInputPosition(pageTopLeftPoint)
+    setLabelInputPosition(getAnnoTopLeftPagePosition(annotation.coordinates))
   }
 
   const handleOnAnnoChanged = (annotation: Annotation) => {
@@ -942,6 +934,7 @@ const Canvas = ({
             const currentScaled = scaledAnnotations.find(
               (a) => a.internalId === selectedAnnotation.internalId,
             )
+            if (!currentScaled) return
 
             // change the status to CHANGED when the annotation was loaded (initialAnnotations)
             const newAnnotationStatus: AnnotationStatus =
