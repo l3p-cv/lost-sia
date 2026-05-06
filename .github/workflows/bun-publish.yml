@@ -8,7 +8,7 @@ on:
     types: [created]
 
 permissions:
-  id-token: write  # Required for OIDC
+  id-token: write # Required for OIDC
   contents: read
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
-          package-manager-cache: false  # never use caching in release builds
+          package-manager-cache: false # never use caching in release builds
       - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
         with:
           bun-version: latest
@@ -45,6 +45,4 @@ jobs:
           tag: ${{ github.event.release.tag_name }}
       - run: bun install --frozen-lockfile
       - run: bun run build
-      - run: bun publish
-        env:
-          NPM_CONFIG_TOKEN: ${{secrets.npm_token}}
+      - run: npm publish
