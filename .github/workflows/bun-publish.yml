@@ -45,4 +45,13 @@ jobs:
           tag: ${{ github.event.release.tag_name }}
       - run: bun install --frozen-lockfile
       - run: bun run build
-      - run: npm publish
+      - name: Publish to npm
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          if echo "$VERSION" | grep -q '-'; then
+            DIST_TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+          else
+            DIST_TAG="latest"
+          fi
+          npm publish --tag "$DIST_TAG"
