@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased] - 
+## [unreleased]
 ### Changed
 - Your stuff here
+### Fixed
+### Added
+
+## [3.1.1] - 2026-05-06
 ### Fixed
 - Fixed not saving labels when pressing enter directly after finishing poly-annotation
 
@@ -21,31 +25,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete rework of LOST-SIA
 - The props for the SIA component to the outside worls have changed completely.
 
-## [2.0.0] - 2025-07-02 
+## [2.0.0] - 2025-07-02
 ### Changed
 - Order of buttons in ToolBar: Move setting and filter btn up
 - Added notification that redo/undo is currently not supported
-### Added 
+### Added
 - imgActions poperty that will record all actions a user performs during the annotation process
 - Set up prettier and formatted all files
 - Added properties `isStaticPosition` and `fixedImageSize` to Sia
 - Added additional Exports so lost-sia provides all necessary Exports to be usable in LOST
 - Be able to remove a specific node of a polygon/ line by pressing ctrl + leftclick on the node to remove
 - Added fetatures for SAM (Segment Anything) proposals -> Be able to define areas of interest boxes/ points for SAM
-### Removed 
+### Removed
 - autoSave Feature since it caused a lot of runtime errors and instability
 ### Breaking Changes
-- onAnnoSaveEvent and annoSaveResponse for instant annotation update in backend -> will also change some internal behaviour 
+- onAnnoSaveEvent and annoSaveResponse for instant annotation update in backend -> will also change some internal behaviour
 
 ## [1.3.0] - 2022-05-13
 ### Added
 - Added fullscreen prop
-### Fixed 
+### Fixed
 - Sia: Do not crash when no annos prop is provided
 
 ## [1.2.0] - 2022-05-12
 ### Added
-- Added preventScrolling prop onMouseEnter in canvas 
+- Added preventScrolling prop onMouseEnter in canvas
 
 ## [1.1.3] - 2022-05-12
 ### Changed
@@ -76,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved internal uiConfig handling
 
 ## [1.0.1] - 2022-05-06
-### Fixed 
+### Fixed
 - Export of Sia and other components
 
 ## [1.0.0] - 2022-05-06
@@ -91,7 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking Change
 - Restructured props and event handling for canvas and toolbar
 - Created new Sia component
-### Fixed 
+### Fixed
   - Fixed correctAnnotation method to work correctly in maxCanvas mode
   - Will prevent annotations from being created outside of the image
 
@@ -99,16 +103,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Delete annotation in creation mode when hitting *Escape*-Key
 - Show img description in ImgBar if available
-- Max canvas size mode. Where canvas takes the maximum container size and is not 
+- Max canvas size mode. Where canvas takes the maximum container size and is not
   image oriented as before. Add prop *maxCanvas={true}* to canvas in order to enable.
 ### Changed
-- Be able to deal with mixed color possible labels -> where a part of labels 
+- Be able to deal with mixed color possible labels -> where a part of labels
   will have a specified color and the other part has no provided color
 
 ## [0.8.0] - 2021-10-14
 ### Added
 - Added lockedAnnos prop for Canvas in order to lock annos by id. Locked annos
-  can not be edited 
+  can not be edited
 
 ## [0.7.0] - 2021-10-13
 ### Added
@@ -134,7 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.1] - 2020-12-16
 ### Changed
-- Do not unload image when props.annos change 
+- Do not unload image when props.annos change
 
 ## [0.4.0] - 2020-12-16
 ### Added
@@ -143,8 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2020-12-11
 ### Added
-- Frontend annotation time measurement 
-  * Annotation time is now measured in frontend, based on user events. For each annotation individual user interaction time is measured. 
+- Frontend annotation time measurement
+  * Annotation time is now measured in frontend, based on user events. For each annotation individual user interaction time is measured.
 - Delete last node of polygon/ line when hitting delete key in create mode
 - Added copy & paste for annotations
 - Added prop to block canvas
@@ -156,13 +160,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.2] - 2020-08-06
 ### Fixed
 - Do not clutter background through sia css file, when importing sia canvas component
-  
+
 ## [0.2.1] - 2020-06-20
 ### Fixed
 - Fixed multiple image load events for the same image, that lead to wrong svg sizes
 
 ## [0.2.0] - 2020-06-05
-### Fixed 
+### Fixed
 - Added camera move on wasd keys
 - Provide canvas key events via prop callback
 ### Changed
@@ -171,20 +175,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.2] - 2020-04-06
 ### Removed
 - Removed most sia logs that clutter the console
-  
+
 ## [0.1.1] - 2020-04-06
 ### Fixed
 - Fixed undefined possible labels in canvas
-   
+
 ## [0.1.0] - 2020-04-06
 ### Added
 - Always reset annotation mode to *view* when getAnnoBackendFormat is called
 - Delete annotation in sia canvas correctly, when they are moved out of the image.
 - Prevent user from moving image out of canvas
 - Confirm label in LabelInput by click on the respective label
-- Configure name of the default Label by a prop 
+- Configure name of the default Label by a prop
 - Provide method to reset canvas zoom
-- It is now possible to define custom label colors via canvas *possibleLabels* props 
+- It is now possible to define custom label colors via canvas *possibleLabels* props
 
 ### Fixed
 - Fixed jumping camera when zooming into the image
@@ -195,8 +199,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed crash on changing image when label input is active.
 
 ## [0.0.1] - 2020-04-01
-### Fixed 
+### Fixed
 - Fixed all annotations lost bug. (see also https://github.com/l3p-cv/lost/issues/51)
   * When a new annotation was created and deleted before a backend update was performed, SIA sent this annotation to backend for an db update
   * The backend then tried to update a db record that did not exists which caused an exception.
-  * The result was that all annotation where lost 
+  * The result was that all annotation where lost
