@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ## [3.1.1] - 2026-05-06
+### Changed
+- updated ci deployment to use node 24 and npm with OIDC auth for publishing
 ### Fixed
 - Fixed not saving labels when pressing enter directly after finishing poly-annotation
 
