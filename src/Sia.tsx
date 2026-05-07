@@ -498,83 +498,89 @@ const Sia = ({
             possibleLabels={possibleLabels}
             uiConfig={uiConfig}
             onAnnoCreated={(annotation: Annotation) => {
-              const _annotations: Annotation[] = [...annotations]
-              _annotations.push(annotation)
-              setAnnotations(_annotations)
+              setAnnotations((prev) => {
+                const _annotations = [...prev, annotation]
+                onAnnoCreated(annotation, _annotations)
+                return _annotations
+              })
               setSelectedAnnotation(annotation)
-              onAnnoCreated(annotation, _annotations)
               // dont update history here - we dont have a finished anno at this point
             }}
             onAnnoChanged={(changedAnno: Annotation) => {
-              // update annotation list
-              const annoListIndex: number = annotations.findIndex(
-                (anno) => anno.internalId === changedAnno.internalId,
-              )
+              setAnnotations((prev) => {
+                // update annotation list
+                const annoListIndex: number = prev.findIndex(
+                  (anno) => anno.internalId === changedAnno.internalId,
+                )
 
-              // only fire event if item found
-              if (annoListIndex === -1) return
+                // only fire event if item found
+                if (annoListIndex === -1) return prev
 
-              const _annotations: Annotation[] = [...annotations]
-              _annotations[annoListIndex] = changedAnno
-              setAnnotations(_annotations)
+                const _annotations: Annotation[] = [...prev]
+                _annotations[annoListIndex] = changedAnno
 
-              // only update history for full/finished annotations
-              if (changedAnno.status !== AnnotationStatus.CREATING) {
-                updateAnnotationHistory(_annotations)
-              }
+                // only update history for full/finished annotations
+                if (changedAnno.status !== AnnotationStatus.CREATING) {
+                  updateAnnotationHistory(_annotations)
+                }
 
-              // inform the outside world about our change
-              onAnnoChanged(changedAnno, _annotations)
+                // inform the outside world about our change
+                onAnnoChanged(changedAnno, _annotations)
+
+                return _annotations
+              })
             }}
             onAnnoCreationFinished={(
               changedAnno: Annotation,
               hasAnnoJustBeenCreated: boolean,
             ) => {
-              // update annotation list
-              const _annotations: Annotation[] = [...annotations]
+              setAnnotations((prev) => {
+                // update annotation list
+                const _annotations: Annotation[] = [...prev]
 
-              // remove the previous annotations we used to do the operation with
-              if (isPolygonSelectionMode) {
-                if (polygonOperationResult?.annotationsToDelete !== undefined) {
-                  // we also want to remove the current selected annotation
-                  polygonOperationResult.annotationsToDelete.push(selectedAnnotation)
+                // remove the previous annotations we used to do the operation with
+                if (isPolygonSelectionMode) {
+                  if (polygonOperationResult?.annotationsToDelete !== undefined) {
+                    // we also want to remove the current selected annotation
+                    polygonOperationResult.annotationsToDelete.push(selectedAnnotation)
 
-                  for (const annotation of polygonOperationResult.annotationsToDelete) {
-                    // polygonOperationResult.annotationsToDelete.forEach((annotation) => {
-                    // remove annotations "the official way" (inform the server what we did)
-                    deleteAnnotationByInternalId(annotation.internalId)
+                    for (const annotation of polygonOperationResult.annotationsToDelete) {
+                      // remove annotations "the official way" (inform the server what we did)
+                      deleteAnnotationByInternalId(annotation.internalId)
 
-                    // since we are updating the annotations list after all the deletions again, their disappearance wouldn't be noticed
-                    // therefore also manually remove the annotations here
+                      // since we are updating the annotations list after all the deletions again, their disappearance wouldn't be noticed
+                      // therefore also manually remove the annotations here
 
-                    // get index of selected annotation
-                    const annoListIndex: number = _annotations.findIndex(
-                      (anno) => anno.internalId === annotation.internalId,
-                    )
+                      // get index of selected annotation
+                      const annoListIndex: number = _annotations.findIndex(
+                        (anno) => anno.internalId === annotation.internalId,
+                      )
 
-                    // remove annotation from object
-                    _annotations.splice(annoListIndex, 1)
+                      // remove annotation from object
+                      _annotations.splice(annoListIndex, 1)
+                    }
                   }
                 }
-              }
-              // mark annotation as fully created before storing it
-              changedAnno.status = AnnotationStatus.CREATED
+                // mark annotation as fully created before storing it
+                changedAnno.status = AnnotationStatus.CREATED
 
-              // are we just marking an existing annotation as finished or did we created it in the same frame
-              if (hasAnnoJustBeenCreated) _annotations.push(changedAnno)
-              else {
-                // all other annotation types
-                const annoListIndex: number = annotations.findIndex(
-                  (anno) => anno.internalId === changedAnno.internalId,
-                )
-                _annotations[annoListIndex] = changedAnno
-              }
+                // are we just marking an existing annotation as finished or did we created it in the same frame
+                if (hasAnnoJustBeenCreated) _annotations.push(changedAnno)
+                else {
+                  // all other annotation types
+                  const annoListIndex: number = prev.findIndex(
+                    (anno) => anno.internalId === changedAnno.internalId,
+                  )
+                  _annotations[annoListIndex] = changedAnno
+                }
 
-              setAnnotations(_annotations)
-              updateAnnotationHistory(_annotations)
+                updateAnnotationHistory(_annotations)
 
-              // inform the outer world about our changes
-              onAnnoCreationFinished(changedAnno, _annotations)
+                // inform the outer world about our changes
+                onAnnoCreationFinished(changedAnno, _annotations)
+
+                return _annotations
+              })
             }}
             onAnnoEditing={handleAnnoEditing}
             onSetIsImageJunk={handleImageJunk}

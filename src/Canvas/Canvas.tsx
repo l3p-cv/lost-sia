@@ -916,8 +916,10 @@ const Canvas = ({
           possibleLabels={possibleLabels}
           isMultilabel={annotationSettings.canHaveMultipleLabels}
           onLabelSelect={(selectedLabelIds: number[]) => {
-            // close the input popup
-            setIsLabelInputVisible(false)
+            // close the input popup after the current event finishes,
+            // so the invisible selection circle stays in place long enough
+            // to block the label-click from falling through to SVG annotations
+            setTimeout(() => setIsLabelInputVisible(false), 0)
 
             // inform parent which label was chosen
             if (selectedLabelIds.length > 0) {

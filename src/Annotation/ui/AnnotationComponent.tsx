@@ -52,7 +52,7 @@ const AnnotationComponent = ({
   const [coordinates, setCoordinates] = useState<Point[]>(scaledAnnotation.coordinates)
 
   const [annotationMode, setAnnotationMode] = useState<AnnotationMode>(
-    scaledAnnotation.mode,
+    isSelected ? scaledAnnotation.mode : AnnotationMode.VIEW,
   )
   const [isDragging, setIsDragging] = useState<boolean>(false)
 
