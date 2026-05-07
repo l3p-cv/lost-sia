@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 ### Changed
-- Your stuff here
 ### Fixed
+- No longer selects and duplicates other polygons, when selecting labels with "enter" right after annotating 
 ### Added
 
 ## [3.1.1] - 2026-05-06
