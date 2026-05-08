@@ -524,11 +524,12 @@ const Sia = ({
                   updateAnnotationHistory(_annotations)
                 }
 
-                // inform the outside world about our change
-                onAnnoChanged(changedAnno, _annotations)
-
                 return _annotations
               })
+
+              // inform the outside world about our change
+              // (kept outside the updater — side effects must not run inside setState)
+              onAnnoChanged(changedAnno)
             }}
             onAnnoCreationFinished={(
               changedAnno: Annotation,
@@ -576,11 +577,12 @@ const Sia = ({
 
                 updateAnnotationHistory(_annotations)
 
-                // inform the outer world about our changes
-                onAnnoCreationFinished(changedAnno, _annotations)
-
                 return _annotations
               })
+
+              // inform the outer world about our changes
+              // (kept outside the updater — side effects must not run inside setState)
+              onAnnoCreationFinished(changedAnno)
             }}
             onAnnoEditing={handleAnnoEditing}
             onSetIsImageJunk={handleImageJunk}
