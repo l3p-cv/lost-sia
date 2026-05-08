@@ -33,8 +33,8 @@ type SiaProps = {
   possibleLabels: Label[]
   uiConfig?: UiConfig
   onAnnoCreated?: (createdAnno: Annotation, allAnnos: Annotation[]) => void
-  onAnnoCreationFinished?: (createdAnno: Annotation, allAnnos: Annotation[]) => void
-  onAnnoChanged?: (changedAnno: Annotation, allAnnos: Annotation[]) => void
+  onAnnoCreationFinished?: (createdAnno: Annotation) => void
+  onAnnoChanged?: (changedAnno: Annotation) => void
   onAnnoDeleted?: (deletedAnno: Annotation, allAnnos: Annotation[]) => void
   onImageLabelsChanged?: (selectedImageIds: number[]) => void
   onIsImageJunk?: (isJunk: boolean) => void
@@ -62,8 +62,8 @@ const Sia = ({
   initialIsImageJunk = false,
   possibleLabels,
   onAnnoCreated = (_, __) => {},
-  onAnnoCreationFinished = (_, __) => {},
-  onAnnoChanged = (_, __) => {},
+  onAnnoCreationFinished = (_) => {},
+  onAnnoChanged = (_) => {},
   onAnnoDeleted = (_, __) => {},
   onImageLabelsChanged = () => {},
   onIsImageJunk = () => {},
@@ -535,6 +535,10 @@ const Sia = ({
               changedAnno: Annotation,
               hasAnnoJustBeenCreated: boolean,
             ) => {
+              const finishedAnno: Annotation = {
+                ...changedAnno,
+                status: AnnotationStatus.CREATED, // copy and mark annotation as fully created
+              }
               setAnnotations((prev) => {
                 // update annotation list
                 const _annotations: Annotation[] = [...prev]
@@ -562,17 +566,13 @@ const Sia = ({
                     }
                   }
                 }
-                // mark annotation as fully created before storing it
-                changedAnno.status = AnnotationStatus.CREATED
 
-                // are we just marking an existing annotation as finished or did we created it in the same frame
-                if (hasAnnoJustBeenCreated) _annotations.push(changedAnno)
+                if (hasAnnoJustBeenCreated) _annotations.push(finishedAnno)
                 else {
-                  // all other annotation types
                   const annoListIndex: number = prev.findIndex(
-                    (anno) => anno.internalId === changedAnno.internalId,
+                    (anno) => anno.internalId === finishedAnno.internalId,
                   )
-                  _annotations[annoListIndex] = changedAnno
+                  _annotations[annoListIndex] = finishedAnno
                 }
 
                 updateAnnotationHistory(_annotations)
@@ -580,9 +580,9 @@ const Sia = ({
                 return _annotations
               })
 
-              // inform the outer world about our changes
+              // inform the outer world about changes
               // (kept outside the updater — side effects must not run inside setState)
-              onAnnoCreationFinished(changedAnno)
+              onAnnoCreationFinished(finishedAnno)
             }}
             onAnnoEditing={handleAnnoEditing}
             onSetIsImageJunk={handleImageJunk}

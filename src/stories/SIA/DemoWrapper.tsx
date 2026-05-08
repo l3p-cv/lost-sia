@@ -36,10 +36,10 @@ const DemoWrapper = ({
       onAnnoCreated={(anno: Annotation, _: Annotation[]) => {
         console.log('CREATED', anno)
       }}
-      onAnnoCreationFinished={(anno: Annotation, _: Annotation[]) => {
+      onAnnoCreationFinished={(anno: Annotation) => {
         console.log('FINISHED CREATION', anno)
       }}
-      onAnnoChanged={(anno: Annotation, _: Annotation[]) => {
+      onAnnoChanged={(anno: Annotation) => {
         console.log('CHANGED', anno)
       }}
       onAnnoDeleted={(anno: Annotation, annos: Annotation[]) => {
