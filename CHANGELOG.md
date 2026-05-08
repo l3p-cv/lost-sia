@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 ### Changed
 - Cleaned up unused allAnnos argument of onAnnoChanged and OnAnnoCreationFinished in Sia component
+- Restructure annotation deletion for PolygonEditButtons, to make the tools more stable
 ### Fixed
-- No longer selects and duplicates other polygons, when selecting labels with "enter" right after annotating 
+- No longer selects and duplicates other polygons, when selecting labels with "enter" right after annotating
 
 ## [3.1.1] - 2026-05-06
 ### Changed

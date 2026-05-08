@@ -35,7 +35,7 @@ type SiaProps = {
   onAnnoCreated?: (createdAnno: Annotation, allAnnos: Annotation[]) => void
   onAnnoCreationFinished?: (createdAnno: Annotation) => void
   onAnnoChanged?: (changedAnno: Annotation) => void
-  onAnnoDeleted?: (deletedAnno: Annotation, allAnnos: Annotation[]) => void
+  onAnnoDeleted?: (deletedAnno: Annotation, allAnnos?: Annotation[]) => void
   onImageLabelsChanged?: (selectedImageIds: number[]) => void
   onIsImageJunk?: (isJunk: boolean) => void
   onNotification?: (notification: SIANotification) => void
@@ -539,32 +539,28 @@ const Sia = ({
                 ...changedAnno,
                 status: AnnotationStatus.CREATED, // copy and mark annotation as fully created
               }
+
+              // Collect annotations to delete before entering the updater.
+              // build a fresh array so we never mutate the prop from SiaWrapper.
+              const annosToDelete: Annotation[] =
+                isPolygonSelectionMode &&
+                polygonOperationResult?.annotationsToDelete !== undefined
+                  ? [
+                      ...polygonOperationResult.annotationsToDelete,
+                      ...(selectedAnnotation !== undefined ? [selectedAnnotation] : []),
+                    ]
+                  : []
+
               setAnnotations((prev) => {
                 // update annotation list
                 const _annotations: Annotation[] = [...prev]
 
-                // remove the previous annotations we used to do the operation with
-                if (isPolygonSelectionMode) {
-                  if (polygonOperationResult?.annotationsToDelete !== undefined) {
-                    // we also want to remove the current selected annotation
-                    polygonOperationResult.annotationsToDelete.push(selectedAnnotation)
-
-                    for (const annotation of polygonOperationResult.annotationsToDelete) {
-                      // remove annotations "the official way" (inform the server what we did)
-                      deleteAnnotationByInternalId(annotation.internalId)
-
-                      // since we are updating the annotations list after all the deletions again, their disappearance wouldn't be noticed
-                      // therefore also manually remove the annotations here
-
-                      // get index of selected annotation
-                      const annoListIndex: number = _annotations.findIndex(
-                        (anno) => anno.internalId === annotation.internalId,
-                      )
-
-                      // remove annotation from object
-                      _annotations.splice(annoListIndex, 1)
-                    }
-                  }
+                // remove the source annotations that were consumed by the polygon operation
+                for (const annotation of annosToDelete) {
+                  const annoListIndex: number = _annotations.findIndex(
+                    (anno) => anno.internalId === annotation.internalId,
+                  )
+                  if (annoListIndex !== -1) _annotations.splice(annoListIndex, 1)
                 }
 
                 if (hasAnnoJustBeenCreated) _annotations.push(finishedAnno)
@@ -580,8 +576,12 @@ const Sia = ({
                 return _annotations
               })
 
-              // inform the outer world about changes
-              // (kept outside the updater — side effects must not run inside setState)
+              // Notify the server about the deletions (outside of the updater/setState!!!)
+              for (const annotation of annosToDelete) {
+                onAnnoDeleted(annotation)
+              }
+
+              // inform the outer world about the new annotation (also outside of the updater/setState!!!)
               onAnnoCreationFinished(finishedAnno)
             }}
             onAnnoEditing={handleAnnoEditing}
