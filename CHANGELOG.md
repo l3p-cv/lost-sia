@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 ### Changed
+### Fixed
+
+## [3.1.2] - 2026-05-11
+### Changed
 - Cleaned up unused allAnnos argument of onAnnoChanged and OnAnnoCreationFinished in Sia component
 - Restructure annotation deletion for PolygonEditButtons, to make the tools more stable
 ### Fixed
