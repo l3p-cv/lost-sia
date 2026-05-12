@@ -501,6 +501,9 @@ const Canvas = ({
 
   // image changed after init -> reset everything
   useEffect(() => {
+    // always clear stale sizing state when the image changes
+    resetCanvas()
+
     if (canvasRef?.current !== undefined) {
       const { width, height } = canvasRef.current!.getBoundingClientRect()
 
@@ -522,13 +525,11 @@ const Canvas = ({
       // cleanup
       return () => resizeObserver.disconnect()
     }
-
-    resetCanvas()
   }, [image, isFullscreen])
 
   useEffect(() => {
     calculatePageToCanvasOffset()
-  }, [imageRef, svgTranslation, canvasSize])
+  }, [canvasSize])
 
   // notify component about available size
   useEffect(() => {
@@ -543,23 +544,14 @@ const Canvas = ({
   }, [canvasRef])
 
   // notify component about default image size
+  // read rendered size when image or canvas size changes — no ResizeObserver needed here
+  // since canvasRef's ResizeObserver already handles container resize events and updates canvasSize
   useEffect(() => {
     if (imageRef.current === null) return
 
     const { width, height } = imageRef.current.getBoundingClientRect()
-
     setImgSize({ x: width, y: height })
-
-    // listen for size changes on div element
-    const imgResizeObserver = new ResizeObserver(() => {
-      const { width, height } = imageRef.current!.getBoundingClientRect()
-
-      setImgSize({ x: width, y: height })
-    })
-    imgResizeObserver.observe(imageRef.current)
-
-    return () => imgResizeObserver.disconnect()
-  }, [imageRef])
+  }, [image, canvasSize])
 
   useEffect(() => {
     if (imageToStageFactor === 0) return

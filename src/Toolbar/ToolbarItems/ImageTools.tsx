@@ -28,10 +28,10 @@ const ImageTools = ({
 }: ImageToolsProps) => {
   const [isLabelPopupVisible, setIsLabelPopupVisible] = useState<boolean>(false)
 
-  // close modal when the fullscreen state changes
+  // close modal when the fullscreen state or image changes
   useEffect(() => {
     setIsLabelPopupVisible(false)
-  }, [isFullscreen])
+  }, [isFullscreen, imageLabelIds])
 
   return (
     <CButtonGroup role="group" aria-label="Image Tools">
