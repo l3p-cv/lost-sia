@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 ### Changed
 ### Fixed
+- Canvas.tsx changed removed imageref for resseting size of image constantly on image size change
+- Fixed issue of the dropdown for 'Add label' in sia annotation toolbar not closing - changes made in ImageLabelInput.tsx and ImageTools.tsx
 
 ## [3.1.2] - 2026-05-11
 ### Changed
