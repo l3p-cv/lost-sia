@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Canvas.tsx changed removed imageref for resseting size of image constantly on image size change
 - Fixed issue of the dropdown for 'Add label' in sia annotation toolbar not closing - changes made in ImageLabelInput.tsx and ImageTools.tsx
-
+- Fixed Search Annotation appearing in background when in fullscreen during Annotation Review by removing customPopoverStyle zIndex: 7000 in ImageFilterButton.tsx(lost) and reducing zIndex for fullscreenStyle in Sia.tsx to 1040.
 ## [3.1.2] - 2026-05-11
 ### Changed
 - Cleaned up unused allAnnos argument of onAnnoChanged and OnAnnoCreationFinished in Sia component
