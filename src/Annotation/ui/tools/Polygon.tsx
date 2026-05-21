@@ -71,6 +71,17 @@ const Polygon = ({
   const onMouseDown = (e: MouseEvent) => {
     if (annotationSettings.canEdit === false) return
 
+    // prevent middle-click from bubbling to the canvas during annotation creation
+    // also prevent default browser behavior (auto-scroll / paste on Linux)
+    if (
+      e.button === 1 &&
+      [AnnotationMode.CREATE, AnnotationMode.ADD].includes(annotationMode)
+    ) {
+      e.preventDefault()
+      e.stopPropagation()
+      return
+    }
+
     if (
       isSelected &&
       annotationMode !== AnnotationMode.CREATE &&

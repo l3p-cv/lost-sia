@@ -641,7 +641,11 @@ const Canvas = ({
     if (e.button === 0) {
       // left click
     } else if (e.button === 1) {
-      // click on mouse wheel
+      // click on mouse wheel - ignore during annotation creation to prevent abandoning in-progress annotations
+      if (editorMode === EditorModes.CREATE || editorMode === EditorModes.ADD) {
+        e.preventDefault()
+        return
+      }
       setEditorMode(EditorModes.CAMERA_MOVE)
     } else if (e.button === 2) {
       // check if annotation creation allowed in settings
@@ -678,7 +682,7 @@ const Canvas = ({
   }
 
   const onMouseUp = (e) => {
-    if (e.button === 1) {
+    if (e.button === 1 && editorMode === EditorModes.CAMERA_MOVE) {
       setEditorMode(EditorModes.VIEW)
     }
   }
