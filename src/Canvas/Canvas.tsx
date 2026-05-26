@@ -584,6 +584,10 @@ const Canvas = ({
           AnnotationStatus.CREATED,
         )
 
+        if (polygonToCreate.labelIds !== undefined) {
+          newAnnotation.labelIds = polygonToCreate.labelIds
+        }
+
         onFinishCreateAnno(newAnnotation)
       },
     )

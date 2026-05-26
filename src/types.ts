@@ -53,6 +53,7 @@ export type SIANotification = {
 export type ToolCoordinates = {
   coordinates: Point[]
   type: AnnotationTool
+  labelIds?: number[]
 }
 
 export type UiConfig = {
