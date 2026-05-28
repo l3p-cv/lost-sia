@@ -17,7 +17,7 @@ import TagLabel from './TagLabel'
 type ImageLabelInputProps = {
   isDisabled: boolean
   isVisible: boolean
-  selectedLabelsIds: number[]
+  selectedLabelsIds: number[] | undefined
   possibleLabels: Label[]
   isMultilabel?: boolean
   onLabelSelect: (selectedLabelIds: number[]) => void

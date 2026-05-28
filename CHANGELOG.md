@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed issue of the dropdown for 'Add label' in sia annotation toolbar not closing - changes made in ImageLabelInput.tsx and ImageTools.tsx
 - Fixed Search Annotation appearing in background when in fullscreen during Annotation Review by removing customPopoverStyle zIndex: 7000 in ImageFilterButton.tsx(lost) and reducing zIndex for fullscreenStyle in Sia.tsx to 1040.
 - Canvas.tsx, Line.tsx, Polygon.tsx: added middle-click guards and refined handling to prevent broken clicks after middle-click during annotation creation
+- Canvas.tsx: moved resetCanvas() inside canvasRef guard to prevent imgSize being stuck at {x:-1, y:-1} when canvasRef is not yet attached
+- Canvas.tsx: added window-level mouseup listener to reset CAMERA_MOVE mode when middle-mouse is released outside the SVG boundary
+- Canvas.tsx: added imgSize and uiConfig to calculatePageToCanvasOffset effect dependencies to prevent stale centering offset
+- ImageLabelInput.tsx: corrected selectedLabelsIds prop type from number[] to number[] | undefined to match actual runtime nullability
+- ImageTools.tsx: removed imageLabelIds from useEffect deps to prevent multi-label dropdown closing after every label click
+
 ### Added
 - types.ts, Canvas.tsx: Added optional labelIds to ToolCoordinates for polygon operation results.
 ## [3.1.2] - 2026-05-11

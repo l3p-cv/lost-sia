@@ -28,10 +28,12 @@ const ImageTools = ({
 }: ImageToolsProps) => {
   const [isLabelPopupVisible, setIsLabelPopupVisible] = useState<boolean>(false)
 
-  // close modal when the fullscreen state or image changes
+  // close modal when the fullscreen state changes
+  // NOTE: imageLabelIds intentionally excluded — adding it would close the dropdown on every
+  // label click in multi-label mode, before the user finishes selecting labels.
   useEffect(() => {
     setIsLabelPopupVisible(false)
-  }, [isFullscreen, imageLabelIds])
+  }, [isFullscreen])
 
   return (
     <CButtonGroup role="group" aria-label="Image Tools">

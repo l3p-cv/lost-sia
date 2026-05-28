@@ -343,7 +343,12 @@ const Canvas = ({
   const getAnnoTopLeftPagePosition = (stageCoords: Point[]): Point => {
     const leftPoints: Point[] = transform.getMostLeftPoints(stageCoords)
     const topLeftPoint: Point = transform.getTopPoint(leftPoints)[0]
-    return transform.convertStageToPage(topLeftPoint, pageToStageOffset, svgScale, svgTranslation)
+    return transform.convertStageToPage(
+      topLeftPoint,
+      pageToStageOffset,
+      svgScale,
+      svgTranslation,
+    )
   }
 
   const handleKeyAction = (keyAction: KeyAction) => {
@@ -499,12 +504,24 @@ const Canvas = ({
     svgRef.current?.focus()
   }, [])
 
+  // reset CAMERA_MOVE mode on middle-mouse release, even if it happens outside the SVG boundary
+  useEffect(() => {
+    const handleWindowMouseUp = (e: MouseEvent) => {
+      if (e.button === 1 && editorMode === EditorModes.CAMERA_MOVE) {
+        setEditorMode(EditorModes.VIEW)
+      }
+    }
+    window.addEventListener('mouseup', handleWindowMouseUp)
+    return () => window.removeEventListener('mouseup', handleWindowMouseUp)
+  }, [editorMode])
+
   // image changed after init -> reset everything
   useEffect(() => {
-    // always clear stale sizing state when the image changes
-    resetCanvas()
-
     if (canvasRef?.current !== undefined) {
+      // clear stale sizing state only when the canvas ref is ready, to avoid
+      // leaving imgSize stuck at {x:-1, y:-1} on the early-exit path
+      resetCanvas()
+
       const { width, height } = canvasRef.current!.getBoundingClientRect()
 
       // for whatever reason the ref adds the toolbars height to the available space, leading to a container size reaching outside the bottom
@@ -529,7 +546,9 @@ const Canvas = ({
 
   useEffect(() => {
     calculatePageToCanvasOffset()
-  }, [canvasSize])
+    // imgSize and uiConfig are read inside calculatePageToCanvasOffset for the imageCentered path;
+    // include them to avoid a stale closure when imgSize changes without canvasSize changing.
+  }, [canvasSize, imgSize, uiConfig])
 
   // notify component about available size
   useEffect(() => {
