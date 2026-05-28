@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Canvas.tsx: added imgSize and uiConfig to calculatePageToCanvasOffset effect dependencies to prevent stale centering offset
 - ImageLabelInput.tsx: corrected selectedLabelsIds prop type from number[] to number[] | undefined to match actual runtime nullability
 - ImageTools.tsx: removed imageLabelIds from useEffect deps to prevent multi-label dropdown closing after every label click
+- Sia.tsx: fixed duplicate internalId bug causing newly created annotations to survive deletion on first attempt
 
 ### Added
 - types.ts, Canvas.tsx: Added optional labelIds to ToolCoordinates for polygon operation results.
