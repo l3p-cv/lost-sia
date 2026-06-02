@@ -17,7 +17,7 @@ import TagLabel from './TagLabel'
 type ImageLabelInputProps = {
   isDisabled: boolean
   isVisible: boolean
-  selectedLabelsIds: number[]
+  selectedLabelsIds: number[] | undefined
   possibleLabels: Label[]
   isMultilabel?: boolean
   onLabelSelect: (selectedLabelIds: number[]) => void
@@ -41,9 +41,9 @@ const ImageLabelInput = ({
     let newLabelIds: number[] = []
 
     if (isMultilabel) {
-      newLabelIds = [...selectedLabelsIds]
+      newLabelIds = [...(selectedLabelsIds ?? [])]
       // check if item in list (get its index if so)
-      const foundIndex: number = selectedLabelsIds.indexOf(clickedLabel.id)
+      const foundIndex: number = (selectedLabelsIds ?? []).indexOf(clickedLabel.id)
       // add label if not in list, remove label if in list
       if (foundIndex === -1) {
         newLabelIds.push(clickedLabel.id)
@@ -59,14 +59,14 @@ const ImageLabelInput = ({
 
   const getSelectedLabels = () => {
     const selectedLabels: Label[] = possibleLabels.filter((label: Label) =>
-      selectedLabelsIds.includes(label.id),
+      selectedLabelsIds?.includes(label.id),
     )
 
     return selectedLabels
   }
 
   const renderLabels = () => {
-    if (selectedLabelsIds.length === 0)
+    if (!selectedLabelsIds || selectedLabelsIds.length === 0)
       return (
         <div style={{ marginTop: 6 }}>
           <FontAwesomeIcon icon={faTag as IconProps} />
@@ -88,7 +88,7 @@ const ImageLabelInput = ({
 
   return (
     <CTooltip content="Add Image Label">
-      <CDropdown visible={isVisible} autoClose={false}>
+      <CDropdown visible={isVisible} autoClose="outside">
         {/* this invisible toggle has to be here, othervise the menu is not showing as intended */}
         <CDropdownToggle
           variant="outline"

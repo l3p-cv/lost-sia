@@ -410,7 +410,7 @@ const Sia = ({
     position: 'fixed',
     top: 0,
     left: 0,
-    zIndex: 6000,
+    zIndex: 1040,
     backgroundColor: '#ffff',
     width: '100%',
     height: '100%',

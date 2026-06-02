@@ -343,7 +343,12 @@ const Canvas = ({
   const getAnnoTopLeftPagePosition = (stageCoords: Point[]): Point => {
     const leftPoints: Point[] = transform.getMostLeftPoints(stageCoords)
     const topLeftPoint: Point = transform.getTopPoint(leftPoints)[0]
-    return transform.convertStageToPage(topLeftPoint, pageToStageOffset, svgScale, svgTranslation)
+    return transform.convertStageToPage(
+      topLeftPoint,
+      pageToStageOffset,
+      svgScale,
+      svgTranslation,
+    )
   }
 
   const handleKeyAction = (keyAction: KeyAction) => {
@@ -499,9 +504,24 @@ const Canvas = ({
     svgRef.current?.focus()
   }, [])
 
+  // reset CAMERA_MOVE mode on middle-mouse release, even if it happens outside the SVG boundary
+  useEffect(() => {
+    const handleWindowMouseUp = (e: MouseEvent) => {
+      if (e.button === 1 && editorMode === EditorModes.CAMERA_MOVE) {
+        setEditorMode(EditorModes.VIEW)
+      }
+    }
+    window.addEventListener('mouseup', handleWindowMouseUp)
+    return () => window.removeEventListener('mouseup', handleWindowMouseUp)
+  }, [editorMode])
+
   // image changed after init -> reset everything
   useEffect(() => {
     if (canvasRef?.current !== undefined) {
+      // clear stale sizing state only when the canvas ref is ready, to avoid
+      // leaving imgSize stuck at {x:-1, y:-1} on the early-exit path
+      resetCanvas()
+
       const { width, height } = canvasRef.current!.getBoundingClientRect()
 
       // for whatever reason the ref adds the toolbars height to the available space, leading to a container size reaching outside the bottom
@@ -522,13 +542,13 @@ const Canvas = ({
       // cleanup
       return () => resizeObserver.disconnect()
     }
-
-    resetCanvas()
   }, [image, isFullscreen])
 
   useEffect(() => {
     calculatePageToCanvasOffset()
-  }, [imageRef, svgTranslation, canvasSize])
+    // imgSize and uiConfig are read inside calculatePageToCanvasOffset for the imageCentered path;
+    // include them to avoid a stale closure when imgSize changes without canvasSize changing.
+  }, [canvasSize, imgSize, uiConfig])
 
   // notify component about available size
   useEffect(() => {
@@ -543,23 +563,14 @@ const Canvas = ({
   }, [canvasRef])
 
   // notify component about default image size
+  // read rendered size when image or canvas size changes — no ResizeObserver needed here
+  // since canvasRef's ResizeObserver already handles container resize events and updates canvasSize
   useEffect(() => {
     if (imageRef.current === null) return
 
     const { width, height } = imageRef.current.getBoundingClientRect()
-
     setImgSize({ x: width, y: height })
-
-    // listen for size changes on div element
-    const imgResizeObserver = new ResizeObserver(() => {
-      const { width, height } = imageRef.current!.getBoundingClientRect()
-
-      setImgSize({ x: width, y: height })
-    })
-    imgResizeObserver.observe(imageRef.current)
-
-    return () => imgResizeObserver.disconnect()
-  }, [imageRef])
+  }, [image, canvasSize])
 
   useEffect(() => {
     if (imageToStageFactor === 0) return
@@ -591,6 +602,10 @@ const Canvas = ({
           AnnotationMode.VIEW,
           AnnotationStatus.CREATED,
         )
+
+        if (polygonToCreate.labelIds !== undefined) {
+          newAnnotation.labelIds = polygonToCreate.labelIds
+        }
 
         onFinishCreateAnno(newAnnotation)
       },
@@ -649,7 +664,11 @@ const Canvas = ({
     if (e.button === 0) {
       // left click
     } else if (e.button === 1) {
-      // click on mouse wheel
+      // click on mouse wheel - ignore during annotation creation to prevent abandoning in-progress annotations
+      if (editorMode === EditorModes.CREATE || editorMode === EditorModes.ADD) {
+        e.preventDefault()
+        return
+      }
       setEditorMode(EditorModes.CAMERA_MOVE)
     } else if (e.button === 2) {
       // check if annotation creation allowed in settings
@@ -686,7 +705,7 @@ const Canvas = ({
   }
 
   const onMouseUp = (e) => {
-    if (e.button === 1) {
+    if (e.button === 1 && editorMode === EditorModes.CAMERA_MOVE) {
       setEditorMode(EditorModes.VIEW)
     }
   }
