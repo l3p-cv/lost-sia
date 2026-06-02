@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.1.3] - 2026-06-01
+## unreleased
 ### Fixed
 - Canvas.tsx changed removed imageref for resseting size of image constantly on image size change
 - Fixed issue of the dropdown for 'Add label' in sia annotation toolbar not closing - changes made in ImageLabelInput.tsx and ImageTools.tsx
@@ -15,9 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Canvas.tsx: added imgSize and uiConfig to calculatePageToCanvasOffset effect dependencies to prevent stale centering offset
 - ImageLabelInput.tsx: corrected selectedLabelsIds prop type from number[] to number[] | undefined to match actual runtime nullability
 - ImageTools.tsx: removed imageLabelIds from useEffect deps to prevent multi-label dropdown closing after every label click
-
 ### Added
 - types.ts, Canvas.tsx: Added optional labelIds to ToolCoordinates for polygon operation results.
+
 ## [3.1.2] - 2026-05-11
 ### Changed
 - Cleaned up unused allAnnos argument of onAnnoChanged and OnAnnoCreationFinished in Sia component
