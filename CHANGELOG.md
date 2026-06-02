@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
+### Added
+
+## [3.1.3] - 2026-06-02
 ### Fixed
 - Canvas.tsx changed removed imageref for resseting size of image constantly on image size change
 - Fixed issue of the dropdown for 'Add label' in sia annotation toolbar not closing - changes made in ImageLabelInput.tsx and ImageTools.tsx
