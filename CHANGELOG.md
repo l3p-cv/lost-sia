@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
-
+### Fixed
+- Fixed ImageLabelInput toggle button height to match adjacent buttons by removing hardcoded zero padding
 ## [3.1.3] - 2026-06-02
 ### Fixed
 - Canvas.tsx changed removed imageref for resseting size of image constantly on image size change
