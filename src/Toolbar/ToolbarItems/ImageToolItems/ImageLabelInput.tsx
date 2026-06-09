@@ -68,7 +68,7 @@ const ImageLabelInput = ({
   const renderLabels = () => {
     if (!selectedLabelsIds || selectedLabelsIds.length === 0)
       return (
-        <div style={{ marginTop: 6 }}>
+        <div>
           <FontAwesomeIcon icon={faTag as IconProps} />
         </div>
       )
@@ -94,7 +94,7 @@ const ImageLabelInput = ({
           variant="outline"
           caret={false}
           color={isDisabled ? 'secondary' : 'primary'}
-          style={{ paddingTop: 0, paddingBottom: 0 }}
+          // style={{ paddingTop: 0, paddingBottom: 0 }}
           as="div"
         >
           {renderLabels()}

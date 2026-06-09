@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+### Fixed
+- Fixed ImageLabelInput toggle button irregular height to match adjacent buttons by removing hardcoded zero padding
 
 ## [3.1.4] - 2026-06-25
 ### Fixed
