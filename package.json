@@ -63,9 +63,7 @@
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-draggable": "^4.5.0",
-    "sass": "^1.95.0",
-    "semantic-ui-css": "2.5.0",
-    "semantic-ui-react": "^2.0.3"
+    "sass": "^1.95.0"
   },
   "peerDependencies": {
     "@coreui/react": "^5.9.1",
@@ -81,6 +79,7 @@
     "@storybook/addon-links": "^10.1.6",
     "@storybook/react": "^10.1.6",
     "@storybook/react-vite": "^10.1.6",
+    "@storybook/test": "^8.6.15",
     "@types/react": "^19.2.7",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",

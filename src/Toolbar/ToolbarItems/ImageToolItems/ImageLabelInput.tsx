@@ -11,7 +11,6 @@ import {
 import { Label } from '../../../types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTag } from '@fortawesome/free-solid-svg-icons'
-import { IconProps } from 'semantic-ui-react'
 import TagLabel from './TagLabel'
 
 type ImageLabelInputProps = {
@@ -69,7 +68,7 @@ const ImageLabelInput = ({
     if (!selectedLabelsIds || selectedLabelsIds.length === 0)
       return (
         <div style={{ marginTop: 6 }}>
-          <FontAwesomeIcon icon={faTag as IconProps} />
+          <FontAwesomeIcon icon={faTag} />
         </div>
       )
 

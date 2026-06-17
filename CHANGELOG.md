@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+### Removed
+- Removed unused components from SIA1
+- Removed semantic-ui-react dependency
 
 ## [3.1.3] - 2026-06-02
 ### Fixed

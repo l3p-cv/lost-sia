@@ -38,7 +38,6 @@ export default defineConfig({
         'react-dom',
         'react-draggable',
         'react/jsx-runtime',
-        'semantic-ui-react',
       ],
       input: inputs,
       preserveEntrySignatures: 'exports-only',
