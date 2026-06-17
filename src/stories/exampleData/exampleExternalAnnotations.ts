@@ -37,10 +37,10 @@ const point: ExternalAnnotation[] = [
 const line: ExternalAnnotation[] = [
   {
     coordinates: [
-      { x: 50, y: 50 },
-      { x: 200, y: 100 },
-      { x: 250, y: 100 },
-      { x: 250, y: 200 },
+      { x: 0.05, y: 0.05 },
+      { x: 0.2, y: 0.1 },
+      { x: 0.25, y: 0.1 },
+      { x: 0.25, y: 0.2 },
     ],
     labelIds: [5],
     type: AnnotationTool.Line,
@@ -48,11 +48,11 @@ const line: ExternalAnnotation[] = [
   },
   {
     coordinates: [
-      { x: 259.883, y: 300.424 },
-      { x: 350, y: 331.5263919270834 },
-      { x: 355, y: 320 },
-      { x: 370, y: 300 },
-      { x: 270, y: 250 },
+      { x: 0.26, y: 0.3 },
+      { x: 0.35, y: 0.33 },
+      { x: 0.36, y: 0.32 },
+      { x: 0.37, y: 0.3 },
+      { x: 0.27, y: 0.25 },
     ],
     labelIds: [8, 11],
     type: AnnotationTool.Line,
@@ -63,8 +63,8 @@ const line: ExternalAnnotation[] = [
 const bbox: ExternalAnnotation[] = [
   {
     coordinates: [
-      { x: 50, y: 50 },
-      { x: 200, y: 200 },
+      { x: 0.05, y: 0.05 },
+      { x: 0.2, y: 0.2 },
     ],
     labelIds: [5],
     type: AnnotationTool.BBox,
@@ -72,8 +72,8 @@ const bbox: ExternalAnnotation[] = [
   },
   {
     coordinates: [
-      { x: 250, y: 100 },
-      { x: 450, y: 150 },
+      { x: 0.25, y: 0.1 },
+      { x: 0.45, y: 0.15 },
     ],
     labelIds: [8, 11],
     type: AnnotationTool.BBox,
@@ -84,10 +84,10 @@ const bbox: ExternalAnnotation[] = [
 const polygon: ExternalAnnotation[] = [
   {
     coordinates: [
-      { x: 50, y: 50 },
-      { x: 200, y: 100 },
-      { x: 250, y: 100 },
-      { x: 250, y: 200 },
+      { x: 0.05, y: 0.05 },
+      { x: 0.2, y: 0.1 },
+      { x: 0.25, y: 0.1 },
+      { x: 0.25, y: 0.2 },
     ],
     labelIds: [5],
     status: AnnotationStatus.LOADED,
@@ -95,11 +95,11 @@ const polygon: ExternalAnnotation[] = [
   },
   {
     coordinates: [
-      { x: 259.883, y: 300.424 },
-      { x: 350, y: 331.5263919270834 },
-      { x: 355, y: 320 },
-      { x: 370, y: 300 },
-      { x: 270, y: 250 },
+      { x: 0.26, y: 0.3 },
+      { x: 0.35, y: 0.33 },
+      { x: 0.36, y: 0.32 },
+      { x: 0.37, y: 0.3 },
+      { x: 0.27, y: 0.25 },
     ],
     labelIds: [8, 11],
     status: AnnotationStatus.LOADED,

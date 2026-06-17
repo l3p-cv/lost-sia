@@ -780,7 +780,9 @@ const Canvas = ({
     onSelectAnnotation(percentagedAnnotation)
 
     // get top left point of annotation
-    setLabelInputPosition(getAnnoTopLeftPagePosition(annotation.coordinates))
+    if (annotationSettings.canLabel) {
+      setLabelInputPosition(getAnnoTopLeftPagePosition(annotation.coordinates))
+    }
   }
 
   const handleOnAnnoChanged = (annotation: Annotation) => {
@@ -919,6 +921,7 @@ const Canvas = ({
         flexDirection: 'column',
       }}
     >
+      {annotationSettings.canLabel && (
       <div
         style={{
           position: 'absolute',
@@ -973,6 +976,7 @@ const Canvas = ({
           }}
         />
       </div>
+      )}
 
       {isImageJunk && (
         <div
