@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import React from 'react'
 import {
   CDropdown,
@@ -35,6 +35,14 @@ const ImageLabelInput = ({
   onLabelSelect,
 }: ImageLabelInputProps) => {
   const [filter, setFilter] = useState('')
+  const tagScrollRef = useCallback((el: HTMLDivElement | null) => {
+    if (!el) return
+    const handler = (e: WheelEvent) => {
+      e.preventDefault()
+      el.scrollLeft += e.deltaY * 0.2
+    }
+    el.addEventListener('wheel', handler, { passive: false })
+  }, [])
 
   const filteredLabels: Label[] = possibleLabels.filter((label: Label) =>
     label.name.toLowerCase().includes(filter.toLowerCase()),
@@ -79,6 +87,7 @@ const ImageLabelInput = ({
     const selectedLabels = getSelectedLabels()
     return (
       <div
+        ref={tagScrollRef}
         style={
           {
             display: 'flex',
