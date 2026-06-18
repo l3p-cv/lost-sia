@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 ### Fixed
 - Fixed ImageLabelInput toggle button irregular height to match adjacent buttons by removing hardcoded zero padding
-
+- `Canvas.tsx`: added `clampToCanvas` helper to prevent label selection popup from rendering outside the canvas bounds.
 ## [3.1.4] - 2026-06-25
 ### Fixed
 - Sia.tsx: fixed duplicate internalId bug causing newly created annotations to survive deletion on first attempt
