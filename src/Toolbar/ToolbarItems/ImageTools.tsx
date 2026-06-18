@@ -41,6 +41,7 @@ const ImageTools = ({
         <ImageLabelInput
           isDisabled={isDisabled}
           isMultilabel={true}
+          isFullscreen={isFullscreen}
           isVisible={isLabelPopupVisible}
           selectedLabelsIds={imageLabelIds}
           possibleLabels={possibleLabels}

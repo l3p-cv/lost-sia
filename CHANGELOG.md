@@ -6,9 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- `SIA.scss` : Added `tag-scroll` styles to be used as a horizontal thin scroll for `ImageLabelInput.tsx`.
+- `TagLabel.tsx`: Added optional `onRemove` prop that renders a `✕` (faXmark) icon button inside the chip, allowing users to remove a selected label directly without reopening the dropdown.
 ### Fixed
 - Fixed ImageLabelInput toggle button irregular height to match adjacent buttons by removing hardcoded zero padding
 - `Canvas.tsx`: added `clampToCanvas` helper to prevent label selection popup from rendering outside the canvas bounds.
+### Changed
+- `ImageLabelInput.tsx`: Selected labels now display as a single horizontally scrollable row of chips (max 300px, 500px in fullscreen) with a ✕ remove button on each chip; the dropdown label list is scrollable (max 200px) with the filter input pinned at top, and selected items are visually highlighted.
+- `ImageTools.tsx`: Passed `isFullscreen` prop down to `ImageLabelInput` to support wider chip area in fullscreen mode.
+- `LabelInput.tsx`: added div styles for vertical scroll inside the Dropdown Menu for Label Input.
 ## [3.1.4] - 2026-06-25
 ### Fixed
 - Sia.tsx: fixed duplicate internalId bug causing newly created annotations to survive deletion on first attempt
