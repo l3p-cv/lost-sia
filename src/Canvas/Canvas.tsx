@@ -351,6 +351,17 @@ const Canvas = ({
     )
   }
 
+  // Estimated max dimensions of the LabelInput dropdown (filter bar + ~8 label items).
+  // Used to clamp the popup anchor so it never escapes the canvas bounds.
+  const LABEL_POPUP_WIDTH = 250
+  const LABEL_POPUP_HEIGHT = 350
+
+  /** Clamps a page-space popup position so the dropdown stays inside the canvas area. */
+  const clampToCanvas = (pos: Point): Point => ({
+    x: Math.min(pos.x, pageToCanvasOffset.x + canvasSize.x - LABEL_POPUP_WIDTH),
+    y: Math.min(pos.y, pageToCanvasOffset.y + canvasSize.y - LABEL_POPUP_HEIGHT),
+  })
+
   const handleKeyAction = (keyAction: KeyAction) => {
     switch (keyAction) {
       case KeyAction.EDIT_LABEL:
@@ -361,7 +372,7 @@ const Canvas = ({
             imgSize,
             stageSize,
           )
-          setLabelInputPosition(getAnnoTopLeftPagePosition(stageCoords))
+          setLabelInputPosition(clampToCanvas(getAnnoTopLeftPagePosition(stageCoords)))
           setIsLabelInputVisible(true)
         }
         break
@@ -779,8 +790,10 @@ const Canvas = ({
 
     onSelectAnnotation(percentagedAnnotation)
 
-    // get top left point of annotation
-    setLabelInputPosition(getAnnoTopLeftPagePosition(annotation.coordinates))
+    // get top left point of annotation, clamped so the popup stays inside the canvas
+    setLabelInputPosition(
+      clampToCanvas(getAnnoTopLeftPagePosition(annotation.coordinates)),
+    )
   }
 
   const handleOnAnnoChanged = (annotation: Annotation) => {
