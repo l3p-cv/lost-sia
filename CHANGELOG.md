@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ImageLabelInput.tsx`: Selected labels now display as a single horizontally scrollable row of chips (max 300px, 500px in fullscreen) with a ✕ remove button on each chip; the dropdown label list is scrollable (max 200px) with the filter input pinned at top, and selected items are visually highlighted.
 - `ImageTools.tsx`: Passed `isFullscreen` prop down to `ImageLabelInput` to support wider chip area in fullscreen mode.
 - `LabelInput.tsx`: added div styles for vertical scroll inside the Dropdown Menu for Label Input.
+- `ImageLabelInput.tsx`: Mouse wheel now scrolls the selected label chips area horizontally using a native non-passive wheel event listener via `tagScrollRef` ref callback.
 ## [3.1.3] - 2026-06-02
 ### Fixed
 - Canvas.tsx changed removed imageref for resseting size of image constantly on image size change
