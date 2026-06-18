@@ -7,3 +7,16 @@
   height: 100%;
   background-color: #ffff;
 }
+
+.tag-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tag-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tag-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+}

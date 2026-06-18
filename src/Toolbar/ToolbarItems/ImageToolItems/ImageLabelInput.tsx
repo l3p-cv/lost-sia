@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import React from 'react'
 import {
   CDropdown,
   CDropdownMenu,
@@ -17,6 +18,7 @@ import TagLabel from './TagLabel'
 type ImageLabelInputProps = {
   isDisabled: boolean
   isVisible: boolean
+  isFullscreen?: boolean
   selectedLabelsIds: number[] | undefined
   possibleLabels: Label[]
   isMultilabel?: boolean
@@ -26,6 +28,7 @@ type ImageLabelInputProps = {
 const ImageLabelInput = ({
   isDisabled,
   isVisible,
+  isFullscreen = false,
   selectedLabelsIds,
   possibleLabels,
   isMultilabel = false,
@@ -74,21 +77,42 @@ const ImageLabelInput = ({
       )
 
     const selectedLabels = getSelectedLabels()
-    return selectedLabels.map((label: Label) => (
-      <TagLabel
-        key={label.name}
-        name={label.name}
-        color={label.color}
-        size={25}
-        triangleSize={17}
-        style={{ marginLeft: 1, marginTop: 5 }}
-      />
-    ))
+    return (
+      <div
+        style={
+          {
+            display: 'flex',
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
+            maxWidth: isFullscreen ? '500px' : '300px',
+            alignItems: 'center',
+            gap: '10px',
+            scrollbarWidth: 'thin',
+          } as React.CSSProperties
+        }
+        className="tag-scroll"
+      >
+        {selectedLabels.map((label: Label) => (
+          <TagLabel
+            key={label.name}
+            name={label.name}
+            color={label.color}
+            size={25}
+            triangleSize={17}
+            style={{ flexShrink: 0 }}
+            onRemove={() => updateSelectedLabels(label)}
+          />
+        ))}
+      </div>
+    )
   }
 
   return (
     <CTooltip content="Add Image Label">
-      <CDropdown visible={isVisible} autoClose="outside">
+      <CDropdown
+        visible={isVisible}
+        autoClose="outside"
+      >
         {/* this invisible toggle has to be here, othervise the menu is not showing as intended */}
         <CDropdownToggle
           variant="outline"
@@ -99,7 +123,7 @@ const ImageLabelInput = ({
         >
           {renderLabels()}
         </CDropdownToggle>
-        <CDropdownMenu>
+        <CDropdownMenu as="div" style={{ padding: 0 }}>
           <div className="px-3 py-2">
             <CFormInput
               placeholder="Filter label..."
@@ -109,15 +133,25 @@ const ImageLabelInput = ({
             />
           </div>
           <CDropdownDivider />
-          {filteredLabels.length > 0 ? (
-            filteredLabels.map((label: Label) => (
-              <CDropdownItem key={label.id} onClick={() => updateSelectedLabels(label)}>
-                {label.name}
-              </CDropdownItem>
-            ))
-          ) : (
-            <CDropdownItem disabled>No results</CDropdownItem>
-          )}
+          <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            {filteredLabels.length > 0 ? (
+              filteredLabels.map((label: Label) => {
+                const isSelected = selectedLabelsIds?.includes(label.id)
+
+                return (
+                  <CDropdownItem
+                    key={label.id}
+                    onClick={() => updateSelectedLabels(label)}
+                    active={isSelected}
+                  >
+                    {label.name}
+                  </CDropdownItem>
+                )
+              })
+            ) : (
+              <CDropdownItem disabled>No results</CDropdownItem>
+            )}
+          </div>
         </CDropdownMenu>
       </CDropdown>
     </CTooltip>
