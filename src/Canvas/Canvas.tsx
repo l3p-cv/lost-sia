@@ -572,6 +572,37 @@ const Canvas = ({
     setImgSize({ x: width, y: height })
   }, [image, canvasSize])
 
+  // Source of truth for the image's natural size.
+  // The SVG <image> element above loads asynchronously, so reading
+  // imageRef.getBoundingClientRect() (the effect above) runs before the
+  // remote image has decoded and resolves to {0, 0}. That left imgSize at
+  // 0, which trips the getFittedImageScale guard (returns 0), so stageSize
+  // never got set and the <image> rendered at its natural (huge) pixel size.
+  // Preloading via an HTMLImageElement gives us naturalWidth/Height as soon
+  // as the bytes are decoded, regardless of the SVG <image> lifecycle.
+  useEffect(() => {
+    if (!image) {
+      setImgSize({ x: -1, y: -1 })
+      return
+    }
+
+    let cancelled = false
+    const probe = new Image()
+    probe.onload = () => {
+      if (cancelled) return
+      const { naturalWidth, naturalHeight } = probe
+      if (naturalWidth > 0 && naturalHeight > 0) {
+        setImgSize({ x: naturalWidth, y: naturalHeight })
+      }
+    }
+    probe.src = image
+
+    return () => {
+      cancelled = true
+      probe.onload = null
+    }
+  }, [image])
+
   useEffect(() => {
     if (imageToStageFactor === 0) return
 
