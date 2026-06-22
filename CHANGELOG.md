@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 - Added SiaViewer component (allows viewing annotations without being able to modify them)
+- Added export for getColor utils method (allows other libs to use lost-sias color palette)
 ### Removed
 - Removed unused components from SIA1
 - Removed semantic-ui-react dependency

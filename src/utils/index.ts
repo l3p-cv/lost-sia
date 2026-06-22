@@ -1,2 +1,3 @@
 export { default as TimeUtils } from './TimeUtils'
 export { uiConfig, SIA_INITIAL_UI_CONFIG } from './uiConfig'
+export { getColor, getDefaultColor } from './color'
