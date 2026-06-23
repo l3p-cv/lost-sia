@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+### Removed
+- Removed SIASettingButton (referencing already deleted toolbarevents)
 
 ## [3.1.3] - 2026-06-02
 ### Fixed
