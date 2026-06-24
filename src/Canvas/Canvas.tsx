@@ -133,8 +133,12 @@ const Canvas = ({
     y: svgTranslation.y,
   }
 
-  // label input will be opened if a position is set here
-  const [labelInputPosition, setLabelInputPosition] = useState<Point>()
+  // stage coordinates of the annotation whose label popup is open.
+  // stored as Point[] so the pixel position can be recomputed on every render
+  // (zoom changes svgScale/svgTranslation, so we need a live recalculation each frame)
+  const [labelInputPosition, setLabelInputPosition] = useState<Point[] | undefined>(
+    undefined,
+  )
   const [isLabelInputVisible, setIsLabelInputVisible] = useState<boolean>(false)
 
   // svg element - used to trap focus
@@ -347,7 +351,7 @@ const Canvas = ({
       topLeftPoint,
       pageToStageOffset,
       svgScale,
-      svgTranslation,
+      centeredSvgTranslation,
     )
   }
 
@@ -356,11 +360,21 @@ const Canvas = ({
   const LABEL_POPUP_WIDTH = 250
   const LABEL_POPUP_HEIGHT = 350
 
-  /** Clamps a page-space popup position so the dropdown stays inside the canvas area. */
-  const clampToCanvas = (pos: Point): Point => ({
-    x: Math.min(pos.x, pageToCanvasOffset.x + canvasSize.x - LABEL_POPUP_WIDTH),
-    y: Math.min(pos.y, pageToCanvasOffset.y + canvasSize.y - LABEL_POPUP_HEIGHT),
-  })
+  /** Clamps a viewport-space popup position so the dropdown stays inside the visible canvas area.
+   * Uses the canvas bounding rect so the popup is always reachable even when the annotation
+   * is outside the visible viewport (e.g. after zooming in while drawing).
+   */
+  const clampToViewport = (pos: Point): Point => {
+    const canvasRect = canvasRef.current?.getBoundingClientRect()
+    const minX = canvasRect?.left ?? 0
+    const minY = canvasRect?.top ?? 0
+    const maxX = (canvasRect?.right ?? window.innerWidth) - LABEL_POPUP_WIDTH
+    const maxY = (canvasRect?.bottom ?? window.innerHeight) - LABEL_POPUP_HEIGHT
+    return {
+      x: Math.min(Math.max(pos.x, minX), maxX),
+      y: Math.min(Math.max(pos.y, minY), maxY),
+    }
+  }
 
   const handleKeyAction = (keyAction: KeyAction) => {
     switch (keyAction) {
@@ -372,7 +386,7 @@ const Canvas = ({
             imgSize,
             stageSize,
           )
-          setLabelInputPosition(clampToCanvas(getAnnoTopLeftPagePosition(stageCoords)))
+          setLabelInputPosition(stageCoords)
           setIsLabelInputVisible(true)
         }
         break
@@ -790,10 +804,8 @@ const Canvas = ({
 
     onSelectAnnotation(percentagedAnnotation)
 
-    // get top left point of annotation, clamped so the popup stays inside the canvas
-    setLabelInputPosition(
-      clampToCanvas(getAnnoTopLeftPagePosition(annotation.coordinates)),
-    )
+    // store stage coords so popup position is recomputed live on every render
+    setLabelInputPosition(annotation.coordinates)
   }
 
   const handleOnAnnoChanged = (annotation: Annotation) => {
@@ -933,13 +945,20 @@ const Canvas = ({
       }}
     >
       <div
-        style={{
-          position: 'absolute',
-          left: labelInputPosition?.x ?? 0,
-          top: labelInputPosition?.y ?? 0,
-          display: labelInputPosition?.y === undefined ? 'none' : 'inherit',
-          zIndex: isLabelInputVisible ? 7000 : -1,
-        }}
+        style={(() => {
+          // recompute pixel position on every render so the popup tracks the annotation
+          const pagePos = labelInputPosition
+            ? clampToViewport(getAnnoTopLeftPagePosition(labelInputPosition))
+            : undefined
+          return {
+            // position: fixed resolves left/top against the viewport.
+            position: 'fixed' as const,
+            left: pagePos ? pagePos.x - window.scrollX : 0,
+            top: pagePos ? pagePos.y - window.scrollY : 0,
+            display: pagePos === undefined ? 'none' : 'inherit',
+            zIndex: isLabelInputVisible ? 7000 : -1,
+          }
+        })()}
       >
         <LabelInput
           defaultLabelId={defaultLabelId}
