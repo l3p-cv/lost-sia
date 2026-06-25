@@ -126,6 +126,7 @@ const Sia = ({
 
 
     // keep history index marker in the present
+    annotationHistoryIndexRef.current = undefined
     setAnnotationHistoryIndex(undefined)
   }
 
@@ -222,7 +223,7 @@ const Sia = ({
   }
 
   const handleAnnoEditing = (annotation: Annotation) => {
-    const _annotations: Annotation[] = [...annotations]
+    const _annotations: Annotation[] = [...annotationsRef.current]
 
     // annotation is being edited - remove it from current annotations for this time
     const selectedAnnotationIndex: number = _annotations.findIndex(
@@ -591,6 +592,7 @@ const Sia = ({
               setAnnotations(_annotations)
               updateAnnotationHistory(_annotations)
               setSelectedAnnotation(finishedAnno)
+              onSelectAnnotation(finishedAnno)
 
               // Notify the server about the deletions (outside of the updater/setState!!!)
               for (const annotation of annosToDelete) {
