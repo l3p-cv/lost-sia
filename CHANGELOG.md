@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [3.1.4] - 2026-06-25
 ### Fixed
 - Sia.tsx: fixed duplicate internalId bug causing newly created annotations to survive deletion on first attempt
 - Sia.tsx: fixed stale closure bugs missed in the deletion fix — undo history corruption on rapid edits, handleAnnoEditing using old state, and selection not syncing after polygon completion
