@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed ImageLabelInput toggle button irregular height to match adjacent buttons by removing hardcoded zero padding
 - `Canvas.tsx`: added `clampToCanvas` helper to prevent label selection popup from rendering outside the canvas bounds.
+- Canvas.tsx: fixed label selection popup to stay visible and track annotation correctly at any zoom level
 ### Changed
 - `ImageLabelInput.tsx`: Selected labels now display as a single horizontally scrollable row of chips (max 300px, 500px in fullscreen) with a ✕ remove button on each chip; the dropdown label list is scrollable (max 200px) with the filter input pinned at top, and selected items are visually highlighted.
 - `ImageTools.tsx`: Passed `isFullscreen` prop down to `ImageLabelInput` to support wider chip area in fullscreen mode.
@@ -20,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Sia.tsx: fixed duplicate internalId bug causing newly created annotations to survive deletion on first attempt
 - Sia.tsx: fixed stale closure bugs missed in the deletion fix — undo history corruption on rapid edits, handleAnnoEditing using old state, and selection not syncing after polygon completion
-- Canvas.tsx: fixed label selection popup to stay visible and track annotation correctly at any zoom level
 ### Changed
 - Sia.tsx: removed duplicated lines
 ## [3.1.3] - 2026-06-02
