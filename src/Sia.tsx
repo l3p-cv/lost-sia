@@ -95,24 +95,39 @@ const Sia = ({
     defaultAnnotationTool ?? AnnotationTool.Point,
   )
 
+  // refs to always have the latest state without stale closure issues
+  const annotationsRef = useRef<Annotation[]>(annotations)
+  useEffect(() => {
+    annotationsRef.current = annotations
+  }, [annotations])
+
+  const annotationHistoryIndexRef = useRef<number | undefined>(annotationHistoryIndex)
+  useEffect(() => {
+    annotationHistoryIndexRef.current = annotationHistoryIndex
+  }, [annotationHistoryIndex])
+
   const updateAnnotationHistory = (annotations: Annotation[]) => {
     const _annotations = [...annotations]
-    const _annotationHistory = [...annotationHistory]
 
-    // user did some changes from within the past
-    // time to create an alternative timeline and delete the original one
-    if (annotationHistoryIndex !== undefined) {
-      // remove everything after the state the user is
-      _annotationHistory.splice(annotationHistoryIndex + 1)
-    }
+    setAnnotationHistory((prevHistory) => {
+      const _annotationHistory = [...prevHistory]
+
+      // user did some changes from within the past
+      // time to create an alternative timeline and delete the original one
+      if (annotationHistoryIndexRef.current !== undefined) {
+        // remove everything after the state the user is
+        _annotationHistory.splice(annotationHistoryIndexRef.current + 1)
+      }
 
     // update the list with out latest change (it is always living in the present)
-    _annotationHistory.push(_annotations)
+      _annotationHistory.push(_annotations)
+      return _annotationHistory
+    })
+
 
     // keep history index marker in the present
+    annotationHistoryIndexRef.current = undefined
     setAnnotationHistoryIndex(undefined)
-
-    setAnnotationHistory(_annotationHistory)
   }
 
   // for adjusting the container/canvas size
@@ -137,17 +152,19 @@ const Sia = ({
   const [usedInternalIds, setUsedInternalIds] = useState<number[]>([])
 
   const deleteAnnotationByInternalId = (internalId: number) => {
-    // get index of selected annotation
-    const annoListIndex: number = annotations.findIndex(
+    const currentAnnotations = annotationsRef.current
+    const annoListIndex: number = currentAnnotations.findIndex(
       (anno) => anno.internalId === internalId,
     )
 
-    // dereference list to force state update
-    const _annotations: Annotation[] = [...annotations]
+    if (annoListIndex === -1) return
 
+    const _annotations: Annotation[] = [...currentAnnotations]
+    
     // remove annotation
     const removedAnno: Annotation = _annotations.splice(annoListIndex, 1)[0]
 
+    annotationsRef.current = _annotations
     setAnnotations(_annotations)
     setSelectedAnnotation(undefined)
     updateAnnotationHistory(_annotations)
@@ -206,7 +223,7 @@ const Sia = ({
   }
 
   const handleAnnoEditing = (annotation: Annotation) => {
-    const _annotations: Annotation[] = [...annotations]
+    const _annotations: Annotation[] = [...annotationsRef.current]
 
     // annotation is being edited - remove it from current annotations for this time
     const selectedAnnotationIndex: number = _annotations.findIndex(
@@ -498,34 +515,30 @@ const Sia = ({
             possibleLabels={possibleLabels}
             uiConfig={uiConfig}
             onAnnoCreated={(annotation: Annotation) => {
-              setAnnotations((prev) => {
-                const _annotations = [...prev, annotation]
-                onAnnoCreated(annotation, _annotations)
-                return _annotations
-              })
+              const _annotations = [...annotationsRef.current, annotation]
+              annotationsRef.current = _annotations
+              setAnnotations(_annotations)
+              onAnnoCreated(annotation, _annotations)
               setSelectedAnnotation(annotation)
               // dont update history here - we dont have a finished anno at this point
             }}
             onAnnoChanged={(changedAnno: Annotation) => {
-              setAnnotations((prev) => {
-                // update annotation list
-                const annoListIndex: number = prev.findIndex(
-                  (anno) => anno.internalId === changedAnno.internalId,
-                )
+              const annoListIndex: number = annotationsRef.current.findIndex(
+                (anno) => anno.internalId === changedAnno.internalId,
+              )
 
-                // only fire event if item found
-                if (annoListIndex === -1) return prev
-
-                const _annotations: Annotation[] = [...prev]
+              if (annoListIndex !== -1) {
+                const _annotations: Annotation[] = [...annotationsRef.current]
                 _annotations[annoListIndex] = changedAnno
+                annotationsRef.current = _annotations
+                setAnnotations(_annotations)
+
 
                 // only update history for full/finished annotations
                 if (changedAnno.status !== AnnotationStatus.CREATING) {
                   updateAnnotationHistory(_annotations)
                 }
-
-                return _annotations
-              })
+              }
 
               // inform the outside world about our change
               // (kept outside the updater — side effects must not run inside setState)
@@ -551,30 +564,35 @@ const Sia = ({
                     ]
                   : []
 
-              setAnnotations((prev) => {
-                // update annotation list
-                const _annotations: Annotation[] = [...prev]
+              const _annotations: Annotation[] = [...annotationsRef.current]
 
-                // remove the source annotations that were consumed by the polygon operation
-                for (const annotation of annosToDelete) {
-                  const annoListIndex: number = _annotations.findIndex(
-                    (anno) => anno.internalId === annotation.internalId,
-                  )
-                  if (annoListIndex !== -1) _annotations.splice(annoListIndex, 1)
-                }
+              // remove annotations consumed by polygon operation
+              for (const annotation of annosToDelete) {
+                const annoListIndex: number = _annotations.findIndex(
+                  (anno) => anno.internalId === annotation.internalId,
+                )
+                if (annoListIndex !== -1) _annotations.splice(annoListIndex, 1)
+              }
 
-                if (hasAnnoJustBeenCreated) _annotations.push(finishedAnno)
-                else {
-                  const annoListIndex: number = prev.findIndex(
-                    (anno) => anno.internalId === finishedAnno.internalId,
-                  )
-                  _annotations[annoListIndex] = finishedAnno
-                }
+              if (hasAnnoJustBeenCreated) {
+                // replace the CREATING entry with the finished CREATED version
+                const existingIdx = _annotations.findIndex(
+                  (a) => a.internalId === finishedAnno.internalId,
+                )
+                if (existingIdx !== -1) _annotations.splice(existingIdx, 1)
+                _annotations.push(finishedAnno)
+              } else {
+                const annoListIndex: number = _annotations.findIndex(
+                  (anno) => anno.internalId === finishedAnno.internalId,
+                )
+                if (annoListIndex !== -1) _annotations[annoListIndex] = finishedAnno
+              }
 
-                updateAnnotationHistory(_annotations)
-
-                return _annotations
-              })
+              annotationsRef.current = _annotations
+              setAnnotations(_annotations)
+              updateAnnotationHistory(_annotations)
+              setSelectedAnnotation(finishedAnno)
+              onSelectAnnotation(finishedAnno)
 
               // Notify the server about the deletions (outside of the updater/setState!!!)
               for (const annotation of annosToDelete) {
