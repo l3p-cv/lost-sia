@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ImageTools.tsx`: Passed `isFullscreen` prop down to `ImageLabelInput` to support wider chip area in fullscreen mode.
 - `LabelInput.tsx`: added div styles for vertical scroll inside the Dropdown Menu for Label Input.
 - `ImageLabelInput.tsx`: Mouse wheel now scrolls the selected label chips area horizontally using a native non-passive wheel event listener via `tagScrollRef` ref callback.
+- `ImageLabelInput.tsx`: fixed wheel event listener cleanup on unmount
+- `LabelInput.tsx`: increased dropdown maxHeight to 200px
 ## [3.1.4] - 2026-06-25
 ### Fixed
 - Sia.tsx: fixed duplicate internalId bug causing newly created annotations to survive deletion on first attempt

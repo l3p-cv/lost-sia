@@ -79,7 +79,7 @@ const LabelInput = ({
             />
           </div>
           <CDropdownDivider />
-          <div style={{ maxHeight: '100px', overflowY: 'auto' }}>
+          <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
             {filteredLabels.length > 0 ? (
               filteredLabels.map((label: Label) => (
                 <CDropdownItem key={label.id} onClick={() => updateSelectedLabels(label)}>
