@@ -1,4 +1,7 @@
 import type { CSSProperties } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faXmark } from '@fortawesome/free-solid-svg-icons'
+import { IconProps } from 'semantic-ui-react'
 
 type TagLabelProps = {
   name: string
@@ -7,6 +10,7 @@ type TagLabelProps = {
   style?: CSSProperties
   triangleSize?: number
   onClick?: () => void
+  onRemove?: () => void
 }
 
 const TagLabel = ({
@@ -16,6 +20,7 @@ const TagLabel = ({
   style = {},
   triangleSize = 22,
   onClick,
+  onRemove,
 }: TagLabelProps) => {
   const containerStyle: CSSProperties = {
     display: 'inline-flex',
@@ -50,6 +55,34 @@ const TagLabel = ({
     <button style={containerStyle} onClick={onClick}>
       <span style={triangleStyle} />
       {name}
+      {onRemove && (
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation()
+            onRemove()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.stopPropagation()
+              onRemove()
+            }
+          }}
+          style={{
+            marginLeft: '6px',
+            cursor: 'pointer',
+            opacity: 0.6,
+            fontSize: `${bodySize * 0.4}px`,
+            lineHeight: 1,
+            display: 'inline-flex',
+            alignItems: 'center',
+          }}
+          aria-label="Remove tag"
+        >
+          <FontAwesomeIcon icon={faXmark as IconProps} />
+        </span>
+      )}
     </button>
   )
 }
