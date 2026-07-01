@@ -119,11 +119,10 @@ const Sia = ({
         _annotationHistory.splice(annotationHistoryIndexRef.current + 1)
       }
 
-    // update the list with out latest change (it is always living in the present)
+      // update the list with out latest change (it is always living in the present)
       _annotationHistory.push(_annotations)
       return _annotationHistory
     })
-
 
     // keep history index marker in the present
     annotationHistoryIndexRef.current = undefined
@@ -160,7 +159,7 @@ const Sia = ({
     if (annoListIndex === -1) return
 
     const _annotations: Annotation[] = [...currentAnnotations]
-    
+
     // remove annotation
     const removedAnno: Annotation = _annotations.splice(annoListIndex, 1)[0]
 
@@ -532,7 +531,6 @@ const Sia = ({
                 _annotations[annoListIndex] = changedAnno
                 annotationsRef.current = _annotations
                 setAnnotations(_annotations)
-
 
                 // only update history for full/finished annotations
                 if (changedAnno.status !== AnnotationStatus.CREATING) {
