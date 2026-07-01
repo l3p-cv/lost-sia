@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- `SIA.scss` : Added `tag-scroll` styles to be used as a horizontal thin scroll for `ImageLabelInput.tsx`.
+- `TagLabel.tsx`: Added optional `onRemove` prop that renders a `✕` (faXmark) icon button inside the chip, allowing users to remove a selected label directly without reopening the dropdown.
+### Fixed
+- Fixed ImageLabelInput toggle button height to match adjacent buttons by removing hardcoded zero padding.
+- `Canvas.tsx`: added `clampToCanvas` helper to prevent label selection popup from rendering outside the canvas bounds.
+- `TagLabel.tsx`: Added onKeyDown to fix accessibility keyboard listener.
+### Fixed
+- Fixed ImageLabelInput toggle button irregular height to match adjacent buttons by removing hardcoded zero padding
+- `Canvas.tsx`: added `clampToCanvas` helper to prevent label selection popup from rendering outside the canvas bounds.
+- Canvas.tsx: fixed label selection popup to stay visible and track annotation correctly at any zoom level
+### Changed
+- `ImageLabelInput.tsx`: Selected labels now display as a single horizontally scrollable row of chips (max 300px, 500px in fullscreen) with a ✕ remove button on each chip; the dropdown label list is scrollable (max 200px) with the filter input pinned at top, and selected items are visually highlighted.
+- `ImageTools.tsx`: Passed `isFullscreen` prop down to `ImageLabelInput` to support wider chip area in fullscreen mode.
+- `LabelInput.tsx`: added div styles for vertical scroll inside the Dropdown Menu for Label Input.
+- `ImageLabelInput.tsx`: Mouse wheel now scrolls the selected label chips area horizontally using a native non-passive wheel event listener via `tagScrollRef` ref callback.
+- `ImageLabelInput.tsx`: fixed wheel event listener cleanup on unmount
+- `LabelInput.tsx`: increased dropdown maxHeight to 200px
 
 ## [3.1.4] - 2026-06-25
 ### Fixed
@@ -13,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sia.tsx: fixed stale closure bugs missed in the deletion fix — undo history corruption on rapid edits, handleAnnoEditing using old state, and selection not syncing after polygon completion
 ### Changed
 - Sia.tsx: removed duplicated lines
+
 ## [3.1.3] - 2026-06-02
 ### Fixed
 - Canvas.tsx changed removed imageref for resseting size of image constantly on image size change

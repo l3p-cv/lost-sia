@@ -79,15 +79,17 @@ const LabelInput = ({
             />
           </div>
           <CDropdownDivider />
-          {filteredLabels.length > 0 ? (
-            filteredLabels.map((label: Label) => (
-              <CDropdownItem key={label.id} onClick={() => updateSelectedLabels(label)}>
-                {label.name}
-              </CDropdownItem>
-            ))
-          ) : (
-            <CDropdownItem disabled>No results</CDropdownItem>
-          )}
+          <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            {filteredLabels.length > 0 ? (
+              filteredLabels.map((label: Label) => (
+                <CDropdownItem key={label.id} onClick={() => updateSelectedLabels(label)}>
+                  {label.name}
+                </CDropdownItem>
+              ))
+            ) : (
+              <CDropdownItem disabled>No results</CDropdownItem>
+            )}
+          </div>
         </CDropdownMenu>
       </CDropdown>
     </>
