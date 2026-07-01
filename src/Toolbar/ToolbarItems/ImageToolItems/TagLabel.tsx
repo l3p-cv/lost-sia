@@ -57,9 +57,17 @@ const TagLabel = ({
       {name}
       {onRemove && (
         <span
+          role="button"
+          tabIndex={0}
           onClick={(e) => {
             e.stopPropagation()
             onRemove()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.stopPropagation()
+              onRemove()
+            }
           }}
           style={{
             marginLeft: '6px',
@@ -70,6 +78,7 @@ const TagLabel = ({
             display: 'inline-flex',
             alignItems: 'center',
           }}
+          aria-label="Remove tag"
         >
           <FontAwesomeIcon icon={faXmark as IconProps} />
         </span>

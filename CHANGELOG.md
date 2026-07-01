@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `SIA.scss` : Added `tag-scroll` styles to be used as a horizontal thin scroll for `ImageLabelInput.tsx`.
 - `TagLabel.tsx`: Added optional `onRemove` prop that renders a `✕` (faXmark) icon button inside the chip, allowing users to remove a selected label directly without reopening the dropdown.
+- `TagLabel.tsx`: Added onKeyDown to fix accessibility keyboard listener.
 ### Fixed
 - Fixed ImageLabelInput toggle button irregular height to match adjacent buttons by removing hardcoded zero padding
 - `Canvas.tsx`: added `clampToCanvas` helper to prevent label selection popup from rendering outside the canvas bounds.
