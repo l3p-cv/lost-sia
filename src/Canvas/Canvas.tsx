@@ -517,11 +517,10 @@ const Canvas = ({
 
   // image changed after init -> reset everything
   useEffect(() => {
-    if (canvasRef?.current !== undefined) {
+    if (canvasRef?.current !== null) {
       // clear stale sizing state only when the canvas ref is ready, to avoid
       // leaving imgSize stuck at {x:-1, y:-1} on the early-exit path
       resetCanvas()
-
       const { width, height } = canvasRef.current!.getBoundingClientRect()
 
       // for whatever reason the ref adds the toolbars height to the available space, leading to a container size reaching outside the bottom
@@ -532,7 +531,8 @@ const Canvas = ({
 
       // listen for size changes on div element
       const resizeObserver = new ResizeObserver(() => {
-        const { width, height } = canvasRef.current!.getBoundingClientRect()
+        if (canvasRef.current === null) return
+        const { width, height } = canvasRef.current.getBoundingClientRect()
         const heightWithoutToolbar: number = height - toolbarHeight
 
         setCanvasSize({ x: width, y: heightWithoutToolbar })
