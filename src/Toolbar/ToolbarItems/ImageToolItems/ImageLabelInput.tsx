@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import React from 'react'
 import {
   CDropdown,
@@ -35,12 +35,21 @@ const ImageLabelInput = ({
   onLabelSelect,
 }: ImageLabelInputProps) => {
   const [filter, setFilter] = useState('')
+  const tagElRef = useRef<HTMLDivElement | null>(null)
+  const tagHandlerRef = useRef<((e: WheelEvent) => void) | null>(null)
   const tagScrollRef = useCallback((el: HTMLDivElement | null) => {
+    // cleanup previous listener
+    if (tagElRef.current && tagHandlerRef.current) {
+      tagElRef.current.removeEventListener('wheel', tagHandlerRef.current)
+    }
+    tagElRef.current = el
+    tagHandlerRef.current = null
     if (!el) return
     const handler = (e: WheelEvent) => {
       e.preventDefault()
       el.scrollLeft += e.deltaY * 0.2
     }
+    tagHandlerRef.current = handler
     el.addEventListener('wheel', handler, { passive: false })
   }, [])
 
@@ -118,10 +127,7 @@ const ImageLabelInput = ({
 
   return (
     <CTooltip content="Add Image Label">
-      <CDropdown
-        visible={isVisible}
-        autoClose="outside"
-      >
+      <CDropdown visible={isVisible} autoClose="outside">
         {/* this invisible toggle has to be here, othervise the menu is not showing as intended */}
         <CDropdownToggle
           variant="outline"
