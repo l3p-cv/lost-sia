@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [3.2.0] - 2026-07-01
+### Added
 - `SIA.scss` : Added `tag-scroll` styles to be used as a horizontal thin scroll for `ImageLabelInput.tsx`.
 - `TagLabel.tsx`: Added optional `onRemove` prop that renders a `✕` (faXmark) icon button inside the chip, allowing users to remove a selected label directly without reopening the dropdown.
 ### Fixed
