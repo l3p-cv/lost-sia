@@ -46,6 +46,7 @@ const Toolbar = ({
         <ImageTools
           canJunk={allowedTools.junk}
           isImageJunk={isImageJunk}
+          canLabel={allowedTools.imageLabel}
           imageLabelIds={imageLabelIds}
           isDisabled={isDisabled}
           isFullscreen={isFullscreen}
