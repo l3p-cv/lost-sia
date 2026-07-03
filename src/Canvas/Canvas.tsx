@@ -505,18 +505,12 @@ const Canvas = ({
   }
 
   const scaledAnnotations = calculateScaledAnnotations(annotations)
-
+  // imgSize is measured separately once in the <image> element's 'load' event
   const resetCanvas = () => {
     setEditorMode(EditorModes.VIEW)
 
     // largest possible annotation size fitting the whole image
     setStageSize({ x: -1, y: -1 })
-
-    if (imageRef.current !== null) {
-      const { width, height } = imageRef.current.getBoundingClientRect()
-      setImgSize({ x: width, y: height })
-    }
-
     setSvgScale(1)
     setSvgTranslation({ x: 0, y: 0 })
 
@@ -588,13 +582,23 @@ const Canvas = ({
   }, [canvasRef])
 
   // notify component about default image size
-  // read rendered size when image or canvas size changes — no ResizeObserver needed here
-  // since canvasRef's ResizeObserver already handles container resize events and updates canvasSize
+  // Wait for the native 'load' event on the <image> element before measuring,
   useEffect(() => {
-    if (imageRef.current === null) return
+    const imageEl = imageRef.current
+    if (imageEl === null) return
 
-    const { width, height } = imageRef.current.getBoundingClientRect()
-    setImgSize({ x: width, y: height })
+    const measure = () => {
+      if (imageRef.current === null) return
+      const { width, height } = imageRef.current.getBoundingClientRect()
+      setImgSize({ x: width, y: height })
+    }
+
+    // SVGImageElement fires 'load' once the referenced resource is ready
+    imageEl.addEventListener('load', measure)
+    // in case the image is already loaded/cached by the time this effect runs
+    measure()
+
+    return () => imageEl.removeEventListener('load', measure)
   }, [image, canvasSize])
 
   useEffect(() => {

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 - Add imageLabel and delete to Allowedtools (to hide coresponding toolbar elements)
+### Fixed
+- Removed potetnital image-loading error in firefox
 ### Removed
 - Removed SIASettingButton (referencing already deleted toolbarevents)
 
