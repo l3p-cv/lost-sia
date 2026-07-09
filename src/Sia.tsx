@@ -399,6 +399,8 @@ const Sia = ({
       line: true,
       junk: true,
       polygon: true,
+      imageLabel: true,
+      delete: true,
     }
 
     if (propAllowedTools === undefined) return setAllowedTools(defaultAllowedTools)

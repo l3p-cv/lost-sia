@@ -35,6 +35,8 @@ const allowedTools: AllowedTools = {
   line: true,
   point: true,
   polygon: true,
+  imageLabel: true,
+  delete: true,
 }
 
 const limitedAllowedTools: AllowedTools = {
@@ -43,6 +45,8 @@ const limitedAllowedTools: AllowedTools = {
   line: false,
   point: false,
   polygon: false,
+  imageLabel: true,
+  delete: true,
 }
 
 const annotationSettings: AnnotationSettings = {

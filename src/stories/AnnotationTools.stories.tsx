@@ -29,6 +29,8 @@ const allowedTools: AllowedTools = {
   point: false,
   polygon: false,
   junk: true,
+  imageLabel: true,
+  delete: true,
 }
 
 export const BBoxOnly: Story = {
@@ -63,12 +65,14 @@ export const BBoxOnly: Story = {
   },
 }
 
-const noJunkTools = {
+const noJunkTools: AllowedTools = {
   bbox: true,
   line: true,
   point: true,
   polygon: true,
   junk: false,
+  imageLabel: true,
+  delete: true,
 }
 
 export const NoJunk: Story = {

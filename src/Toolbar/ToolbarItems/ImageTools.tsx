@@ -7,7 +7,7 @@ import IconButton from '../../IconButton'
 
 type ImageToolsProps = {
   canJunk: boolean
-  canLabel: boolean
+  canLabel?: boolean
   imageLabelIds?: number[]
   isDisabled?: boolean
   isFullscreen?: boolean

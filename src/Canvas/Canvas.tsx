@@ -581,8 +581,7 @@ const Canvas = ({
     setCanvasSize({ x: width, y: heightWithoutToolbar })
   }, [canvasRef])
 
-  // notify component about default image size
-  // Wait for the native 'load' event on the <image> element before measuring,
+  // notify component about default image size; wait for native 'load' event of <image> element before measuring
   useEffect(() => {
     const imageEl = imageRef.current
     if (imageEl === null) return
