@@ -8,6 +8,8 @@ export type AllowedTools = {
   line: boolean
   point: boolean
   polygon: boolean
+  imageLabel?: boolean
+  delete?: boolean
 }
 
 export type AnnotationSettings = {

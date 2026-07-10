@@ -1,36 +1,3 @@
-const canvasConfig = {
-  tools: {
-    point: true,
-    line: true,
-    polygon: true,
-    bbox: true,
-    junk: true,
-  },
-  annos: {
-    minArea: 250,
-    multilabels: false,
-    actions: {
-      draw: true,
-      label: true,
-      edit: true,
-    },
-    maxAnnos: null,
-  },
-  img: {
-    multilabels: false,
-    actions: {
-      label: true,
-    },
-  },
-  autoSaveInterval: undefined,
-  allowedToMarkExample: true,
-}
-
-const filter = {
-  rotate: { active: false, angle: 0 },
-  clahe: { active: false, clipLimit: 3 },
-}
-
 const uiConfig = {
   nodeRadius: 4,
   strokeWidth: 4,
@@ -67,24 +34,6 @@ const imgMeta = {
   isJunk: null,
   annoTime: 23.4247,
   description: null,
-}
-
-const toolbarEnabled = {
-  imgLabel: true,
-  nextPrev: true,
-  toolSelection: true,
-  fullscreen: true,
-  junk: true,
-  deleteAll: true,
-  settings: {
-    infoBoxes: true,
-    annoStyle: true,
-  },
-  filter: {
-    rotate: true,
-    clahe: true,
-  },
-  help: true,
 }
 
 export const noAnnos = { bBoxes: [], lines: [], points: [], polygons: [] }

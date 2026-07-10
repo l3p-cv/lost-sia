@@ -7,6 +7,7 @@ import IconButton from '../../IconButton'
 
 type ImageToolsProps = {
   canJunk: boolean
+  canLabel?: boolean
   imageLabelIds?: number[]
   isDisabled?: boolean
   isFullscreen?: boolean
@@ -18,6 +19,7 @@ type ImageToolsProps = {
 
 const ImageTools = ({
   canJunk,
+  canLabel = true,
   isDisabled = false,
   isFullscreen = false,
   isImageJunk = false,
@@ -37,7 +39,7 @@ const ImageTools = ({
 
   return (
     <CButtonGroup role="group" aria-label="Image Tools">
-      {possibleLabels && (
+      {possibleLabels && canLabel && (
         <ImageLabelInput
           isDisabled={isDisabled}
           isMultilabel={true}

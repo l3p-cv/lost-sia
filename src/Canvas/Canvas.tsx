@@ -505,18 +505,14 @@ const Canvas = ({
   }
 
   const scaledAnnotations = calculateScaledAnnotations(annotations)
-
+  // imgSize is measured separately once in the <image> element's 'load' event
   const resetCanvas = () => {
     setEditorMode(EditorModes.VIEW)
 
     // largest possible annotation size fitting the whole image
     setStageSize({ x: -1, y: -1 })
-
-    if (imageRef.current !== null) {
-      const { width, height } = imageRef.current.getBoundingClientRect()
-      setImgSize({ x: width, y: height })
-    }
-
+    // use {0, 0} so it hits the `=== 0` guards
+    setImgSize({ x: 0, y: 0 })
     setSvgScale(1)
     setSvgTranslation({ x: 0, y: 0 })
 
@@ -542,11 +538,10 @@ const Canvas = ({
 
   // image changed after init -> reset everything
   useEffect(() => {
-    if (canvasRef?.current !== undefined) {
+    if (canvasRef?.current !== null) {
       // clear stale sizing state only when the canvas ref is ready, to avoid
       // leaving imgSize stuck at {x:-1, y:-1} on the early-exit path
       resetCanvas()
-
       const { width, height } = canvasRef.current!.getBoundingClientRect()
 
       // for whatever reason the ref adds the toolbars height to the available space, leading to a container size reaching outside the bottom
@@ -557,7 +552,8 @@ const Canvas = ({
 
       // listen for size changes on div element
       const resizeObserver = new ResizeObserver(() => {
-        const { width, height } = canvasRef.current!.getBoundingClientRect()
+        if (canvasRef.current === null) return
+        const { width, height } = canvasRef.current.getBoundingClientRect()
         const heightWithoutToolbar: number = height - toolbarHeight
 
         setCanvasSize({ x: width, y: heightWithoutToolbar })
@@ -587,14 +583,31 @@ const Canvas = ({
     setCanvasSize({ x: width, y: heightWithoutToolbar })
   }, [canvasRef])
 
-  // notify component about default image size
-  // read rendered size when image or canvas size changes — no ResizeObserver needed here
-  // since canvasRef's ResizeObserver already handles container resize events and updates canvasSize
+  // notify component about default image size; wait for native 'load' event of <image> element before measuring
   useEffect(() => {
-    if (imageRef.current === null) return
+    const imageEl = imageRef.current
+    if (imageEl === null) return
 
-    const { width, height } = imageRef.current.getBoundingClientRect()
-    setImgSize({ x: width, y: height })
+    // guards against a queued 'load' event firing setImgSize after this
+    let active = true
+
+    const measure = () => {
+      if (!active) return
+      // use the captured imageEl (not imageRef.current) so this always measures
+      // the element this effect actually attached the listener to
+      const { width, height } = imageEl.getBoundingClientRect()
+      setImgSize({ x: width, y: height })
+    }
+
+    // SVGImageElement fires 'load' once the referenced resource is ready
+    imageEl.addEventListener('load', measure)
+    // in case the image is already loaded/cached by the time this effect runs
+    measure()
+
+    return () => {
+      active = false
+      imageEl.removeEventListener('load', measure)
+    }
   }, [image, canvasSize])
 
   useEffect(() => {

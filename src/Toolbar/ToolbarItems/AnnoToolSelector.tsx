@@ -79,15 +79,17 @@ const AnnoToolSelector = ({
         />
       )}
 
-      <IconButton
-        color="primary"
-        icon={faTrash}
-        isOutline={true}
-        disabled={isDisabled}
-        onClick={onShouldDeleteSelectedAnnotation}
-        tooltip="Delete selected annotation"
-        margin={0}
-      />
+      {allowedTools.delete && (
+        <IconButton
+          color="primary"
+          icon={faTrash}
+          isOutline={true}
+          disabled={isDisabled}
+          onClick={onShouldDeleteSelectedAnnotation}
+          tooltip="Delete selected annotation"
+          margin={0}
+        />
+      )}
     </CButtonGroup>
   )
 }
