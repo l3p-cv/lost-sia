@@ -79,7 +79,7 @@ const AnnoToolSelector = ({
         />
       )}
 
-      {allowedTools?.delete && (
+      {allowedTools.delete && (
         <IconButton
           color="primary"
           icon={faTrash}

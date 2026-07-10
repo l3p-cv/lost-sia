@@ -405,7 +405,9 @@ const Sia = ({
 
     if (propAllowedTools === undefined) return setAllowedTools(defaultAllowedTools)
 
-    setAllowedTools(propAllowedTools)
+    // merge so consumers on the old (pre-imageLabel/delete) shape keep those
+    // tools enabled by default instead of silently losing them
+    setAllowedTools({ ...defaultAllowedTools, ...propAllowedTools })
   }, [propAllowedTools])
 
   // useEffect(() => {

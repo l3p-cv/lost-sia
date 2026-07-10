@@ -511,6 +511,8 @@ const Canvas = ({
 
     // largest possible annotation size fitting the whole image
     setStageSize({ x: -1, y: -1 })
+    // use {0, 0} so it hits the `=== 0` guards
+    setImgSize({ x: 0, y: 0 })
     setSvgScale(1)
     setSvgTranslation({ x: 0, y: 0 })
 
@@ -586,9 +588,14 @@ const Canvas = ({
     const imageEl = imageRef.current
     if (imageEl === null) return
 
+    // guards against a queued 'load' event firing setImgSize after this
+    let active = true
+
     const measure = () => {
-      if (imageRef.current === null) return
-      const { width, height } = imageRef.current.getBoundingClientRect()
+      if (!active) return
+      // use the captured imageEl (not imageRef.current) so this always measures
+      // the element this effect actually attached the listener to
+      const { width, height } = imageEl.getBoundingClientRect()
       setImgSize({ x: width, y: height })
     }
 
@@ -597,7 +604,10 @@ const Canvas = ({
     // in case the image is already loaded/cached by the time this effect runs
     measure()
 
-    return () => imageEl.removeEventListener('load', measure)
+    return () => {
+      active = false
+      imageEl.removeEventListener('load', measure)
+    }
   }, [image, canvasSize])
 
   useEffect(() => {
