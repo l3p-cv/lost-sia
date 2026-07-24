@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
-
+### Fixed
+- Fixed incomplete deletion issue caused due to was triggering unnecessary edit patch (drag or spurious move-up click) during spamming rapid point annotation creation : By adding only `leftClickOnly` prop to `Node.tsx` for `Point.tsx` so Point Annotation drags only when left-click happens.
 ## [3.3.0-rc.1] - 2026-07-10
 ### Added
 - Add imageLabel and delete to Allowedtools (to hide corresponding toolbar elements)

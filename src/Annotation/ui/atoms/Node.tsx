@@ -14,6 +14,7 @@ type NodeProps = {
   onMoving: (index: number, coordinates: Point) => void
   onMoved: () => void
   onIsDraggingStateChanged: (bool) => void
+  leftClickOnly?: boolean  // If true, only left-click (button 0) triggers drag
 }
 
 const Node = ({
@@ -28,6 +29,7 @@ const Node = ({
   onMoving, // during moving - update coordinates in parent
   onMoved, // moving finished - send annotation changed event
   onIsDraggingStateChanged,
+  leftClickOnly = false,
 }: NodeProps) => {
   const [hasHalo, setHasHalo] = useState<boolean>(false)
   const [isDragging, setIsDragging] = useState<boolean>(false)
@@ -78,6 +80,10 @@ const Node = ({
 
   const onMouseDown = (e: MouseEvent) => {
     if (!annotationSettings.canEdit) return
+
+    // If leftClickOnly is true, only allow left-click (button 0) to initiate drag
+    // This prevents right-click from triggering drag on point annotations
+    if (leftClickOnly && e.button !== 0) return
 
     if (e.ctrlKey) onDeleteNode()
     else setIsDragging(true)
