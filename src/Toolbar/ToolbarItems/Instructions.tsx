@@ -41,13 +41,13 @@ const Instructions = () => {
     },
     {
       title: 'Undo/ Redo',
-      description: ['Undo: Hit STRG + Z ', 'Redo: Hit STRG + R'],
+      description: ['Undo: Hit CTRL + Z ', 'Redo: Hit CTRL + Y'],
     },
     {
       title: 'Add/ Remove a node to Line/Polygon',
       description: [
-        'Add: Hit STRG + Click left on the line',
-        'Remove: Hit STRG + Click left on the node to delete',
+        'Add: Hit CTRL + Click left on the line',
+        'Remove: Hit CTRL + Click left on the node to delete',
       ],
     },
     {
@@ -81,7 +81,7 @@ const Instructions = () => {
     },
     {
       title: 'Copy and Paste annotations',
-      description: ['Copy: 1.) Select annotation 2.) Hit STRG + C', 'Paste: STRG + V'],
+      description: ['Copy: 1.) Select annotation 2.) Hit CTRL + C', 'Paste: CTRL + V'],
     },
     {
       title: 'Mark image as junk',
