@@ -38,6 +38,7 @@ const Point = ({
       svgScale={svgScale}
       svgTranslation={svgTranslation}
       style={style}
+      leftClickOnly={true}
       onDeleteNode={
         // just do nothing (we cannot delete a node from a point - delete the whole point instead)
         () => {}
