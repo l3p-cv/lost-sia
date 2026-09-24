@@ -29,6 +29,14 @@ export type ExternalAnnotation = {
   type: AnnotationTool
 }
 
+export type ExternalAnnotationUpdate = {
+  internalId: number
+  annotation: ExternalAnnotation
+  // increments on every update so repeated updates of the same annotation
+  // are always applied, even if the annotation content is unchanged
+  trigger: number
+}
+
 export type Label = {
   id: number
   name: string
