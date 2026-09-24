@@ -10,6 +10,7 @@ import {
   AllowedTools,
   AnnotationSettings,
   ExternalAnnotation,
+  ExternalAnnotationUpdate,
   Label,
   PolygonOperationResult,
   SIANotification,
@@ -30,6 +31,7 @@ type SiaProps = {
   initialAnnotations?: ExternalAnnotation[]
   initialImageLabelIds?: number[]
   initialIsImageJunk?: boolean
+  externalAnnotationUpdate?: ExternalAnnotationUpdate
   possibleLabels: Label[]
   uiConfig?: UiConfig
   onAnnoCreated?: (createdAnno: Annotation, allAnnos: Annotation[]) => void
@@ -60,6 +62,7 @@ const Sia = ({
   initialAnnotations = undefined,
   initialImageLabelIds = undefined,
   initialIsImageJunk = false,
+  externalAnnotationUpdate,
   possibleLabels,
   onAnnoCreated = (_, __) => {},
   onAnnoCreationFinished = (_) => {},
@@ -351,6 +354,45 @@ const Sia = ({
 
     createInitialAnnotations()
   }, [initialAnnotations])
+
+  // remember which external update we already applied, so repeated updates of
+  // the same annotation are applied even if the content did not change
+  const lastExternalAnnoTriggerRef = useRef<number | undefined>(undefined)
+
+  // apply an external in-place annotation update (e.g. a blowUp result) without
+  // forcing a full image reload: only the matching annotation is replaced in
+  // the internal state, the image / zoom / selection stay untouched
+  useEffect(() => {
+    if (externalAnnotationUpdate === undefined) return
+    if (externalAnnotationUpdate.trigger === lastExternalAnnoTriggerRef.current)
+      return
+
+    const { internalId, annotation } = externalAnnotationUpdate
+    const currentAnnotations = annotationsRef.current
+    const annoIndex = currentAnnotations.findIndex(
+      (anno) => anno.internalId === internalId,
+    )
+    if (annoIndex === -1) return
+
+    lastExternalAnnoTriggerRef.current = externalAnnotationUpdate.trigger
+
+    const updatedAnnotation: Annotation = {
+      ...currentAnnotations[annoIndex],
+      ...annotation,
+      internalId,
+    }
+
+    const _annotations: Annotation[] = [...currentAnnotations]
+    _annotations[annoIndex] = updatedAnnotation
+    annotationsRef.current = _annotations
+    setAnnotations(_annotations)
+    updateAnnotationHistory(_annotations)
+
+    // keep the selected annotation in sync when it was the updated one
+    if (selectedAnnotation?.internalId === internalId) {
+      setSelectedAnnotation(updatedAnnotation)
+    }
+  }, [externalAnnotationUpdate])
 
   useEffect(() => {
     setImageLabelIds(initialImageLabelIds)

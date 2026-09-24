@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- New `externalAnnotationUpdate` prop on `Sia` to apply an in-place update of a
+  single annotation without reloading the image (the image, zoom/pan and the
+  selection stay untouched)
+### Changed
+- Made shortcuts case-insensitive
 
 ## [3.3.0] - 2026-07-10
 ### Fixed

@@ -13,14 +13,14 @@ class KeyMapper {
     isShiftKeyPressed: boolean = false,
     isCtrlKeyPressed: boolean = false,
   ): boolean {
-    switch (key) {
-      case 'Enter':
+    switch (key.toLowerCase()) {
+      case 'enter':
         this.triggerKeyAction(KeyAction.EDIT_LABEL)
         break
-      case 'Delete':
+      case 'delete':
         this.triggerKeyAction(KeyAction.DELETE_ANNO)
         break
-      case 'Backspace':
+      case 'backspace':
         this.triggerKeyAction(KeyAction.DELETE_ANNO)
         break
       case 'z':
@@ -31,7 +31,7 @@ class KeyMapper {
       case 'y':
         if (isCtrlKeyPressed) this.triggerKeyAction(KeyAction.REDO)
         break
-      case 'Tab':
+      case 'tab':
         if (isShiftKeyPressed) this.triggerKeyAction(KeyAction.TRAVERSE_ANNOS_BACKWARDS)
         else this.triggerKeyAction(KeyAction.TRAVERSE_ANNOS)
         break
@@ -62,7 +62,7 @@ class KeyMapper {
         if (isCtrlKeyPressed) this.triggerKeyAction(KeyAction.PASTE_ANNOTATION)
 
         break
-      case 'Escape':
+      case 'escape':
         this.triggerKeyAction(KeyAction.DELETE_ANNO_IN_CREATION)
         break
       default:
