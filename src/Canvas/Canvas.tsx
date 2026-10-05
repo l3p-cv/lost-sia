@@ -336,18 +336,6 @@ const Canvas = ({
     annotationToPaste.internalId = onRequestNewAnnoId()
     annotationToPaste.externalId = ''
 
-    const tooSmallArea = getAreaBelowMinimalArea(
-      transform.convertPercentagedCoordinatesToImage(
-        annotationToPaste.coordinates,
-        imgSize,
-      ),
-      annotationToPaste.type,
-    )
-    if (tooSmallArea !== undefined) {
-      notifyTooSmallArea(tooSmallArea)
-      return
-    }
-
     onAnnoCreationFinished(annotationToPaste, true)
 
     onSelectAnnotation(annotationToPaste)
@@ -662,48 +650,8 @@ const Canvas = ({
     )
   }, [polygonOperationResult])
 
-  //  minimalArea guard
-  // Legacy LOST feature: annotations with a definable area (bbox, polygon)
-  // smaller than annotationSettings.minimalArea are rejected on creation.
-  // <= 0 disables the check; points and lines are exempt.
-
-  const notifyTooSmallArea = (area: number) => {
-    onNotification({
-      title: 'Warning',
-      message: `Annotation too small: area was ${Math.round(area)} px but needs to be bigger than ${Number(
-        annotationSettings.minimalArea,
-      )} px`,
-      type: NotificationType.WARNING,
-    })
-  }
-
-  const getAreaBelowMinimalArea = (
-    imageCoordinates: Point[],
-    type: AnnotationTool,
-  ): number | undefined => {
-    const minimalArea = Number(annotationSettings.minimalArea) || 0
-    if (minimalArea <= 0) return undefined
-
-    const area = transform.getAreaInImagePx(imageCoordinates, type)
-    return area !== undefined && area < minimalArea ? area : undefined
-  }
-
   const onFinishCreateAnno = (fullyCreatedAnnotation: Annotation) => {
     setEditorMode(EditorModes.VIEW)
-
-    // reject annotations below the configured minimal area (bbox & polygon only)
-    const tooSmallArea = getAreaBelowMinimalArea(
-      transform.convertStageCoordinatesToImage(
-        fullyCreatedAnnotation.coordinates,
-        imageToStageFactor,
-      ),
-      fullyCreatedAnnotation.type,
-    )
-    if (tooSmallArea !== undefined) {
-      notifyTooSmallArea(tooSmallArea)
-      onShouldDeleteAnno(fullyCreatedAnnotation.internalId)
-      return
-    }
 
     const newAnnotation: Annotation = {
       ...fullyCreatedAnnotation,
@@ -883,52 +831,6 @@ const Canvas = ({
     const newAnnotation = {
       ...annotation,
       coordinates: percentagedCoordinates,
-    }
-
-    // minimalArea: reject completed edits that shrink the annotation below the
-    // configured minimum — the edit is reverted to the stored pre-edit state
-    if (annotation.status !== AnnotationStatus.CREATING) {
-      const minimalArea = Number(annotationSettings.minimalArea) || 0
-      if (minimalArea > 0) {
-        const newArea = transform.getAreaInImagePx(
-          transform.convertPercentagedCoordinatesToImage(percentagedCoordinates, imgSize),
-          annotation.type,
-        )
-        const storedAnno = annotations.find(
-          (a) => a.internalId === annotation.internalId,
-        )
-        const storedArea = storedAnno
-          ? transform.getAreaInImagePx(
-              transform.convertPercentagedCoordinatesToImage(
-                storedAnno.coordinates,
-                imgSize,
-              ),
-              storedAnno.type,
-            )
-          : undefined
-
-        // only reject a shrink from >= minimalArea to < minimalArea
-        // (annotations already below the minimum stay editable)
-        if (
-          newArea !== undefined &&
-          newArea < minimalArea &&
-          storedArea !== undefined &&
-          storedArea >= minimalArea
-        ) {
-          notifyTooSmallArea(newArea)
-          // resubmit the stored pre-edit version: Sia updates its state, the
-          // scaledAnnotation prop changes and AnnotationComponent resyncs its
-          // local coordinates back (same mechanism as out-of-image fixes)
-          onAnnoChanged({
-            ...storedAnno,
-            status:
-              storedAnno.status === AnnotationStatus.LOADED
-                ? AnnotationStatus.CHANGED
-                : storedAnno.status,
-          })
-          return
-        }
-      }
     }
 
     // mark loaded annotations as changed (they wont be saved otherwise)

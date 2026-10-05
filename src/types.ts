@@ -13,7 +13,7 @@ export type AllowedTools = {
 }
 
 export type AnnotationSettings = {
-  minimalArea?: number
+  minimalArea?: number // @TODO needs to be implemented
   canHaveMultipleLabels: boolean
   canEdit?: boolean
   canCreate: boolean
