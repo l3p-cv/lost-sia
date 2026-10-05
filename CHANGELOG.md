@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- Implemented `annotationSettings.minimalArea` : bbox/polygon annotations (no points/lines) smaller than the configured minimum are rejected with a warning on creation ,paste and smaller than minimum area edits are reverted to the pre-edit state. Annotations already below minimum stay editable.
 
+### Changed
+- `Sia.tsx`: default `minimalArea` is now 0. default is overriden by annotation settings.
 ## [3.4.0] - 2026-09-24
 ### Added
 - New `externalAnnotationUpdate` prop on `Sia` to apply an in-place update of a

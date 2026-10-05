@@ -405,7 +405,7 @@ const Sia = ({
       canEdit: true,
       canHaveMultipleLabels: false,
       canLabel: true,
-      minimalArea: 250,
+      minimalArea: 0,
     }
 
     // use default values if a key is not set

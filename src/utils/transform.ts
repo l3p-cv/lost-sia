@@ -1,3 +1,4 @@
+import { AnnotationTool } from '../models'
 import type { Point, Vector2 } from '../types'
 
 const convertImageCoordinatesToStage = (
@@ -174,6 +175,37 @@ export const getTopPoint = (points: Point[]): Point[] => {
   return minYList
 }
 
+/**
+ * Computes the area of an annotation in image pixels.
+ * Only annotations that define an area (bbox, polygon) have a result;
+ * points and lines return undefined.
+ *
+ * @param imageCoordinates annotation coordinates in image pixels
+ * @param type annotation type
+ * @returns the area in image pixels, or undefined if the type has no area
+ */
+export const getAreaInImagePx = (
+  imageCoordinates: Point[],
+  type: AnnotationTool,
+): number | undefined => {
+  if (type === AnnotationTool.Point || type === AnnotationTool.Line) return undefined
+
+  if (type === AnnotationTool.BBox) {
+    const [first, second] = imageCoordinates
+    return Math.abs((second.x - first.x) * (second.y - first.y))
+  }
+
+  // polygon: shoelace formula
+  let doubledArea = 0
+  for (let i = 0; i < imageCoordinates.length; i++) {
+    const current = imageCoordinates[i]
+    const next = imageCoordinates[(i + 1) % imageCoordinates.length]
+    doubledArea += current.x * next.y - next.x * current.y
+  }
+
+  return Math.abs(doubledArea) / 2
+}
+
 export default {
   convertImageCoordinatesToStage,
   convertPercentagedCoordinatesToImage,
@@ -183,4 +215,5 @@ export default {
   convertStageToPage,
   getMostLeftPoints,
   getTopPoint,
+  getAreaInImagePx,
 }
