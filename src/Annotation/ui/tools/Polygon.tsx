@@ -68,11 +68,18 @@ const Polygon = ({
     didAnnoActuallyMoveRef.current = didAnnoActuallyMove
   }, [didAnnoActuallyMove])
 
-  const onMouseDown = (e: MouseEvent) => {
-    if (annotationSettings.canEdit === false) return
+  const addNodeAtMousePosition = (e: MouseEvent) => {
+      const antiScaledMousePositionInStageCoordinates =
+        mouse.getAntiScaledMouseStagePosition(
+          e, pageToStageOffset, svgScale, svgTranslation,
+        )
+      const newCoordinates = [...coordinates]
+      newCoordinates.push(antiScaledMousePositionInStageCoordinates)
+      onAddNode(newCoordinates)
+  }
 
-    // prevent middle-click from bubbling to the canvas during annotation creation
-    // also prevent default browser behavior (auto-scroll / paste on Linux)
+  const onMouseDown = (e: MouseEvent) => {
+    // UX guard, not a permission — keep ungated
     if (
       e.button === 1 &&
       [AnnotationMode.CREATE, AnnotationMode.ADD].includes(annotationMode)
@@ -82,7 +89,9 @@ const Polygon = ({
       return
     }
 
+    // moving an existing annotation is an edit action
     if (
+      annotationSettings.canEdit !== false &&
       isSelected &&
       annotationMode !== AnnotationMode.CREATE &&
       annotationMode !== AnnotationMode.ADD &&
@@ -90,23 +99,18 @@ const Polygon = ({
     )
       setIsAnnoDragging(true)
 
+    // adding nodes while creating is part of drawing
+    // (creation itself is already gated by canCreate on the canvas)
+    if (e.button === 2 && annotationMode === AnnotationMode.CREATE)
+      return addNodeAtMousePosition(e)
+
+    // adding nodes to an existing annotation is an edit action
     if (
+      annotationSettings.canEdit !== false &&
       e.button === 2 &&
-      [AnnotationMode.CREATE, AnnotationMode.ADD].includes(annotationMode)
-    ) {
-      const antiScaledMousePositionInStageCoordinates =
-        mouse.getAntiScaledMouseStagePosition(
-          e,
-          pageToStageOffset,
-          svgScale,
-          svgTranslation,
-        )
-
-      const newCoordinates = [...coordinates]
-      newCoordinates.push(antiScaledMousePositionInStageCoordinates)
-
-      onAddNode(newCoordinates)
-    }
+      annotationMode === AnnotationMode.ADD
+    )
+      addNodeAtMousePosition(e)
   }
 
   const onMouseMove = (e: MouseEvent) => {
@@ -266,7 +270,7 @@ const Polygon = ({
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
       />
-      {isSelected && annotationSettings.canEdit && renderEdges()}
+      {(annotationMode === AnnotationMode.CREATE || (isSelected && annotationSettings.canEdit)) && renderEdges()}
       {isSelected && annotationMode !== AnnotationMode.CREATE && renderNodes()}
     </g>
   )

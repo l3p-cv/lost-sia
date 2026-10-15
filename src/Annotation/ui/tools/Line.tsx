@@ -52,17 +52,14 @@ const Line = ({
   }, [didAnnoActuallyMove])
 
   const onMouseDown = (e: MouseEvent) => {
-    if (annotationSettings.canEdit === false) return
-
-    // prevent middle-click from bubbling to the canvas during annotation creation
-    // also prevent default browser behavior (auto-scroll / paste on Linux)
     if (e.button === 1 && annotationMode === AnnotationMode.CREATE) {
       e.preventDefault()
       e.stopPropagation()
       return
     }
 
-    if (isSelected && annotationMode !== AnnotationMode.CREATE && e.button === 0)
+    // moving an existing annotation is an edit action
+    if (annotationSettings.canEdit !== false && isSelected && annotationMode !== AnnotationMode.CREATE && e.button === 0)
       setIsAnnoDragging(true)
 
     if (e.button === 2 && annotationMode == AnnotationMode.CREATE) {
@@ -196,9 +193,15 @@ const Line = ({
           svgTranslation={svgTranslation}
           style={style}
           onAddNode={(coordinate: Point) => {
+            // adding a node to an existing line is an edit action
+            if (
+              annotationSettings.canEdit === false &&
+              annotationMode !== AnnotationMode.CREATE
+            )
+              return
+
             const newCoordinates = [...coordinates]
 
-            // add element at index while keeping the others
             newCoordinates.splice(index + 1, 0, coordinate)
 
             onAddNode(newCoordinates)

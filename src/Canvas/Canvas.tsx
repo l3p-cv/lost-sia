@@ -22,6 +22,7 @@ import {
   ToolCoordinates,
   UiConfig,
   Vector2,
+  AllowedTools,
 } from '../types'
 import mouse from '../utils/mouse'
 import AnnotationMode from '../models/AnnotationMode'
@@ -50,10 +51,13 @@ type CanvasProps = {
   possibleLabels: Label[]
   preventScrolling?: boolean
   uiConfig: UiConfig
+  allowedTools?: AllowedTools
   // onKeyDown?: (e) => void | undefined;
   // onKeyUp?: (e) => void | undefined;
   onAnnoCreated: (createdAnno: Annotation) => void
   onAnnoCreationFinished: (createdAnno: Annotation, hasAnnotationExisted: boolean) => void
+  onAnnoCreationRejected?: (rejectedAnnotation : Annotation) => void
+  onPolygonOperationInterrupted?: () => void
   onAnnoChanged: (changedAnno: Annotation) => void
   onAnnoEditing: (annoToEdit: Annotation) => void
   // onAnnoDeleted: (deletedAnno: Annotation, allAnnos: Annotation[]) => void;
@@ -81,10 +85,21 @@ const Canvas = ({
   selectedAnnoTool,
   toolbarHeight = 0,
   uiConfig,
+  allowedTools = {
+    bbox: true,
+    point: true,
+    line: true,
+    polygon: true,
+    junk: true,
+    imageLabel: true,
+    delete: true,
+  },
   // onKeyDown: propOnKeyDown,
   // onKeyUp: propsOnKeyUp,
   onAnnoCreated,
   onAnnoCreationFinished,
+  onAnnoCreationRejected = (_) => {},
+  onPolygonOperationInterrupted = () => {},
   onAnnoChanged,
   onAnnoEditing = (_) => {},
   onNotification = (_) => {},
@@ -149,6 +164,22 @@ const Canvas = ({
 
   // used to get the size of the dynamically loaded image
   const imageRef = useRef(null)
+
+  // natural (source) image size — measured once per image.
+// imgSize is the RENDERED size and drifts on window resizes; the
+// minimalArea check must not depend on the current window size.
+const naturalImgSizeRef = useRef<Vector2 | undefined>(undefined)
+useEffect(() => {
+    if (image === undefined) {
+        naturalImgSizeRef.current = undefined
+        return
+    }
+    const img = new Image()
+    img.onload = () => {
+        naturalImgSizeRef.current = { x: img.naturalWidth, y: img.naturalHeight }
+    }
+    img.src = image
+}, [image])
 
   // returns the aspect ratio of the largest image size fitting onto the canvas without changing the aspect ratio
   const getFittedImageScale = (imgSize: Vector2, svgSize: Vector2): number => {
@@ -325,6 +356,9 @@ const Canvas = ({
   }
 
   const pasteAnnotation = () => {
+
+    if (warnIfPolygonOperationActive()) return
+
     const clipboardAnnotation: string | null = localStorage.getItem(
       'lostAnnotationClipboard',
     )
@@ -336,11 +370,17 @@ const Canvas = ({
     annotationToPaste.internalId = onRequestNewAnnoId()
     annotationToPaste.externalId = ''
 
+    if (!isToolAllowed(annotationToPaste.type)) {
+      onNotification({
+        title: 'Warning',
+        message: 'This annotation tool is disabled for this task',
+        type: NotificationType.WARNING,
+      })
+      return
+    }
+
     const tooSmallArea = getAreaBelowMinimalArea(
-      transform.convertPercentagedCoordinatesToImage(
-        annotationToPaste.coordinates,
-        imgSize,
-      ),
+      annotationToPaste.coordinates,
       annotationToPaste.type,
     )
     if (tooSmallArea !== undefined) {
@@ -391,7 +431,8 @@ const Canvas = ({
   const handleKeyAction = (keyAction: KeyAction) => {
     switch (keyAction) {
       case KeyAction.EDIT_LABEL:
-        if (selectedAnnotation) {
+        if (warnIfPolygonOperationActive()) return
+        if (selectedAnnotation && annotationSettings.canLabel) {
           // selectedAnnotation coordinates are in the percentaged system — convert to stage first
           const stageCoords = transform.convertPercentagedCoordinatesToStage(
             selectedAnnotation.coordinates,
@@ -403,14 +444,14 @@ const Canvas = ({
         }
         break
       case KeyAction.DELETE_ANNO:
-        if (selectedAnnotation) onShouldDeleteAnno(selectedAnnotation.internalId)
+        if (selectedAnnotation && allowedTools.delete !== false) onShouldDeleteAnno(selectedAnnotation.internalId)
         break
       // case KeyAction.TOGGLE_ANNO_COMMENT_INPUT:
       //   console.log("KeyAction TODO: TOGGLE_ANNO_COMMENT_INPUT");
       //   break;
       case KeyAction.DELETE_ANNO_IN_CREATION:
         // remove an unfinished annotation
-        if (editorMode === EditorModes.CREATE) {
+        if (editorMode === EditorModes.CREATE && allowedTools.delete !== false) {
           onShouldDeleteAnno(selectedAnnotation.internalId)
           setEditorMode(EditorModes.VIEW)
         }
@@ -455,11 +496,15 @@ const Canvas = ({
         pasteAnnotation()
         break
       case KeyAction.RECREATE_ANNO:
+        if (warnIfPolygonOperationActive()) return
+        if (!annotationSettings.canEdit || !annotationSettings.canCreate)
+          return
         console.log('KeyAction TODO: RECREATE_ANNO')
         editSelectedAnnotation()
         break
       case KeyAction.TOGGLE_IMAGE_JUNK:
         // dont junk image while creating annotation
+        if (!allowedTools.junk) return
         if (editorMode === EditorModes.ADD || editorMode === EditorModes.CREATE) return
         onSetIsImageJunk(!isImageJunk)
         break
@@ -677,30 +722,72 @@ const Canvas = ({
     })
   }
 
+  const getAreaInNaturalImagePx = (
+      percentagedCoordinates: Point[],
+      type: AnnotationTool,
+  ): number | undefined => {
+      const naturalSize = naturalImgSizeRef.current
+      // fail open while the natural size has not been measured yet
+      if (naturalSize === undefined) return undefined
+      return transform.getAreaInImagePx(
+          transform.convertPercentagedCoordinatesToImage(percentagedCoordinates, naturalSize),
+          type,
+      )
+  }
+
   const getAreaBelowMinimalArea = (
-    imageCoordinates: Point[],
+    percentagedCoordinates: Point[],
     type: AnnotationTool,
   ): number | undefined => {
     const minimalArea = Number(annotationSettings.minimalArea) || 0
     if (minimalArea <= 0) return undefined
 
-    const area = transform.getAreaInImagePx(imageCoordinates, type)
+    const area = getAreaInNaturalImagePx(percentagedCoordinates, type)
     return area !== undefined && area < minimalArea ? area : undefined
+  }
+
+  const isToolAllowed = (tool: AnnotationTool): boolean =>
+    tool === AnnotationTool.BBox
+      ? !!allowedTools.bbox
+      : tool === AnnotationTool.Polygon
+        ? !!allowedTools.polygon
+        : tool === AnnotationTool.Point
+          ? !!allowedTools.point
+          : tool === AnnotationTool.Line
+            ? !!allowedTools.line
+            : true
+
+  /** Warns when a polygon operation is active and an annotation-creating
+   * action was attempted. Returns true when the caller must abort. */
+  const warnIfPolygonOperationActive = (): boolean => {
+      if (!isPolygonSelectionMode) return false
+
+      onNotification({
+        title: 'Warning',
+        message: 'Please select existing polygons to perform the operation',
+        type: NotificationType.WARNING,
+      })
+      onPolygonOperationInterrupted()
+      return true
   }
 
   const onFinishCreateAnno = (fullyCreatedAnnotation: Annotation) => {
     setEditorMode(EditorModes.VIEW)
-
+    
+    // convert the coordinates from our local scaled sytem into the percentaged one
+    const percentagedCoordinates = transform.convertStageCoordinatesToPercentaged(
+      fullyCreatedAnnotation.coordinates,
+      imageToStageFactor,
+      imgSize,
+    )
     // reject annotations below the configured minimal area (bbox & polygon only)
     const tooSmallArea = getAreaBelowMinimalArea(
-      transform.convertStageCoordinatesToImage(
-        fullyCreatedAnnotation.coordinates,
-        imageToStageFactor,
-      ),
+      percentagedCoordinates,
       fullyCreatedAnnotation.type,
     )
     if (tooSmallArea !== undefined) {
       notifyTooSmallArea(tooSmallArea)
+      onAnnoCreationRejected(fullyCreatedAnnotation)
       onShouldDeleteAnno(fullyCreatedAnnotation.internalId)
       return
     }
@@ -719,12 +806,6 @@ const Canvas = ({
       newAnnotation.annoTime = annoEditDuration
     }
 
-    // convert the coordinates from our local scaled sytem into the percentaged one
-    const percentagedCoordinates = transform.convertStageCoordinatesToPercentaged(
-      fullyCreatedAnnotation.coordinates,
-      imageToStageFactor,
-      imgSize,
-    )
     newAnnotation.coordinates = percentagedCoordinates
 
     onAnnoChanged(newAnnotation)
@@ -761,8 +842,11 @@ const Canvas = ({
       }
       setEditorMode(EditorModes.CAMERA_MOVE)
     } else if (e.button === 2) {
+      if (warnIfPolygonOperationActive()) return
       // check if annotation creation allowed in settings
       if (!annotationSettings.canCreate) return
+
+      if (!isToolAllowed(selectedAnnoTool)) return
 
       if (editorMode === EditorModes.ADD || editorMode === EditorModes.CREATE) return
 
@@ -890,21 +974,15 @@ const Canvas = ({
     if (annotation.status !== AnnotationStatus.CREATING) {
       const minimalArea = Number(annotationSettings.minimalArea) || 0
       if (minimalArea > 0) {
-        const newArea = transform.getAreaInImagePx(
-          transform.convertPercentagedCoordinatesToImage(percentagedCoordinates, imgSize),
+        const newArea = getAreaInNaturalImagePx(
+          percentagedCoordinates,
           annotation.type,
         )
         const storedAnno = annotations.find(
           (a) => a.internalId === annotation.internalId,
         )
         const storedArea = storedAnno
-          ? transform.getAreaInImagePx(
-              transform.convertPercentagedCoordinatesToImage(
-                storedAnno.coordinates,
-                imgSize,
-              ),
-              storedAnno.type,
-            )
+          ? getAreaInNaturalImagePx(storedAnno.coordinates, storedAnno.type)
           : undefined
 
         // only reject a shrink from >= minimalArea to < minimalArea
