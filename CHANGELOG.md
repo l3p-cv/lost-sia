@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [3.4.1] - 2026-10-21
+### Added
 - Implemented `annotationSettings.minimalArea` : bbox/polygon annotations (no points/lines) smaller than the configured minimum are rejected with a warning on creation ,paste and smaller than minimum area edits are reverted to the pre-edit state. Annotations already below minimum stay editable.
 - `Sia.tsx` and `Canvas.tsx` added new callback onAnnoCreationRejected fired when annotation is minimalArea guard, also added onPolygonOperationInterrupted callback fired when an annotation creating action is attempted during active polygon operation.
 - Canvas receives `allowedTools`  from `Sia`.
