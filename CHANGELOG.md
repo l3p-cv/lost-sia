@@ -12,10 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented `annotationSettings.minimalArea` : bbox/polygon annotations (no points/lines) smaller than the configured minimum are rejected with a warning on creation ,paste and smaller than minimum area edits are reverted to the pre-edit state. Annotations already below minimum stay editable.
 - `Sia.tsx` and `Canvas.tsx` added new callback onAnnoCreationRejected fired when annotation is minimalArea guard, also added onPolygonOperationInterrupted callback fired when an annotation creating action is attempted during active polygon operation.
 - Canvas receives `allowedTools`  from `Sia`.
-
 ### Changed
 - `Sia.tsx`: default `minimalArea` is now 0. default is overriden by annotation settings.
 - Keyboard shortcuts and creation paths now respect the annotask configuration junk toggle (`j`), label input (`Enter`), recreate (`e`), delete and paste are gated by `allowedTools`/`annotationSettings` and right-click creation of a disabled tool is blocked at the canvas level.
+
 ## [3.4.0] - 2026-09-24
 ### Added
 - New `externalAnnotationUpdate` prop on `Sia` to apply an in-place update of a
