@@ -36,6 +36,8 @@ type SiaProps = {
   uiConfig?: UiConfig
   onAnnoCreated?: (createdAnno: Annotation, allAnnos: Annotation[]) => void
   onAnnoCreationFinished?: (createdAnno: Annotation) => void
+  onAnnoCreationRejected?: (rejectedAnnotation : Annotation) => void
+  onPolygonOperationInterrupted?: () => void
   onAnnoChanged?: (changedAnno: Annotation) => void
   onAnnoDeleted?: (deletedAnno: Annotation, allAnnos?: Annotation[]) => void
   onImageLabelsChanged?: (selectedImageIds: number[]) => void
@@ -66,6 +68,8 @@ const Sia = ({
   possibleLabels,
   onAnnoCreated = (_, __) => {},
   onAnnoCreationFinished = (_) => {},
+  onAnnoCreationRejected = (_) => {},
+  onPolygonOperationInterrupted = () => {},
   onAnnoChanged = (_) => {},
   onAnnoDeleted = (_, __) => {},
   onImageLabelsChanged = () => {},
@@ -405,7 +409,7 @@ const Sia = ({
       canEdit: true,
       canHaveMultipleLabels: false,
       canLabel: true,
-      minimalArea: 250,
+      minimalArea: 0,
     }
 
     // use default values if a key is not set
@@ -559,6 +563,7 @@ const Sia = ({
             polygonOperationResult={polygonOperationResult}
             possibleLabels={possibleLabels}
             uiConfig={uiConfig}
+            allowedTools = {allowedTools}
             onAnnoCreated={(annotation: Annotation) => {
               const _annotations = [...annotationsRef.current, annotation]
               annotationsRef.current = _annotations
@@ -646,6 +651,8 @@ const Sia = ({
               // inform the outer world about the new annotation (also outside of the updater/setState!!!)
               onAnnoCreationFinished(finishedAnno)
             }}
+            onAnnoCreationRejected={onAnnoCreationRejected}
+            onPolygonOperationInterrupted={onPolygonOperationInterrupted}
             onAnnoEditing={handleAnnoEditing}
             onSetIsImageJunk={handleImageJunk}
             onNotification={onNotification}
