@@ -90,7 +90,10 @@ const AnnoBar = ({
           y={barPosition.y - 30 / svgScale}
           color={color}
           size={60 / svgScale}
-          onClick={() => onLabelIconClicked(topLeftPoint)}
+          onClick={(e) => {
+            e.stopPropagation()
+            onLabelIconClicked(topLeftPoint)
+          }}
         />
       )}
 

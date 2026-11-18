@@ -270,10 +270,20 @@ const AnnotationComponent = ({
       // onContextMenu={(e) => this.onContextMenu(e)}
       onClick={(e) => {
         e.stopPropagation()
+        if (
+          e.altKey &&
+          e.detail === 1 &&
+          ![AnnotationMode.CREATE, AnnotationMode.ADD].includes(annotationMode) &&
+          !isDisabled
+        ) {
+          onAction(scaledAnnotation, CanvasAction.ANNO_CYCLE_SELECTION, e)
+          return
+        }
         onAction(scaledAnnotation, CanvasAction.ANNO_SELECTED)
       }}
       onDoubleClick={(e) => {
         // double-click cycles to annotations underneath (handled in Canvas.onAnnoAction)
+        if (e.altKey) return
         if ([AnnotationMode.CREATE, AnnotationMode.ADD].includes(annotationMode)) return
         if (isDisabled) return
         e.stopPropagation()

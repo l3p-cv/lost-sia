@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `transform.ts` : Added helpers `isPointInPolygon`,`distancePointToSegment`,`isPointInAnnotation` to detect the point or any annottaion inside the bugger annotation.
 - `AnnotationComponent.tsx` : dispatches the ANNO_CYCLE_SELECTION on double click (disabled in add/create mode).
 -  `Canvas.tsx` : added `handleCycyleSelectionRequest` double click selection to innermost smallest annotation underneath the double clicked one.
+- `AnnotationComponent.tsx` : Added on ALT+Click to select the innermost smallest annotation.
+- `AnnoBar.tsx` : disabled the opening of label popup on alt+click.
 ## [3.4.1] - 2026-10-21
 ### Added
 - Implemented `annotationSettings.minimalArea` : bbox/polygon annotations (no points/lines) smaller than the configured minimum are rejected with a warning on creation ,paste and smaller than minimum area edits are reverted to the pre-edit state. Annotations already below minimum stay editable.
