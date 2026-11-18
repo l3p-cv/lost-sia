@@ -25,7 +25,7 @@ type AnnotationComponentProps = {
   isDisabled?: boolean
   onFinishAnnoCreate: (fullyCreatedAnnotation: Annotation) => void
   onLabelIconClicked: (markerPosition: Point) => void
-  onAction?: (annotation: Annotation, canvasAction: CanvasAction) => void
+  onAction?: (annotation: Annotation, canvasAction: CanvasAction, e?: React.MouseEvent) => void
   onAnnoChanged?: (annotation: Annotation) => void
   onAnnotationModeChange?: (annotationMode: AnnotationMode) => void
   onNotification?: (notification: SIANotification) => void
@@ -271,6 +271,12 @@ const AnnotationComponent = ({
       onClick={(e) => {
         e.stopPropagation()
         onAction(scaledAnnotation, CanvasAction.ANNO_SELECTED)
+      }}
+      onDoubleClick={(e) => {
+        if ([AnnotationMode.CREATE, AnnotationMode.ADD].includes(annotationMode)) return
+        if (isDisabled) return
+        e.stopPropagation()
+        onAction(scaledAnnotation, CanvasAction.ANNO_CYCLE_SELECTION, e)
       }}
     >
       {!isDragging && annotationMode !== AnnotationMode.CREATE && (

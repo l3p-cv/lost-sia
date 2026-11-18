@@ -206,6 +206,72 @@ export const getAreaInImagePx = (
   return Math.abs(doubledArea) / 2
 }
 
+/** Ray-casting point-in-polygon test (works for the 4-corner bbox expansion too). */
+export const isPointInPolygon = (point: Point, polygonCoordinates: Point[]): boolean => {
+  let isInside = false
+  for (let i = 0, j = polygonCoordinates.length - 1; i < polygonCoordinates.length; j = i++) {
+    const current = polygonCoordinates[i]
+    const previous = polygonCoordinates[j]
+    const intersects =
+      current.y > point.y !== previous.y > point.y &&
+      point.x <
+        ((previous.x - current.x) * (point.y - current.y)) / (previous.y - current.y) +
+          current.x
+    if (intersects) isInside = !isInside
+  }
+  return isInside
+}
+
+/** Distance between a point and a line segment. */
+const distancePointToSegment = (point: Point, a: Point, b: Point): number => {
+  const dx = b.x - a.x
+  const dy = b.y - a.y
+  if (dx === 0 && dy === 0) return Math.hypot(point.x - a.x, point.y - a.y)
+  const t = Math.max(
+    0,
+    Math.min(1, ((point.x - a.x) * dx + (point.y - a.y) * dy) / (dx * dx + dy * dy)),
+  )
+  return Math.hypot(point.x - (a.x + t * dx), point.y - (a.y + t * dy))
+}
+
+/**
+ * Tests whether a point lies on an annotation's geometry.
+ * `tolerance` (same unit as coordinates) applies to line strokes and point markers.
+ */
+export const isPointInAnnotation = (
+  point: Point,
+  coordinates: Point[],
+  type: AnnotationTool,
+  tolerance = 0,
+): boolean => {
+  if (coordinates.length === 0) return false
+
+  if (type === AnnotationTool.BBox || type === AnnotationTool.Polygon) {
+    // bbox coordinates are two diagonal corners -> expand to 4 corners
+    const polygonCoordinates =
+      type === AnnotationTool.BBox
+        ? [
+            coordinates[0],
+            { x: coordinates[0].x, y: coordinates[1].y },
+            coordinates[1],
+            { x: coordinates[1].x, y: coordinates[0].y },
+          ]
+        : coordinates
+    return isPointInPolygon(point, polygonCoordinates)
+  }
+
+  if (type === AnnotationTool.Line) {
+    for (let i = 0; i < coordinates.length - 1; i++) {
+      if (distancePointToSegment(point, coordinates[i], coordinates[i + 1]) <= tolerance)
+        return true
+    }
+    return false
+  }
+
+  // AnnotationTool.Point
+  return Math.hypot(point.x - coordinates[0].x, point.y - coordinates[0].y) <= tolerance
+}
+
 export default {
   convertImageCoordinatesToStage,
   convertPercentagedCoordinatesToImage,
@@ -216,4 +282,6 @@ export default {
   getMostLeftPoints,
   getTopPoint,
   getAreaInImagePx,
+  isPointInPolygon,
+  isPointInAnnotation,
 }
