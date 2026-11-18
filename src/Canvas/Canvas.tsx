@@ -561,18 +561,6 @@ useEffect(() => {
     return newScaledAnnotations
   }
 
-  /** Visual stacking order (bottom → top): base order with the selected annotation raised last. */
-  const getVisualStack = (): Annotation[] => {
-    const stack: Annotation[] = [...scaledAnnotations]
-    if (selectedAnnotation) {
-      const selectedIndex = stack.findIndex(
-        (a) => a.internalId === selectedAnnotation.internalId,
-      )
-      if (selectedIndex !== -1) stack.push(stack.splice(selectedIndex, 1)[0])
-    }
-    return stack
-  }
-
   const scaledAnnotations = calculateScaledAnnotations(annotations)
   // imgSize is measured separately once in the <image> element's 'load' event
   const resetCanvas = () => {
@@ -948,8 +936,14 @@ useEffect(() => {
     }
   }
 
-  /** Double-click: select the topmost annotation underneath the double-clicked one. */
-  const handleCycleSelectionRequest = (annotation: Annotation, e?: React.MouseEvent) => {
+  /** Double-click: cycle the selection through ALL annotations under the cursor position,
+   *  ordered by area ASCENDING (innermost first), wrapping at the top back to the smallest.
+   *  A fresh double-click has the topmost (usually largest) annotation selected, so the
+   *  wrap lands directly on the innermost annotation — one click to the core, then peel outward.
+   *  Uses BASE z-order only — the render-only raise-on-select never influences the cycle.
+   *  No extra cycle state: the current selection IS the state (click #1 of the double-click
+   *  always re-selected the topmost annotation at this position). */
+  const handleCycleSelectionRequest = (e?: React.MouseEvent) => {
     if (e === undefined) return
     // no cycling while a popup is open, other annos are hidden, or a polygon operation runs
     if (isLabelInputVisible) return
@@ -957,36 +951,48 @@ useEffect(() => {
     if (editorMode !== EditorModes.VIEW) return
 
     // position in the same coordinate system as the scaled annotation coordinates
-    // (same conversion the tool children use — BBox.tsx:106-121 with svgTranslation=centeredSvgTranslation)
+    // (same conversion the tool children use — BBox.tsx:106-121, svgTranslation=centeredSvgTranslation)
     const mouseStagePosition = mouse.getAntiScaledMouseStagePosition(
       e,
       pageToStageOffset,
       svgScale,
       centeredSvgTranslation,
     )
-
     // tolerance for line strokes / point markers (rendered sizes are scale-corrected)
     const tolerance = Math.max(uiConfig.strokeWidth, uiConfig.nodeRadius) / svgScale
 
-    // walk the visual stack top → down, skipping the annotation that received the event
-    const stack = getVisualStack()
-    for (let i = stack.length - 1; i >= 0; i--) {
-      const candidate = stack[i]
-      if (candidate.internalId === annotation.internalId) continue
-      if (
-        !transform.isPointInAnnotation(
-          mouseStagePosition,
-          candidate.coordinates,
-          candidate.type,
-          tolerance,
-        )
+    // ALL annotations containing the point, sorted by area ASCENDING (innermost first).
+    // points and lines have no area -> count as 0 -> innermost. ties -> internalId (deterministic).
+    const candidates = scaledAnnotations
+      .filter((a) =>
+        transform.isPointInAnnotation(mouseStagePosition, a.coordinates, a.type, tolerance),
       )
-        continue
-      // select the original (percentaged-space) annotation — same path as Tab cycling (traverseAnnos, line 307)
-      const originalAnno = annotations.find((a) => a.internalId === candidate.internalId)
-      if (originalAnno !== undefined) onSelectAnnotation(originalAnno)
-      return
-    }
+      .map((a) => ({
+        anno: a,
+        area:
+          transform.getAreaInImagePx(
+            transform.convertStageCoordinatesToImage(a.coordinates, imageToStageFactor),
+            a.type,
+          ) ?? 0,
+      }))
+      .sort((a, b) => a.area - b.area || a.anno.internalId - b.anno.internalId)
+      .map((c) => c.anno)
+    if (candidates.length === 0) return
+
+    // the currently selected annotation, if it is part of this stack
+    const selectedIndex = selectedAnnotation
+      ? candidates.findIndex((a) => a.internalId === selectedAnnotation.internalId)
+      : -1
+
+    // step to the NEXT-LARGER annotation, wrap at the top back to the smallest.
+    // fresh entry (topmost selected) wraps straight to the innermost.
+    const nextIndex = selectedIndex === -1 ? 0 : (selectedIndex + 1) % candidates.length
+
+    // select the original (percentaged-space) annotation — same path as Tab cycling (traverseAnnos, line 307)
+    const nextAnno = annotations.find(
+      (a) => a.internalId === candidates[nextIndex].internalId,
+    )
+    if (nextAnno !== undefined) onSelectAnnotation(nextAnno)
     // nothing underneath at this position — keep the current selection
   }
 
@@ -996,7 +1002,7 @@ useEffect(() => {
     e?: React.MouseEvent,
   ) => {
     if (canvasAction === CanvasAction.ANNO_CYCLE_SELECTION) {
-      handleCycleSelectionRequest(annotation, e)
+      handleCycleSelectionRequest(e)
       return
     }
 
@@ -1094,7 +1100,7 @@ useEffect(() => {
       editorModesOtherAnnosShouldBeHiddenIn.includes(editorMode)
 
     // draw the annotation using the AnnotationComponent and the scaled coordinates
-    const annos: ReactElement[] = getVisualStack().map(
+    const annos: ReactElement[] = scaledAnnotations.map(
       (scaledAnnotation: Annotation): ReactElement => {
         // only show selected anno in specific editor modes
         const isAnnoSelected: boolean =
@@ -1141,6 +1147,21 @@ useEffect(() => {
         )
       },
     )
+
+    // move the selected annotation to the last spot
+    // this way, it's always on top of the others so that its nodes can be reached
+    if (selectedAnnotation) {
+      const _selectedAnnotation: Annotation = scaledAnnotations.find(
+        (a) => a.internalId === selectedAnnotation?.internalId,
+      )
+
+      // since annos was generated by iterating through scaledAnnotations, the index is the same
+      const selectedAnnotationIndex: number =
+        scaledAnnotations.indexOf(_selectedAnnotation)
+
+      // move the selected annotation to the last spot
+      annos.push(annos.splice(selectedAnnotationIndex, 1)[0])
+    }
 
     return <g>{annos}</g>
   }

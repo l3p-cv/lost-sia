@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `models/CanvasAction.ts` : new action `ANNO_CYCLE_SELECTION`
 - `transform.ts` : Added helpers `isPointInPolygon`,`distancePointToSegment`,`isPointInAnnotation` to detect the point or any annottaion inside the bugger annotation.
 - `AnnotationComponent.tsx` : dispatches the ANNO_CYCLE_SELECTION on double click (disabled in add/create mode).
--  `Canvas.tsx` : added `handleCycyleSelectionRequest` double click selection to topmost annotation underneath the double clicked one,`getVisualStack` (this is the maintain the stack top to down behaviour when TAB is hit), rederAnnotations now uses getVisualStack instead of its own splice logic.
+-  `Canvas.tsx` : added `handleCycyleSelectionRequest` double click selection to innermost smallest annotation underneath the double clicked one.
 ## [3.4.1] - 2026-10-21
 ### Added
 - Implemented `annotationSettings.minimalArea` : bbox/polygon annotations (no points/lines) smaller than the configured minimum are rejected with a warning on creation ,paste and smaller than minimum area edits are reverted to the pre-edit state. Annotations already below minimum stay editable.

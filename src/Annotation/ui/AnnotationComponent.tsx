@@ -273,6 +273,7 @@ const AnnotationComponent = ({
         onAction(scaledAnnotation, CanvasAction.ANNO_SELECTED)
       }}
       onDoubleClick={(e) => {
+        // double-click cycles to annotations underneath (handled in Canvas.onAnnoAction)
         if ([AnnotationMode.CREATE, AnnotationMode.ADD].includes(annotationMode)) return
         if (isDisabled) return
         e.stopPropagation()
