@@ -1268,8 +1268,8 @@ useEffect(() => {
         <div
           style={{
             position: 'absolute',
-            left: junkTextStart.x,
-            top: junkTextStart.y,
+            left: '50%',
+            top: '50%',
             transform: 'translate(-50%, -50%)',
             textAlign: 'center',
             color: 'white',
